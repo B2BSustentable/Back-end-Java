@@ -1,4 +1,4 @@
-package com.example.b2b.entity;
+package com.example.b2b.domain.entity;
 
 public class Usuario {
     private String nome;
