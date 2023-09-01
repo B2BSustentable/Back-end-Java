@@ -10,14 +10,13 @@ import java.util.List;
 
 public class EditarUsuarioPorCnpjUseCase {
 
-    public ResponseEntity<Usuario> editarUsuarioPorCnpj(@RequestBody Usuario usuario, @PathVariable String cnpj, List<Usuario> listaUsuarios) {
+    public ResponseEntity<Usuario> editarUsuarioPorCnpj(@RequestBody Usuario usuarioEditado, @PathVariable String cnpj, List<Usuario> listaUsuarios) {
         Usuario usuarioValidado = listaUsuarios.stream().filter(
                 u -> u.getCnpj().equals(cnpj)).findFirst().orElse(null);
 
         if (!(usuarioValidado == null)) {
-            listaUsuarios.remove(usuarioValidado);
-            listaUsuarios.add(usuario);
-            return ResponseEntity.status(200).body(usuario);
+            listaUsuarios.set(listaUsuarios.indexOf(usuarioValidado), usuarioEditado);
+            return ResponseEntity.status(200).body(usuarioEditado);
         } else {
             return ResponseEntity.status(404).build();
         }
