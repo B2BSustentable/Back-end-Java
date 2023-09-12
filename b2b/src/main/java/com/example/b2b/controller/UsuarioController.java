@@ -25,6 +25,15 @@ public class UsuarioController {
             return ResponseEntity.status(200).body(listaUsuarios);
         }
     }
+    @PostMapping("/{cnpj}/postagem")
+    public ResponseEntity<?> fazerPostagem(@PathVariable String cnpj, @RequestBody String conteudo) {
+        Usuario usuario = usuarioService.getUsuarioPorCnpj(cnpj).getBody();
+        if (usuario != null) {
+            return ResponseEntity.status(200).body(usuario.fazerPostagem(conteudo));
+        } else {
+            return ResponseEntity.status(404).build();
+        }
+    }
 
     // http://localhost:8080/usuarios/123456789
     @GetMapping("/{cnpj}")

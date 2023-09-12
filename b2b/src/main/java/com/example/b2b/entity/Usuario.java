@@ -2,6 +2,7 @@ package com.example.b2b.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.http.ResponseEntity;
 
 @Entity(name = "usuario")
 @Table(name = "usuario")
@@ -17,4 +18,6 @@ public abstract class Usuario {
     private String nome;
     private String cnpj;
     private String senha;
+
+    public abstract ResponseEntity<String> fazerPostagem(String conteudo);
 }
