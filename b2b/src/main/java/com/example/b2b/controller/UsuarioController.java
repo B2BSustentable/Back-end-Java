@@ -40,41 +40,34 @@ public class UsuarioController {
     // http://localhost:8080/usuarios
     @PostMapping
     public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuarioNovo) {
-        List<Usuario> listaUsuarios = usuarioService.getTodosUsuarios();
-        for (Usuario usuario : listaUsuarios) {
-            if (usuario.getCnpj().equals(usuarioNovo.getCnpj())) {
-                return ResponseEntity.status(409).build();
-            }
+        ResponseEntity<Usuario> resposta = usuarioService.cadastrarUsuario(usuarioNovo);
+        if (resposta.getStatusCode().is2xxSuccessful()) {
+            return resposta;
+        } else {
+            return ResponseEntity.status(resposta.getStatusCode()).build();
         }
-        Usuario usuarioCadastrado = usuarioService.cadastrarUsuario(usuarioNovo).getBody();
-        return ResponseEntity.status(201).body(usuarioCadastrado);
     }
 
     // http://localhost:8080/usuarios/123456789
     @PutMapping("/{cnpj}")
     public ResponseEntity<Usuario> editarUsuarioPorCnpj(@RequestBody Usuario usuario, @PathVariable String cnpj) {
-        List<Usuario> listaUsuarios = usuarioService.getTodosUsuarios();
-        for (Usuario usuarioDaLista : listaUsuarios) {
-            if (usuarioDaLista.getCnpj().equals(cnpj)) {
-                usuario.setId(usuarioDaLista.getId());
-                Usuario usuarioEditado = usuarioService.editarUsuarioPorCnpj(usuario, cnpj).getBody();
-                return ResponseEntity.status(200).body(usuarioEditado);
-            }
+        ResponseEntity<Usuario> resposta = usuarioService.editarUsuarioPorCnpj(usuario, cnpj);
+        if (resposta.getStatusCode().is2xxSuccessful()) {
+            return resposta;
+        } else {
+            return ResponseEntity.status(resposta.getStatusCode()).build();
         }
-        return ResponseEntity.status(404).build();
     }
 
     // http://localhost:8080/usuarios/123456789
     @DeleteMapping("/{cnpj}")
     public ResponseEntity<Usuario> deletarUsuarioPorCnpj(@PathVariable String cnpj) {
-        List<Usuario> listaUsuarios = usuarioService.getTodosUsuarios();
-        for (Usuario usuario : listaUsuarios) {
-            if (usuario.getCnpj().equals(cnpj)) {
-                usuarioService.deletarUsuarioPorCnpj(cnpj);
-                return ResponseEntity.status(200).build();
-            }
+        ResponseEntity<Usuario> resposta = usuarioService.deletarUsuarioPorCnpj(cnpj);
+        if (resposta.getStatusCode().is2xxSuccessful()) {
+            return resposta;
+        } else {
+            return ResponseEntity.status(resposta.getStatusCode()).build();
         }
-        return ResponseEntity.status(404).build();
     }
 
     // http://localhost:8080/usuarios/login

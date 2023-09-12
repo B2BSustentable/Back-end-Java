@@ -49,7 +49,7 @@ public class UsuarioService {
         Optional<Usuario> verificarExistenciaDeUsuario = Optional.ofNullable(usuarioRepository.findByCnpj(cnpj));
         if (verificarExistenciaDeUsuario.isPresent()) {
             usuarioRepository.delete(verificarExistenciaDeUsuario.get());
-            return ResponseEntity.status(200).build();
+            return ResponseEntity.status(204).build();
         } else {
             return ResponseEntity.status(404).build();
         }
