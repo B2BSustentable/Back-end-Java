@@ -10,7 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of="id")
 public class UsuarioBronze extends Usuario {
     private String tipoAssinatura = "Bronze";
     private int limiteDeProdutos;
