@@ -1,6 +1,6 @@
 package com.example.b2b.entity.usuario;
 
-import com.example.b2b.dtos.UsuarioDTO;
+import com.example.b2b.dtos.usuario.UsuarioDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;

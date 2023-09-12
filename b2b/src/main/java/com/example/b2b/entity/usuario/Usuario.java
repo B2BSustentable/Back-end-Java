@@ -1,6 +1,6 @@
 package com.example.b2b.entity.usuario;
 
-import com.example.b2b.dtos.UsuarioDTO;
+import com.example.b2b.dtos.usuario.UsuarioDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +14,8 @@ import org.springframework.http.ResponseEntity;
 @EqualsAndHashCode(of="id")
 public abstract class Usuario {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
     private String nome;
     private String cnpj;
     private String senha;

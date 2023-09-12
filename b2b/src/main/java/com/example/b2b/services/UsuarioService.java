@@ -1,6 +1,6 @@
 package com.example.b2b.services;
 
-import com.example.b2b.dtos.UsuarioDTO;
+import com.example.b2b.dtos.usuario.UsuarioDTO;
 import com.example.b2b.entity.usuario.Usuario;
 import com.example.b2b.entity.usuario.UsuarioBronze;
 import com.example.b2b.entity.usuario.UsuarioOuro;
@@ -27,13 +27,11 @@ public class UsuarioService {
     }
 
     public ResponseEntity<Usuario> cadastrarUsuario(UsuarioDTO data) {
-        // Verifique se o usuário com o mesmo CNPJ já existe
         Usuario usuarioExistente = usuarioRepository.findByCnpj(data.cnpj());
         if (usuarioExistente != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        // Crie um novo usuário com base no tipo fornecido no UsuarioDTO
         Usuario novoUsuario;
         switch (data.tipoUsuario()) {
             case USUARIO_BRONZE:
@@ -50,10 +48,8 @@ public class UsuarioService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        // Salve o novo usuário no banco de dados
         usuarioRepository.save(novoUsuario);
 
-        // Retorne a resposta com o novo usuário e o status 201 Created
         return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
     }
 

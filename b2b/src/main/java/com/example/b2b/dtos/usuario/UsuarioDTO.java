@@ -1,4 +1,4 @@
-package com.example.b2b.dtos;
+package com.example.b2b.dtos.usuario;
 
 import com.example.b2b.entity.usuario.TipoUsuario;
 
