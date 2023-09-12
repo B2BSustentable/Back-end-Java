@@ -1,5 +1,6 @@
 package com.example.b2b.controller;
 
+import com.example.b2b.dtos.UsuarioDTO;
 import com.example.b2b.entity.Usuario;
 import com.example.b2b.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class UsuarioController {
 
     // http://localhost:8080/usuarios
     @PostMapping
-    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuarioNovo) {
+    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody UsuarioDTO usuarioNovo) {
         ResponseEntity<Usuario> resposta = usuarioService.cadastrarUsuario(usuarioNovo);
         if (resposta.getStatusCode().is2xxSuccessful()) {
             return resposta;
@@ -59,7 +60,7 @@ public class UsuarioController {
 
     // http://localhost:8080/usuarios/123456789
     @PutMapping("/{cnpj}")
-    public ResponseEntity<Usuario> editarUsuarioPorCnpj(@RequestBody Usuario usuario, @PathVariable String cnpj) {
+    public ResponseEntity<Usuario> editarUsuarioPorCnpj(@RequestBody UsuarioDTO usuario, @PathVariable String cnpj) {
         ResponseEntity<Usuario> resposta = usuarioService.editarUsuarioPorCnpj(usuario, cnpj);
         if (resposta.getStatusCode().is2xxSuccessful()) {
             return resposta;
