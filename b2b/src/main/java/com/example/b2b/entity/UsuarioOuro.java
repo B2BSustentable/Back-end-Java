@@ -1,5 +1,6 @@
 package com.example.b2b.entity;
 
+import com.example.b2b.dtos.UsuarioDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -17,6 +18,14 @@ public class UsuarioOuro extends Usuario {
     private double desconto;
     private boolean suporte24h;
     private String acessoVIP;
+
+    public UsuarioOuro(UsuarioDTO data) {
+        super(data);
+        this.limiteDeProdutos = data.limiteDeProdutos();
+        this.desconto = data.desconto();
+        this.suporte24h = data.suporte24h();
+        this.acessoVIP = data.acessoVIP();
+    }
 
     @Override
     public ResponseEntity<String> fazerPostagem(String conteudo) {
