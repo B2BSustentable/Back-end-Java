@@ -1,10 +1,10 @@
 package com.example.b2b.services;
 
 import com.example.b2b.dtos.UsuarioDTO;
-import com.example.b2b.entity.Usuario;
-import com.example.b2b.entity.UsuarioBronze;
-import com.example.b2b.entity.UsuarioOuro;
-import com.example.b2b.entity.UsuarioPrata;
+import com.example.b2b.entity.usuario.Usuario;
+import com.example.b2b.entity.usuario.UsuarioBronze;
+import com.example.b2b.entity.usuario.UsuarioOuro;
+import com.example.b2b.entity.usuario.UsuarioPrata;
 import com.example.b2b.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
-
-import static com.example.b2b.entity.TipoUsuario.*;
 
 @Service
 public class UsuarioService {

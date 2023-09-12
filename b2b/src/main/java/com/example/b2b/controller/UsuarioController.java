@@ -1,7 +1,7 @@
 package com.example.b2b.controller;
 
 import com.example.b2b.dtos.UsuarioDTO;
-import com.example.b2b.entity.Usuario;
+import com.example.b2b.entity.usuario.Usuario;
 import com.example.b2b.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

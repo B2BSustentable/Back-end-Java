@@ -1,4 +1,4 @@
-package com.example.b2b.entity;
+package com.example.b2b.entity.usuario;
 
 import com.example.b2b.dtos.UsuarioDTO;
 import jakarta.persistence.Entity;
