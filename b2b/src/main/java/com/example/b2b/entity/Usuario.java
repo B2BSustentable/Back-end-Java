@@ -10,7 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode(of="id")
-public abstract class Usuario {
+public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
