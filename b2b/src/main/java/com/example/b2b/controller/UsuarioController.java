@@ -1,22 +1,24 @@
 package com.example.b2b.controller;
 
-import com.example.b2b.domain.entity.Usuario;
-import com.example.b2b.domain.useCase.*;
+import com.example.b2b.entity.Usuario;
+import com.example.b2b.services.UsuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    public List<Usuario> listaUsuarios = new ArrayList<>();
+    @Autowired
+    private UsuarioService usuarioService = new UsuarioService();
 
     // http://localhost:8080/usuarios
     @GetMapping
     public ResponseEntity<List<Usuario>> getUsuarios() {
+        List<Usuario> listaUsuarios = usuarioService.getTodosUsuarios();
         if (listaUsuarios.isEmpty()) {
             return ResponseEntity.status(204).build();
         } else {
@@ -27,36 +29,59 @@ public class UsuarioController {
     // http://localhost:8080/usuarios/123456789
     @GetMapping("/{cnpj}")
     public ResponseEntity<Usuario> getUsuarioPorCnpj(@PathVariable String cnpj) {
-        GetUsuarioPorCnpjUseCase getUsuarioPorCnpjUseCase = new GetUsuarioPorCnpjUseCase();
-        return getUsuarioPorCnpjUseCase.getUsarioPorCnpj(cnpj, listaUsuarios);
+        ResponseEntity<Usuario> usuarioCnpj = usuarioService.getUsuarioPorCnpj(cnpj);
+        if (usuarioCnpj.getBody().getCnpj().equals(cnpj)) {
+            return ResponseEntity.status(200).body(usuarioCnpj.getBody());
+        } else {
+            return ResponseEntity.status(404).build();
+        }
     }
 
     // http://localhost:8080/usuarios
     @PostMapping
-    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuario) {
-        CadastrarUsuarioUseCase cadastrarUsuarioUseCase = new CadastrarUsuarioUseCase();
-        return cadastrarUsuarioUseCase.cadastrarUsuario(usuario, listaUsuarios);
+    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuarioNovo) {
+        List<Usuario> listaUsuarios = usuarioService.getTodosUsuarios();
+        for (Usuario usuario : listaUsuarios) {
+            if (usuario.getCnpj().equals(usuarioNovo.getCnpj())) {
+                return ResponseEntity.status(409).build();
+            }
+        }
+        Usuario usuarioCadastrado = usuarioService.cadastrarUsuario(usuarioNovo).getBody();
+        return ResponseEntity.status(201).body(usuarioCadastrado);
     }
 
     // http://localhost:8080/usuarios/123456789
     @PutMapping("/{cnpj}")
     public ResponseEntity<Usuario> editarUsuarioPorCnpj(@RequestBody Usuario usuario, @PathVariable String cnpj) {
-        EditarUsuarioPorCnpjUseCase editarUsuarioPorCnpjUseCase = new EditarUsuarioPorCnpjUseCase();
-        return editarUsuarioPorCnpjUseCase.editarUsuarioPorCnpj(usuario, cnpj, listaUsuarios);
+        List<Usuario> listaUsuarios = usuarioService.getTodosUsuarios();
+        for (Usuario usuarioDaLista : listaUsuarios) {
+            if (usuarioDaLista.getCnpj().equals(cnpj)) {
+                usuario.setId(usuarioDaLista.getId());
+                Usuario usuarioEditado = usuarioService.editarUsuarioPorCnpj(usuario, cnpj).getBody();
+                return ResponseEntity.status(200).body(usuarioEditado);
+            }
+        }
+        return ResponseEntity.status(404).build();
     }
 
     // http://localhost:8080/usuarios/123456789
     @DeleteMapping("/{cnpj}")
     public ResponseEntity<Usuario> deletarUsuarioPorCnpj(@PathVariable String cnpj) {
-        DeletarUsuarioPorCnpjUseCase deletarUsuarioPorCnpj = new DeletarUsuarioPorCnpjUseCase();
-        return deletarUsuarioPorCnpj.deletarUsuarioPorCnpj(cnpj, listaUsuarios);
+        List<Usuario> listaUsuarios = usuarioService.getTodosUsuarios();
+        for (Usuario usuario : listaUsuarios) {
+            if (usuario.getCnpj().equals(cnpj)) {
+                usuarioService.deletarUsuarioPorCnpj(cnpj);
+                return ResponseEntity.status(200).build();
+            }
+        }
+        return ResponseEntity.status(404).build();
     }
 
     // http://localhost:8080/usuarios/login
     @GetMapping("/login")
         public ResponseEntity<Void> login(@RequestBody Usuario usuario) {
-        GetLoginUseCase getLoginUseCase = new GetLoginUseCase();
-        return getLoginUseCase.getLogin(usuario);
+        ResponseEntity<Void> usuarioLogado = usuarioService.login(usuario);
+        return usuarioLogado;
     }
 
 
