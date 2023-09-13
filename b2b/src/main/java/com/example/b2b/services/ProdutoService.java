@@ -32,4 +32,35 @@ public class ProdutoService {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(novoProduto);
     }
+
+    public ResponseEntity<Produto> getProdutoPorUId(String id) {
+        Produto produto = repository.findById(id);
+        if (produto != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(produto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    public ResponseEntity<Produto> atualizarProduto(String id, ProdutoRequestDTO data) {
+        Produto produto = repository.findById(id);
+        if (produto != null) {
+            produto.setNome(data.nome());
+            produto.setPreco(data.preco());
+            repository.save(produto);
+            return ResponseEntity.status(HttpStatus.OK).body(produto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    public ResponseEntity<Produto> deletarProduto(String id) {
+        Produto produto = repository.findById(id);
+        if (produto != null) {
+            repository.delete(produto);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 }

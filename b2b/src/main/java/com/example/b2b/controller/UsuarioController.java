@@ -18,15 +18,16 @@ public class UsuarioController {
     private UsuarioService usuarioService = new UsuarioService();
 
     // http://localhost:8080/usuarios
-    @GetMapping
-    public ResponseEntity<List<Usuario>> getUsuarios() {
-        List<Usuario> listaUsuarios = usuarioService.getTodosUsuarios();
-        if (listaUsuarios.isEmpty()) {
-            return ResponseEntity.status(204).build();
+    @PostMapping
+    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody @Valid UsuarioDTO usuarioNovo) {
+        ResponseEntity<Usuario> resposta = usuarioService.cadastrarUsuario(usuarioNovo);
+        if (resposta.getStatusCode().is2xxSuccessful()) {
+            return resposta;
         } else {
-            return ResponseEntity.status(200).body(listaUsuarios);
+            return ResponseEntity.status(resposta.getStatusCode()).build();
         }
     }
+
     @PostMapping("/{cnpj}/postagem")
     public ResponseEntity<?> fazerPostagem(@PathVariable String cnpj, @RequestBody @Valid String conteudo) {
         Usuario usuario = usuarioService.getUsuarioPorCnpj(cnpj).getBody();
@@ -34,6 +35,17 @@ public class UsuarioController {
             return ResponseEntity.status(200).body(usuario.fazerPostagem(conteudo));
         } else {
             return ResponseEntity.status(404).build();
+        }
+    }
+
+    // http://localhost:8080/usuarios
+    @GetMapping
+    public ResponseEntity<List<Usuario>> getUsuarios() {
+        List<Usuario> listaUsuarios = usuarioService.getTodosUsuarios();
+        if (listaUsuarios.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        } else {
+            return ResponseEntity.status(200).body(listaUsuarios);
         }
     }
 
@@ -45,17 +57,6 @@ public class UsuarioController {
             return ResponseEntity.status(200).body(usuarioCnpj.getBody());
         } else {
             return ResponseEntity.status(404).build();
-        }
-    }
-
-    // http://localhost:8080/usuarios
-    @PostMapping
-    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody @Valid UsuarioDTO usuarioNovo) {
-        ResponseEntity<Usuario> resposta = usuarioService.cadastrarUsuario(usuarioNovo);
-        if (resposta.getStatusCode().is2xxSuccessful()) {
-            return resposta;
-        } else {
-            return ResponseEntity.status(resposta.getStatusCode()).build();
         }
     }
 

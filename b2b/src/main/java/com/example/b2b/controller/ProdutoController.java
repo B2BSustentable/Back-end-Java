@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController()
-@RequestMapping("produto")
+@RequestMapping("produtos")
 public class ProdutoController {
 
     @Autowired
@@ -39,6 +39,39 @@ public class ProdutoController {
             return ResponseEntity.status(204).build();
         } else {
             return ResponseEntity.status(200).body(listaProdutos);
+        }
+    }
+
+    @GetMapping("/{uId}")
+    public ResponseEntity<Produto> getProdutoPorUId(@PathVariable String uId){
+        ResponseEntity<Produto> produtoNome = produtoService.getProdutoPorUId(uId);
+
+        if (produtoNome.getBody().getId().equals(uId)) {
+            return ResponseEntity.status(200).body(produtoNome.getBody());
+        } else {
+            return ResponseEntity.status(404).build();
+        }
+    }
+
+    @PutMapping("/{uId}")
+    public ResponseEntity<Produto> atualizarProduto(@PathVariable String uId, @RequestBody @Valid ProdutoRequestDTO body){
+        ResponseEntity<Produto> resposta = produtoService.atualizarProduto(uId, body);
+
+        if (resposta.getStatusCode().is2xxSuccessful()) {
+            return resposta;
+        } else {
+            return ResponseEntity.status(resposta.getStatusCode()).build();
+        }
+    }
+
+    @DeleteMapping("/{uId}")
+    public ResponseEntity<Produto> deletarProduto(@PathVariable String uId){
+        ResponseEntity<Produto> resposta = produtoService.deletarProduto(uId);
+
+        if (resposta.getStatusCode().is2xxSuccessful()) {
+            return resposta;
+        } else {
+            return ResponseEntity.status(resposta.getStatusCode()).build();
         }
     }
 }
