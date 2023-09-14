@@ -1,10 +1,15 @@
 package com.example.b2b.entity.usuario;
 
-import com.example.b2b.dtos.usuario.UsuarioDTO;
+import com.example.b2b.dtos.usuario.RegisterDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity(name = "usuarioOuro ")
 @Table(name = "usuario_ouro")
@@ -19,7 +24,7 @@ public class UsuarioOuro extends Usuario {
     private boolean suporte24h;
     private String acessoVIP;
 
-    public UsuarioOuro(UsuarioDTO data) {
+    public UsuarioOuro(RegisterDTO data) {
         super(data);
         this.limiteDeProdutos = data.limiteDeProdutos();
         this.desconto = data.desconto();
@@ -37,4 +42,42 @@ public class UsuarioOuro extends Usuario {
     }
 
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.getTipoUsuario().equals(TipoUsuario.USUARIO_OURO)) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+    }
+
+    @Override
+    public String getPassword() {
+        return getSenha();
+    }
+
+    @Override
+    public String getUsername() {
+        return getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

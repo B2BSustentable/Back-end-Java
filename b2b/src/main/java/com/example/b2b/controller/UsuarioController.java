@@ -1,6 +1,6 @@
 package com.example.b2b.controller;
 
-import com.example.b2b.dtos.usuario.UsuarioDTO;
+import com.example.b2b.dtos.usuario.RegisterDTO;
 import com.example.b2b.entity.usuario.Usuario;
 import com.example.b2b.services.UsuarioService;
 import jakarta.validation.Valid;
@@ -16,17 +16,6 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService = new UsuarioService();
-
-    // http://localhost:8080/usuarios
-    @PostMapping
-    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody @Valid UsuarioDTO usuarioNovo) {
-        ResponseEntity<Usuario> resposta = usuarioService.cadastrarUsuario(usuarioNovo);
-        if (resposta.getStatusCode().is2xxSuccessful()) {
-            return resposta;
-        } else {
-            return ResponseEntity.status(resposta.getStatusCode()).build();
-        }
-    }
 
     @PostMapping("/{cnpj}/postagem")
     public ResponseEntity<?> fazerPostagem(@PathVariable String cnpj, @RequestBody @Valid String conteudo) {
@@ -62,7 +51,7 @@ public class UsuarioController {
 
     // http://localhost:8080/usuarios/123456789
     @PutMapping("/{cnpj}")
-    public ResponseEntity<Usuario> editarUsuarioPorCnpj(@RequestBody @Valid UsuarioDTO usuario, @PathVariable String cnpj) {
+    public ResponseEntity<Usuario> editarUsuarioPorCnpj(@RequestBody @Valid RegisterDTO usuario, @PathVariable String cnpj) {
         ResponseEntity<Usuario> resposta = usuarioService.editarUsuarioPorCnpj(usuario, cnpj);
         if (resposta.getStatusCode().is2xxSuccessful()) {
             return resposta;
@@ -81,13 +70,5 @@ public class UsuarioController {
             return ResponseEntity.status(resposta.getStatusCode()).build();
         }
     }
-
-    // http://localhost:8080/usuarios/login
-    @GetMapping("/login")
-        public ResponseEntity<Void> login(@RequestBody @Valid Usuario usuario) {
-        ResponseEntity<Void> usuarioLogado = usuarioService.login(usuario);
-        return usuarioLogado;
-    }
-
 
 }

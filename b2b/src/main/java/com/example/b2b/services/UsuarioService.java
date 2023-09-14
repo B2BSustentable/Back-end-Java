@@ -1,14 +1,13 @@
 package com.example.b2b.services;
 
-import com.example.b2b.dtos.usuario.UsuarioDTO;
-import com.example.b2b.entity.usuario.Usuario;
-import com.example.b2b.entity.usuario.UsuarioBronze;
-import com.example.b2b.entity.usuario.UsuarioOuro;
-import com.example.b2b.entity.usuario.UsuarioPrata;
+import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
+import com.example.b2b.dtos.usuario.RegisterDTO;
+import com.example.b2b.entity.usuario.*;
 import com.example.b2b.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,12 +21,21 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    public Usuario findByCnpj(String cnpj) {
+        return usuarioRepository.findByCnpj(cnpj);
+    }
+
+    public UserDetails findByEmail(String email) {
+        return usuarioRepository.findByEmail(email);
+    }
+
     public List<Usuario> getTodosUsuarios() {
         return usuarioRepository.findAll();
     }
 
-    public ResponseEntity<Usuario> cadastrarUsuario(UsuarioDTO data) {
-        Usuario usuarioExistente = usuarioRepository.findByCnpj(data.cnpj());
+    public ResponseEntity<Usuario> cadastrarUsuario(String nome, String cnpj, String senhaEncriptada, String email, TipoUsuario tipoUsuario, String tipoAssinatura, int limiteDeProdutos, double desconto, boolean suporte24h, String acessoVIP) {
+        RegisterDTO data = new RegisterDTO(nome, cnpj, senhaEncriptada, email, tipoUsuario, tipoAssinatura, limiteDeProdutos, desconto, suporte24h, acessoVIP);
+        Usuario usuarioExistente = (Usuario) usuarioRepository.findByEmail(data.email());
         if (usuarioExistente != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
@@ -58,7 +66,7 @@ public class UsuarioService {
         return verificarExistenciaDeUsuario.map(usuario -> ResponseEntity.status(200).body(usuario)).orElseGet(() -> ResponseEntity.status(404).build());
     }
 
-    public ResponseEntity<Usuario> editarUsuarioPorCnpj(@RequestBody UsuarioDTO usuarioEditado, @PathVariable String cnpj) {
+    public ResponseEntity<Usuario> editarUsuarioPorCnpj(@RequestBody RegisterDTO usuarioEditado, @PathVariable String cnpj) {
         // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Usuario> usuarioExistenteOptional = Optional.ofNullable(usuarioRepository.findByCnpj(cnpj));
 
@@ -90,16 +98,18 @@ public class UsuarioService {
         }
     }
 
-    public ResponseEntity<Void> login(@RequestBody Usuario usuario) {
-        Optional<Usuario> verificarExistenciaDeUsuario = Optional.ofNullable(usuarioRepository.findByCnpj(usuario.getCnpj()));
+    public ResponseEntity<Void> login(@RequestBody AutenticacaoDTO usuario) {
+        Optional<Usuario> verificarExistenciaDeUsuario = Optional.ofNullable(usuarioRepository.findByCnpj(usuario.email()));
         if (verificarExistenciaDeUsuario.isPresent()) {
-            if (usuario.getCnpj().equals(verificarExistenciaDeUsuario.get().getCnpj()) && usuario.getSenha().equals(verificarExistenciaDeUsuario.get().getSenha())) {
+            Usuario usuarioExistente = verificarExistenciaDeUsuario.get();
+            if (usuarioExistente.getSenha().equals(usuario.senha())) {
                 return ResponseEntity.status(200).build();
-            } else if (usuario.getNome().equals(verificarExistenciaDeUsuario.get().getNome()) && usuario.getSenha().equals(verificarExistenciaDeUsuario.get().getSenha())) {
-                return ResponseEntity.status(200).build();
+            } else {
+                return ResponseEntity.status(401).build();
             }
+        } else {
+            return ResponseEntity.status(404).build();
         }
-        return ResponseEntity.status(404).build();
-    }
 
+    }
 }
