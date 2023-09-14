@@ -44,20 +44,11 @@ public class UsuarioBronze extends Usuario {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.getTipoUsuario().equals(TipoUsuario.USUARIO_PRATA)) {
+        if (this.getTipoUsuario().equals(TipoUsuario.USUARIO_BRONZE)) {
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         } else {
             return List.of(new SimpleGrantedAuthority("ROLE_USER"));
         }
-
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority("ROLE_USER")); // Todos os usuários têm a role "ROLE_USER"
-//
-//        if (this.getTipoUsuario().equals(TipoUsuario.USUARIO_BRONZE)) {
-//            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-//        }
-//
-//        return authorities;
     }
 
     @Override
