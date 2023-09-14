@@ -38,6 +38,10 @@ public class UsuarioPrata extends Usuario {
             return ResponseEntity.status(400).body("Conteúdo inválido.");
         }
     }
+    @Override
+    public ResponseEntity<String> getEmpresasPorGeoLocalizacao(String latitude, String longitude){
+        return null;
+    };
 
 
     @Override
@@ -78,4 +82,6 @@ public class UsuarioPrata extends Usuario {
     public boolean isEnabled() {
         return true;
     }
+
+
 }

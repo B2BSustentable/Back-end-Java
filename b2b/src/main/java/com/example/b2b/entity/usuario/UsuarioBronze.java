@@ -37,6 +37,10 @@ public class UsuarioBronze extends Usuario {
         }
 
     }
+    @Override
+    public ResponseEntity<String> getEmpresasPorGeoLocalizacao(String latitude, String longitude){
+     return null;
+    };
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
