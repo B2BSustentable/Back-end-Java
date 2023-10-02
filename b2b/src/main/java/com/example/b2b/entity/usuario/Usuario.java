@@ -36,7 +36,5 @@ public abstract class Usuario implements UserDetails {
         this.tipoUsuario = data.tipoUsuario();
     }
 
-    public abstract ResponseEntity<String> fazerPostagem(String conteudo);
-
     public abstract ResponseEntity<String> getEmpresasPorGeoLocalizacao(String latitude, String longitude);
 }

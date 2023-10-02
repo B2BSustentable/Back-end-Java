@@ -17,16 +17,6 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService = new UsuarioService();
 
-    @PostMapping("/{cnpj}/postagem")
-    public ResponseEntity<?> fazerPostagem(@PathVariable String cnpj, @RequestBody @Valid String conteudo) {
-        Usuario usuario = usuarioService.getUsuarioPorCnpj(cnpj).getBody();
-        if (usuario != null) {
-            return ResponseEntity.status(200).body(usuario.fazerPostagem(conteudo));
-        } else {
-            return ResponseEntity.status(404).build();
-        }
-    }
-
     // http://localhost:8080/usuarios
     @GetMapping
     public ResponseEntity<List<Usuario>> getUsuarios() {
