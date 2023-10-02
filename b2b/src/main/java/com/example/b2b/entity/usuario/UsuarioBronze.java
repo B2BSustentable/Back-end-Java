@@ -29,15 +29,6 @@ public class UsuarioBronze extends Usuario {
     }
 
     @Override
-    public ResponseEntity<String> fazerPostagem(String conteudo) {
-        if (conteudo != null && !conteudo.isEmpty()) {
-            return ResponseEntity.status(200).body("Postagem do usuário Bronze: " + conteudo);
-        } else {
-            return ResponseEntity.status(400).body("Conteúdo inválido.");
-        }
-
-    }
-    @Override
     public ResponseEntity<String> getEmpresasPorGeoLocalizacao(String latitude, String longitude){
      return null;
     };
