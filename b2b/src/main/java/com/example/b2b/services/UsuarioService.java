@@ -34,7 +34,9 @@ public class UsuarioService {
     }
 
     public ResponseEntity<Usuario> cadastrarUsuario(String nome, String cnpj, String senhaEncriptada, String email, TipoUsuario tipoUsuario, String tipoAssinatura, int limiteDeProdutos, double desconto, boolean suporte24h, String acessoVIP) {
+
         RegisterDTO data = new RegisterDTO(nome, cnpj, senhaEncriptada, email, tipoUsuario, tipoAssinatura, limiteDeProdutos, desconto, suporte24h, acessoVIP);
+
         Usuario usuarioExistente = (Usuario) usuarioRepository.findByEmail(data.email());
         if (usuarioExistente != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
