@@ -22,13 +22,8 @@ public class ProdutoController {
     // POST - http://localhost:8080/produto
     @PostMapping
     public ResponseEntity<Produto> cadastrarProduto(@RequestBody @Valid ProdutoRequestDTO body){
-        ResponseEntity<Produto> resposta = produtoService.cadastrarProduto(body);
-
-        if (resposta.getStatusCode().is2xxSuccessful()) {
-            return resposta;
-        } else {
-            return ResponseEntity.status(resposta.getStatusCode()).build();
-        }
+        Produto resposta = produtoService.cadastrarProduto(body);
+        return ResponseEntity.status(201).body(resposta);
     }
 
     @GetMapping
@@ -44,34 +39,19 @@ public class ProdutoController {
 
     @GetMapping("/{uId}")
     public ResponseEntity<Produto> getProdutoPorUId(@PathVariable String uId){
-        ResponseEntity<Produto> produtoNome = produtoService.getProdutoPorUId(uId);
-
-        if (produtoNome.getBody().getId().equals(uId)) {
-            return ResponseEntity.status(200).body(produtoNome.getBody());
-        } else {
-            return ResponseEntity.status(404).build();
-        }
+        Produto produto = produtoService.getProdutoPorUId(uId);
+        return ResponseEntity.status(200).body(produto);
     }
 
     @PutMapping("/{uId}")
     public ResponseEntity<Produto> atualizarProduto(@PathVariable String uId, @RequestBody @Valid ProdutoRequestDTO body){
-        ResponseEntity<Produto> resposta = produtoService.atualizarProduto(uId, body);
-
-        if (resposta.getStatusCode().is2xxSuccessful()) {
-            return resposta;
-        } else {
-            return ResponseEntity.status(resposta.getStatusCode()).build();
-        }
+        Produto resposta = produtoService.atualizarProduto(uId, body);
+        return ResponseEntity.status(200).body(resposta);
     }
 
     @DeleteMapping("/{uId}")
     public ResponseEntity<Produto> deletarProduto(@PathVariable String uId){
-        ResponseEntity<Produto> resposta = produtoService.deletarProduto(uId);
-
-        if (resposta.getStatusCode().is2xxSuccessful()) {
-            return resposta;
-        } else {
-            return ResponseEntity.status(resposta.getStatusCode()).build();
-        }
+        Void resposta = produtoService.deletarProduto(uId);
+        return ResponseEntity.status(200).build();
     }
 }

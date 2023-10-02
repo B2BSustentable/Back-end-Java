@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProdutoService {
@@ -20,47 +23,48 @@ public class ProdutoService {
         return repository.findAll();
     }
 
-    public ResponseEntity<Produto> cadastrarProduto(ProdutoRequestDTO data) {
-        Produto produtoExistente = repository.findByNome(data.nome());
-        if (produtoExistente != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    public Produto cadastrarProduto(ProdutoRequestDTO data) {
+        Optional<Produto> produtoExistente = repository.findByNome(data.nome());
+        if (produtoExistente.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Produto já cadastrado");
         }
 
         Produto novoProduto = new Produto(data);
 
         repository.save(novoProduto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoProduto);
+        return (novoProduto);
     }
 
-    public ResponseEntity<Produto> getProdutoPorUId(String id) {
-        Produto produto = repository.findById(id);
-        if (produto != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(produto);
+    public Produto getProdutoPorUId(String id) {
+        Optional<Produto> produto = repository.findById(id);
+        if (produto.isPresent()) {
+            return produto.get();
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
         }
     }
 
-    public ResponseEntity<Produto> atualizarProduto(String id, ProdutoRequestDTO data) {
-        Produto produto = repository.findById(id);
-        if (produto != null) {
-            produto.setNome(data.nome());
-            produto.setPreco(data.preco());
-            repository.save(produto);
-            return ResponseEntity.status(HttpStatus.OK).body(produto);
+    public Produto atualizarProduto(String id, ProdutoRequestDTO data) {
+        Optional<Produto> produto = repository.findById(id);
+        if (produto.isPresent()) {
+            produto.get().setNome(data.nome());
+            produto.get().setPreco(data.preco());
+            repository.save(produto.get());
+
+            return produto.get();
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
         }
     }
 
-    public ResponseEntity<Produto> deletarProduto(String id) {
-        Produto produto = repository.findById(id);
-        if (produto != null) {
-            repository.delete(produto);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public Void deletarProduto(String id) {
+        Optional<Produto> produto = repository.findById(id);
+        if (produto.isPresent()) {
+            repository.delete(produto.get());
         }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
+
     }
 }
