@@ -31,34 +31,22 @@ public class UsuarioController {
     // http://localhost:8080/usuarios/123456789
     @GetMapping("/{cnpj}")
     public ResponseEntity<Usuario> getUsuarioPorCnpj(@PathVariable String cnpj) {
-        ResponseEntity<Usuario> usuarioCnpj = usuarioService.getUsuarioPorCnpj(cnpj);
-        if (usuarioCnpj.getBody().getCnpj().equals(cnpj)) {
-            return ResponseEntity.status(200).body(usuarioCnpj.getBody());
-        } else {
-            return ResponseEntity.status(404).build();
-        }
+        Usuario usuarioCnpj = usuarioService.getUsuarioPorCnpj(cnpj);
+        return ResponseEntity.status(200).body(usuarioCnpj);
     }
 
     // http://localhost:8080/usuarios/123456789
     @PutMapping("/{cnpj}")
     public ResponseEntity<Usuario> editarUsuarioPorCnpj(@RequestBody @Valid RegisterDTO usuario, @PathVariable String cnpj) {
-        ResponseEntity<Usuario> resposta = usuarioService.editarUsuarioPorCnpj(usuario, cnpj);
-        if (resposta.getStatusCode().is2xxSuccessful()) {
-            return resposta;
-        } else {
-            return ResponseEntity.status(resposta.getStatusCode()).build();
-        }
+        Usuario resposta = usuarioService.editarUsuarioPorCnpj(usuario, cnpj);
+        return ResponseEntity.status(200).body(resposta);
     }
 
     // http://localhost:8080/usuarios/123456789
     @DeleteMapping("/{cnpj}")
     public ResponseEntity<Usuario> deletarUsuarioPorCnpj(@PathVariable String cnpj) {
-        ResponseEntity<Usuario> resposta = usuarioService.deletarUsuarioPorCnpj(cnpj);
-        if (resposta.getStatusCode().is2xxSuccessful()) {
-            return resposta;
-        } else {
-            return ResponseEntity.status(resposta.getStatusCode()).build();
-        }
+        Void resposta = usuarioService.deletarUsuarioPorCnpj(cnpj);
+        return ResponseEntity.status(200).build();
     }
 
 }
