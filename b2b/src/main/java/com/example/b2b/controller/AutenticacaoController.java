@@ -26,6 +26,7 @@ import javax.naming.AuthenticationException;
 @RequestMapping("/autenticacao")
 public class AutenticacaoController {
 
+    //http://localhost:8080/swagger-ui/index.html -> Para consulta da Documentação Swagger
     @Autowired
     private AuthenticationManager authenticationManager;
 

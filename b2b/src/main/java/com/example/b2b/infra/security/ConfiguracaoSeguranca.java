@@ -7,6 +7,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,6 +34,8 @@ public class ConfiguracaoSeguranca {
                         .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/produtos/**")).hasRole("ADMIN")
                         .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/produtos/**")).hasRole("ADMIN")
                         .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/produtos/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/v3/api-docs/**")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(filtroDeSegurancaDaAutenticacao, UsernamePasswordAuthenticationFilter.class)
@@ -48,4 +51,6 @@ public class ConfiguracaoSeguranca {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 }
