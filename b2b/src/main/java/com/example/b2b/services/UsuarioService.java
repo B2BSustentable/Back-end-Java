@@ -4,6 +4,8 @@ import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
 import com.example.b2b.dtos.usuario.RegisterDTO;
 import com.example.b2b.entity.usuario.*;
 import com.example.b2b.repository.UsuarioRepository;
+import com.example.b2b.util.Lista;
+import com.example.b2b.util.UsuarioSorter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 public class UsuarioService {
@@ -29,9 +31,9 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario cadastrarUsuario(String nome, String cnpj, String senhaEncriptada, String email, TipoUsuario tipoUsuario, String tipoAssinatura, int limiteDeProdutos, double desconto, boolean suporte24h, String acessoVIP) {
+    public Usuario cadastrarUsuario(String nome, String cnpj, String senhaEncriptada, LocalDate dataC, String email, TipoUsuario tipoUsuario, String tipoAssinatura, int limiteDeProdutos, double desconto, boolean suporte24h, String acessoVIP) {
 
-        RegisterDTO data = new RegisterDTO(nome, cnpj, senhaEncriptada, email, tipoUsuario, tipoAssinatura, limiteDeProdutos, desconto, suporte24h, acessoVIP);
+        RegisterDTO data = new RegisterDTO(nome, cnpj, senhaEncriptada, LocalDate.now() , email, tipoUsuario, tipoAssinatura, limiteDeProdutos, desconto, suporte24h, acessoVIP);
 
         Usuario usuarioExistente = (Usuario) usuarioRepository.findByEmail(data.email());
         if (usuarioExistente != null) {
@@ -100,4 +102,22 @@ public class UsuarioService {
 
     }
 
+    public List<Usuario> getListaOrdenadaPorData() {
+           List<Usuario> listaDeUsuarios = usuarioRepository.findAll();
+           Lista<Usuario> lista = new Lista<>();
+           lista.adicionarTodos(listaDeUsuarios);
+           lista.selectionSortByDataDeCriacao();
+           return lista.toList();
+    }
+
+    public Usuario getUsuarioPorData(LocalDate data) {
+        List<Usuario> listaDeUsuarios = usuarioRepository.findAll();
+        Lista<Usuario> lista = new Lista<>();
+        lista.adicionarTodos(listaDeUsuarios);
+        lista.selectionSortByDataDeCriacao();
+        return lista.buscaBinariaPorDataDeCriacao(data);
+    }
+
 }
+
+

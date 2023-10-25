@@ -8,6 +8,8 @@ import org.hibernate.validator.constraints.br.CNPJ;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
+
 @Entity(name = "usuario")
 @Table(name = "usuario")
 @AllArgsConstructor
@@ -25,6 +27,7 @@ public abstract class Usuario implements UserDetails {
 //    @CNPJ
     private String cnpj;
     private String senha;
+    private LocalDate dataDeCriacao;
     @Enumerated(EnumType.STRING)
     private TipoUsuario tipoUsuario;
 
@@ -33,6 +36,7 @@ public abstract class Usuario implements UserDetails {
         this.cnpj = data.cnpj();
         this.email = data.email();
         this.senha = data.senha();
+        this.dataDeCriacao = data.dataCriacao();
         this.tipoUsuario = data.tipoUsuario();
     }
 

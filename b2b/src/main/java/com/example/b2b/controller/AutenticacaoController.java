@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.naming.AuthenticationException;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/autenticacao")
@@ -53,9 +54,9 @@ public class AutenticacaoController {
             }
 
             String senhaEncriptada = new BCryptPasswordEncoder().encode(data.senha());
-            Usuario usuario = usuarioService.cadastrarUsuario(data.nome(), data.cnpj(), senhaEncriptada, data.email(), data.tipoUsuario(), data.tipoAssinatura(), data.limiteDeProdutos(), data.desconto(), data.suporte24h(), data.acessoVIP());
+            Usuario usuario = usuarioService.cadastrarUsuario(data.nome(), data.cnpj(), senhaEncriptada, LocalDate.now() ,data.email(), data.tipoUsuario(), data.tipoAssinatura(), data.limiteDeProdutos(), data.desconto(), data.suporte24h(), data.acessoVIP());
 
-            RegisterResponseDTO registroResponse = new RegisterResponseDTO(usuario.getNome(), usuario.getCnpj(), usuario.getSenha(), usuario.getEmail(), usuario.getTipoUsuario().toString());
+            RegisterResponseDTO registroResponse = new RegisterResponseDTO(usuario.getNome(), usuario.getCnpj(), usuario.getSenha(), usuario.getDataDeCriacao(), usuario.getEmail(), usuario.getTipoUsuario().toString());
             return ResponseEntity.status(HttpStatus.CREATED).body(registroResponse);
     }
 }
