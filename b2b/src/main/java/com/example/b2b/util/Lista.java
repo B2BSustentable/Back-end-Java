@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -136,14 +137,14 @@ public class Lista<T> {
             set(j, temp);
         }
 
-    public Usuario buscaBinariaPorDataDeCriacao(LocalDate data) {
+    public Usuario buscaBinariaPorDataDeCriacao(LocalDateTime data) {
         int esquerda = 0;
         int direita = nroElem - 1;
 
         while (esquerda <= direita) {
             int meio = (esquerda + direita) / 2;
             Usuario usuarioMeio = (Usuario) buscaPorIndice(meio);
-            LocalDate dataMeio = usuarioMeio.getDataDeCriacao();
+            LocalDateTime dataMeio = usuarioMeio.getDataDeCriacao();
             int comparacao = data.compareTo(dataMeio);
 
             if (comparacao == 0) {

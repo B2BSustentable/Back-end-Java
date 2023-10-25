@@ -2,11 +2,10 @@ package com.example.b2b.controller;
 
 import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
 import com.example.b2b.dtos.autenticacao.LoginResponseDTO;
-import com.example.b2b.dtos.usuario.RegisterDTO;
+import com.example.b2b.dtos.usuario.RegisterRequestDTO;
 import com.example.b2b.dtos.usuario.RegisterResponseDTO;
 import com.example.b2b.entity.usuario.Usuario;
 import com.example.b2b.infra.security.TokenService;
-import com.example.b2b.repository.UsuarioRepository;
 import com.example.b2b.services.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.naming.AuthenticationException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/autenticacao")
@@ -48,15 +47,15 @@ public class AutenticacaoController {
         }
 
         @PostMapping("/registrar")
-        public ResponseEntity registrar(@RequestBody @Valid RegisterDTO data) {
+        public ResponseEntity registrar(@RequestBody @Valid RegisterRequestDTO data) {
             if (this.usuarioService.findByEmail(data.email()) != null) {
                 return ResponseEntity.status(409).build();
             }
 
             String senhaEncriptada = new BCryptPasswordEncoder().encode(data.senha());
-            Usuario usuario = usuarioService.cadastrarUsuario(data.nome(), data.cnpj(), senhaEncriptada, LocalDate.now() ,data.email(), data.tipoUsuario(), data.tipoAssinatura(), data.limiteDeProdutos(), data.desconto(), data.suporte24h(), data.acessoVIP());
+            Usuario usuario = usuarioService.cadastrarUsuario(data.nome(), data.cnpj(), senhaEncriptada, LocalDateTime.now() ,data.email(), data.tipoUsuario(), data.tipoAssinatura(), data.limiteDeProdutos(), data.desconto(), data.suporte24h(), data.acessoVIP());
 
-            RegisterResponseDTO registroResponse = new RegisterResponseDTO(usuario.getNome(), usuario.getCnpj(), usuario.getSenha(), usuario.getDataDeCriacao(), usuario.getEmail(), usuario.getTipoUsuario().toString());
+            RegisterResponseDTO registroResponse = new RegisterResponseDTO(usuario.getNome(), usuario.getCnpj(), usuario.getDataDeCriacao(), usuario.getEmail(), usuario.getTipoUsuario().toString());
             return ResponseEntity.status(HttpStatus.CREATED).body(registroResponse);
     }
 }

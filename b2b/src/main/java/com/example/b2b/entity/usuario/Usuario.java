@@ -1,14 +1,13 @@
 package com.example.b2b.entity.usuario;
 
-import com.example.b2b.dtos.usuario.RegisterDTO;
+import com.example.b2b.dtos.usuario.RegisterRequestDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.hibernate.validator.constraints.br.CNPJ;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity(name = "usuario")
 @Table(name = "usuario")
@@ -27,16 +26,16 @@ public abstract class Usuario implements UserDetails {
 //    @CNPJ
     private String cnpj;
     private String senha;
-    private LocalDate dataDeCriacao;
+    private LocalDateTime dataDeCriacao;
     @Enumerated(EnumType.STRING)
     private TipoUsuario tipoUsuario;
 
-    public Usuario(RegisterDTO data) {
+    public Usuario(RegisterRequestDTO data) {
         this.nome = data.nome();
         this.cnpj = data.cnpj();
         this.email = data.email();
         this.senha = data.senha();
-        this.dataDeCriacao = data.dataCriacao();
+        this.dataDeCriacao = data.dataDeCriacao();
         this.tipoUsuario = data.tipoUsuario();
     }
 

@@ -1,20 +1,18 @@
 package com.example.b2b.services;
 
-import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
-import com.example.b2b.dtos.usuario.RegisterDTO;
+import com.example.b2b.dtos.usuario.RegisterRequestDTO;
+import com.example.b2b.dtos.usuario.RegisterResponseDTO;
 import com.example.b2b.entity.usuario.*;
 import com.example.b2b.repository.UsuarioRepository;
 import com.example.b2b.util.Lista;
-import com.example.b2b.util.UsuarioSorter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -31,9 +29,9 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario cadastrarUsuario(String nome, String cnpj, String senhaEncriptada, LocalDate dataC, String email, TipoUsuario tipoUsuario, String tipoAssinatura, int limiteDeProdutos, double desconto, boolean suporte24h, String acessoVIP) {
+    public Usuario cadastrarUsuario(String nome, String cnpj, String senhaEncriptada, LocalDateTime dataDeCricao, String email, TipoUsuario tipoUsuario, String tipoAssinatura, int limiteDeProdutos, double desconto, boolean suporte24h, String acessoVIP) {
 
-        RegisterDTO data = new RegisterDTO(nome, cnpj, senhaEncriptada, LocalDate.now() , email, tipoUsuario, tipoAssinatura, limiteDeProdutos, desconto, suporte24h, acessoVIP);
+        RegisterRequestDTO data = new RegisterRequestDTO(nome, cnpj, senhaEncriptada, dataDeCricao = LocalDateTime.now() , email, tipoUsuario, tipoAssinatura, limiteDeProdutos, desconto, suporte24h, acessoVIP);
 
         Usuario usuarioExistente = (Usuario) usuarioRepository.findByEmail(data.email());
         if (usuarioExistente != null) {
@@ -70,7 +68,7 @@ public class UsuarioService {
         }
     }
 
-    public Usuario editarUsuarioPorCnpj(@RequestBody RegisterDTO usuarioEditado, @PathVariable String cnpj) {
+    public Usuario editarUsuarioPorCnpj(@RequestBody RegisterRequestDTO usuarioEditado, @PathVariable String cnpj) {
         // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Usuario> usuarioExistenteOptional = usuarioRepository.findByCnpj(cnpj);
 
@@ -102,6 +100,15 @@ public class UsuarioService {
 
     }
 
+    public List<RegisterResponseDTO> convertListaResponseDTO(List<Usuario> listaUsuarios) {
+        List<RegisterResponseDTO> listaUsuariosResponse = new ArrayList<>();
+        for (Usuario usuario : listaUsuarios) {
+            RegisterResponseDTO resposta = new RegisterResponseDTO(usuario.getNome(), usuario.getCnpj(), usuario.getDataDeCriacao(), usuario.getEmail(), usuario.getTipoUsuario().toString());
+            listaUsuariosResponse.add(resposta);
+        }
+        return listaUsuariosResponse;
+    }
+
     public List<Usuario> getListaOrdenadaPorData() {
            List<Usuario> listaDeUsuarios = usuarioRepository.findAll();
            Lista<Usuario> lista = new Lista<>();
@@ -110,7 +117,7 @@ public class UsuarioService {
            return lista.toList();
     }
 
-    public Usuario getUsuarioPorData(LocalDate data) {
+    public Usuario getUsuarioPorData(LocalDateTime data) {
         List<Usuario> listaDeUsuarios = usuarioRepository.findAll();
         Lista<Usuario> lista = new Lista<>();
         lista.adicionarTodos(listaDeUsuarios);

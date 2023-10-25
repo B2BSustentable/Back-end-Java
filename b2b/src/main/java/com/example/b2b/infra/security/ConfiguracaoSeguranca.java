@@ -21,24 +21,33 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class ConfiguracaoSeguranca {
     @Autowired
     FiltroDeSeguranca filtroDeSegurancaDaAutenticacao;
+
+    private static final AntPathRequestMatcher[] URLS_PERMITIDAS_PARA_TODOS = {
+            AntPathRequestMatcher.antMatcher("/h2-console/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/autenticacao/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/v3/api-docs/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/produtos/**")
+    };
+
+    private static final AntPathRequestMatcher[] URLS_NECESSITAM_PERMISSAO = {
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/usuarios/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/ordenado/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/produtos/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/produtos/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/produtos/**")
+    };
+
     @Bean
     public SecurityFilterChain correnteFiltrosDeSeguranca(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/autenticacao/registrar")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/autenticacao/login")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/usuarios/**")).hasRole("ADMIN")
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/produtos/**")).hasRole("ADMIN")
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/produtos/**")).hasRole("ADMIN")
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/produtos/**")).hasRole("ADMIN")
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/produtos/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/**")).hasRole("ADMIN")
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui/**")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/v3/api-docs/**")).permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(URLS_PERMITIDAS_PARA_TODOS).permitAll()
+                        .requestMatchers(URLS_NECESSITAM_PERMISSAO).hasRole("ADMIN")
+                        .anyRequest()
+                        .authenticated()
                 )
                 .addFilterBefore(filtroDeSegurancaDaAutenticacao, UsernamePasswordAuthenticationFilter.class)
                 .build();

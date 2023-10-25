@@ -1,6 +1,6 @@
 package com.example.b2b.entity.usuario;
 
-import com.example.b2b.dtos.usuario.RegisterDTO;
+import com.example.b2b.dtos.usuario.RegisterRequestDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -22,7 +22,7 @@ public class UsuarioBronze extends Usuario {
     private int limiteDeProdutos;
     private double desconto;
 
-    public UsuarioBronze(RegisterDTO data) {
+    public UsuarioBronze(RegisterRequestDTO data) {
         super(data);
         this.limiteDeProdutos = data.limiteDeProdutos();
         this.desconto = data.desconto();
