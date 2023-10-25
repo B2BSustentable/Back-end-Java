@@ -33,6 +33,7 @@ public class ConfiguracaoSeguranca {
     private static final AntPathRequestMatcher[] URLS_NECESSITAM_PERMISSAO = {
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/usuarios/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/ordenado/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/ordenado/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/produtos/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/produtos/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/produtos/**")

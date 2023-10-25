@@ -159,32 +159,6 @@ public class Lista<T> {
         return null;
     }
 
-//    public String usuarioToCsv(Usuario usuario) {
-//        return String.format("%s;%s;%s;%s;%s;%s;%s",
-//                usuario.getId(),
-//                usuario.getNome(),`
-//                usuario.getEmail(),
-//                usuario.getCnpj(),
-//                usuario.getDataDeCriacao(),
-//                usuario.getTipoUsuario()
-//        );
-//    }
-//
-//    public void salvarListaComoCSV(String nomeArquivo) {
-//        try {
-//            FileWriter fileWriter = new FileWriter(nomeArquivo);
-//            for (int i = 0; i < nroElem; i++) {
-//                Usuario usuario = (Usuario) vetor[i];
-//                String linhaCSV = usuarioToCsv(usuario);
-//                fileWriter.write(linhaCSV);
-//                fileWriter.write(System.lineSeparator()); // Adicionar quebra de linha
-//            }
-//            fileWriter.close();
-//            System.out.println("Lista de usuários salva com sucesso no arquivo " + nomeArquivo);
-//        } catch (IOException e) {
-//            System.err.println("Erro ao salvar a lista como arquivo CSV: " + e.getMessage());
-//        }
-//    }
 
 
 

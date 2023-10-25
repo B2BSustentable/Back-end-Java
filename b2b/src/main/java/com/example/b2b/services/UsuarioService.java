@@ -11,6 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -125,6 +131,59 @@ public class UsuarioService {
         return lista.buscaBinariaPorDataDeCriacao(data);
     }
 
-}
+    public String gerarEGravarArquivoCSV() {
+        String nomeArquivo = "usuarios_ordenados.csv";
+        String caminhoDoArquivo = "com/example/b2b/arquivo/" + nomeArquivo;
+
+        try {
+            Path directory = Paths.get(caminhoDoArquivo).getParent();
+
+            Files.createDirectories(directory);
+
+            StringBuilder csvContent = new StringBuilder();
+            csvContent.append("ID, Nome, Email, CNPJ, Data de Criação, Tipo de Usuário\n");
+
+            for (Usuario usuario : getListaOrdenadaPorData()) {
+                csvContent.append(String.format("%s, %s, %s, %s, %s, %s\n",
+                        usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getCnpj(),
+                        usuario.getDataDeCriacao().toString(), usuario.getTipoUsuario()));
+            }
+
+            // Grava o conteúdo no arquivo
+            Files.write(Paths.get(caminhoDoArquivo), csvContent.toString().getBytes(), StandardOpenOption.CREATE);
+            System.out.println("Arquivo CSV gerado com sucesso!");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            caminhoDoArquivo = "Erro ao gerar o arquivo CSV.";
+        }
+
+        return caminhoDoArquivo;
+    }
+
+
+
+        public String gerarEGravarArquivoCSVB(List<Usuario> listaUsuariosOrdenado) {
+            String nomeArquivo = "usuarios_ordenados.csv";
+            String caminhoDoArquivo = "com/example/b2b/arquivo/" + nomeArquivo;
+
+            try (FileWriter fileWriter = new FileWriter(caminhoDoArquivo)) {
+
+
+                for (Usuario usuario : listaUsuariosOrdenado) {
+                    fileWriter.append(String.format("%s, %s, %s, %s, %s, %s\n",
+                            usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getCnpj(),
+                            usuario.getDataDeCriacao(), usuario.getTipoUsuario()));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                caminhoDoArquivo = "Erro ao gerar o arquivo CSV.";
+            }
+
+            return caminhoDoArquivo;
+        }
+    }
+
+
 
 
