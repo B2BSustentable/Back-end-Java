@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -37,6 +38,8 @@ public class UsuarioController {
         if (listaUsuarios.isEmpty()) {
             return ResponseEntity.status(204).build();
         }
+
+        Collections.shuffle(listaUsuarios);
         List<RegisterResponseDTO> listaUsuariosResponse = usuarioService.convertListaResponseDTO(listaUsuarios);
         return ResponseEntity.status(200).body(listaUsuariosResponse);
     }
