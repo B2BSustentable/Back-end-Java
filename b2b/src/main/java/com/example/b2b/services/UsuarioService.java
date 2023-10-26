@@ -11,13 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -131,58 +128,97 @@ public class UsuarioService {
         return lista.buscaBinariaPorDataDeCriacao(data);
     }
 
-    public String gerarEGravarArquivoCSV() {
-        String nomeArquivo = "usuarios_ordenados.csv";
-        String caminhoDoArquivo = "com/example/b2b/arquivo/" + nomeArquivo;
+    public static String gerarEGravarArquivoCSV(List<RegisterResponseDTO> listaUsuariosOrdenado, String nomeArq) {
+        FileWriter arquivo = null;
+        Formatter saida = null;
+        Boolean deuRuim = false;
 
+        nomeArq += ".csv";
+
+        // Bloco try-catch para abrir o arquivo
         try {
-            Path directory = Paths.get(caminhoDoArquivo).getParent();
-
-            Files.createDirectories(directory);
-
-            StringBuilder csvContent = new StringBuilder();
-            csvContent.append("ID, Nome, Email, CNPJ, Data de Criação, Tipo de Usuário\n");
-
-            for (Usuario usuario : getListaOrdenadaPorData()) {
-                csvContent.append(String.format("%s, %s, %s, %s, %s, %s\n",
-                        usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getCnpj(),
-                        usuario.getDataDeCriacao().toString(), usuario.getTipoUsuario()));
-            }
-
-            // Grava o conteúdo no arquivo
-            Files.write(Paths.get(caminhoDoArquivo), csvContent.toString().getBytes(), StandardOpenOption.CREATE);
-            System.out.println("Arquivo CSV gerado com sucesso!");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            caminhoDoArquivo = "Erro ao gerar o arquivo CSV.";
+            arquivo = new FileWriter(nomeArq);
+            saida = new Formatter(arquivo);
+        } catch (IOException erro) {
+            System.out.println("Erro ao abrir o arquivo");
+            System.exit(1);
         }
 
-        return caminhoDoArquivo;
+        // Bloco try-catch para gravar o arquivo
+        try {
+            for (int i = 0; i < listaUsuariosOrdenado.size(); i++) {
+                RegisterResponseDTO usuariosOrdenadoElemento = listaUsuariosOrdenado.get(i);
+
+                saida.format("%s;%s;%s;%s;%s\n",
+                        usuariosOrdenadoElemento.nome(), usuariosOrdenadoElemento.cnpj(), usuariosOrdenadoElemento.dataDeCriacao(), usuariosOrdenadoElemento.email(), usuariosOrdenadoElemento.tipoUsuario());
+            }
+        } catch (FormatterClosedException erro) {
+            System.out.println("Erro ao gravar o arquivo");
+            deuRuim = true;
+        } finally {
+            saida.close();
+            try {
+                arquivo.close();
+            } catch (IOException erro) {
+                System.out.println("Erro ao fechar o arquivo");
+                deuRuim = true;
+            }
+            if (deuRuim) {
+                System.exit(1);
+            }
+        }
+        return ("O arquivo: " + nomeArq + " foi gerado com sucesso!");
     }
 
+    public void leArquivoCsv(String nomeArq) {
+        FileReader arq = null;
+        Scanner entrada = null;
+        Boolean deuRuim = false;
 
+        nomeArq += ".csv";
 
-        public String gerarEGravarArquivoCSVB(List<Usuario> listaUsuariosOrdenado) {
-            String nomeArquivo = "usuarios_ordenados.csv";
-            String caminhoDoArquivo = "com/example/b2b/arquivo/" + nomeArquivo;
+        // Bloco try-catch para abrir o arquivo
+        try {
+            arq = new FileReader(nomeArq);
+            entrada = new Scanner(arq).useDelimiter(";|\\n");
+        } catch (FileNotFoundException erro) {
+            System.out.println("Arquivo nao encontrado");
+            System.exit(1);
+        }
 
-            try (FileWriter fileWriter = new FileWriter(caminhoDoArquivo)) {
+        // Bloco try-catch para ler o arquivo
+        try {
+            System.out.println("%s %s %s %s %s\n");
 
+            while (entrada.hasNext()) {
+                String nome = entrada.next();
+                String cnpj = entrada.next();
+                String dataDeCriacao = entrada.next();
+                String email = entrada.next();
+                String tipoUsuario = entrada.next();
 
-                for (Usuario usuario : listaUsuariosOrdenado) {
-                    fileWriter.append(String.format("%s, %s, %s, %s, %s, %s\n",
-                            usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getCnpj(),
-                            usuario.getDataDeCriacao(), usuario.getTipoUsuario()));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                caminhoDoArquivo = "Erro ao gerar o arquivo CSV.";
+                System.out.printf("%s - %s - %s - %s - %s\n", nome, cnpj, dataDeCriacao, email, tipoUsuario);
             }
-
-            return caminhoDoArquivo;
+        } catch (NoSuchElementException erro) {
+            System.out.println("Arquivo com problemas");
+            deuRuim = true;
+        } catch (IllegalStateException erro) {
+            System.out.println("Erro na leitura do arquivo");
+            deuRuim = true;
+        } finally {
+            entrada.close();
+            try {
+                arq.close();
+            } catch (IOException erro) {
+                System.out.println("Erro ao fechar o arquivo");
+                deuRuim = true;
+            }
+            if (deuRuim) {
+                System.exit(1);
+            }
         }
     }
+}
 
 
 

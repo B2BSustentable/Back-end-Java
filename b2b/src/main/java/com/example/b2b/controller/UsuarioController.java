@@ -4,15 +4,21 @@ import com.example.b2b.dtos.usuario.RegisterRequestDTO;
 import com.example.b2b.dtos.usuario.RegisterResponseDTO;
 import com.example.b2b.entity.usuario.Usuario;
 import com.example.b2b.services.UsuarioService;
+import com.example.b2b.util.Lista;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -84,61 +90,31 @@ public class UsuarioController {
         return ResponseEntity.status(200).body(resposta);
     }
 
-//    @GetMapping("/downloadCSV")
-//    public ResponseEntity<Object> downloadCSV() {
-//        try {
-//            // Gerar o conteúdo do CSV
-//            StringBuilder csvContent = new StringBuilder();
-//            csvContent.append("ID, Nome, Email, CNPJ, Data de Criação, Tipo de Usuário\n");
-//
-//            List<Usuario> listaUsuariosOrdenado = usuarioService.getListaOrdenadaPorData();
-//            for (Usuario usuario : listaUsuariosOrdenado) {
-//                csvContent.append(String.format("%s, %s, %s, %s, %s, %s\n",
-//                        usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getCnpj(),
-//                        usuario.getDataDeCriacao().toString(), usuario.getTipoUsuario()));
-//            }
-//
-//            // Salvar o arquivo no servidor
-//            String filePath = "caminho/para/sua/pasta/arquivo/usuarios_ordenados.csv";  // Substitua pelo caminho correto
-//            FileWriter fileWriter = new FileWriter(filePath);
-//            fileWriter.write(csvContent.toString());
-//            fileWriter.close();
-//
-//            // Configurar cabeçalhos para o download
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=usuarios_ordenados.csv");
-//
-//            return ResponseEntity.ok()
-//                    .headers(headers)
-//                    .contentType(MediaType.parseMediaType("application/csv"))
-//                    .body("Arquivo CSV gerado e salvo em: " + filePath);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//        }
-//    }
-
     @GetMapping("/downloadCSV")
-    public ResponseEntity<UrlResource> downloadCSV() throws IOException {
-        String caminhoDoArquivo = usuarioService.gerarEGravarArquivoCSVB(usuarioService.getListaOrdenadaPorData());
-
+    public ResponseEntity downloadCSV() throws IOException {
         try {
-            UrlResource resource = new UrlResource("file:" + caminhoDoArquivo);
+            usuarioService.gerarEGravarArquivoCSV(this.getUsuariosOrdenadoPorData().getBody(), "usuarios");
+            // Ler o conteúdo do arquivo CSV
+            File csvFile = new File("usuarios.csv");
+            String csvContent = new String(FileCopyUtils.copyToByteArray(csvFile), StandardCharsets.UTF_8);
 
-            if (resource.exists() && resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                        .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (MalformedURLException e) {
+            // Configurar a resposta HTTP
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=usuarios.csv");
+
+            // Definir o tipo de mídia da resposta
+            MediaType mediaType = MediaType.parseMediaType("text/csv");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(csvContent.length())
+                    .contentType(mediaType)
+                    .body(new ByteArrayResource(csvContent.getBytes()));
+        } catch (IOException e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
-
-
-
 }
 
 
