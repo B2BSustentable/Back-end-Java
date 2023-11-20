@@ -1,6 +1,6 @@
-package com.example.b2b.entity.usuario;
+package com.example.b2b.entity.empresa;
 
-public enum TipoUsuario {
+public enum TipoPlanos {
 
     USUARIO_BRONZE("usuario_bronze"),
 
@@ -10,7 +10,7 @@ public enum TipoUsuario {
 
     private String tipoUsuario;
 
-    TipoUsuario(String tipoUsuario) {
+    TipoPlanos(String tipoUsuario) {
         this.tipoUsuario = tipoUsuario;
     }
 

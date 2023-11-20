@@ -1,14 +1,12 @@
 package com.example.b2b.controller;
 
-import com.example.b2b.dtos.usuario.RegisterRequestDTO;
-import com.example.b2b.dtos.usuario.RegisterResponseDTO;
-import com.example.b2b.entity.usuario.Usuario;
-import com.example.b2b.services.UsuarioService;
-import com.example.b2b.util.Lista;
+import com.example.b2b.dtos.empresa.RegisterRequestDTO;
+import com.example.b2b.dtos.empresa.RegisterResponseDTO;
+import com.example.b2b.entity.empresa.Empresa;
+import com.example.b2b.services.EmpresaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -26,69 +23,69 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
-public class UsuarioController {
+public class EmpresaController {
 
     @Autowired
-    private UsuarioService usuarioService = new UsuarioService();
+    private EmpresaService empresaService = new EmpresaService();
 
     // http://localhost:8080/usuarios
     @GetMapping
     public ResponseEntity<List<RegisterResponseDTO>> getUsuarios() {
-        List<Usuario> listaUsuarios = usuarioService.getTodosUsuarios();
-        if (listaUsuarios.isEmpty()) {
+        List<Empresa> listaEmpresas = empresaService.getTodosUsuarios();
+        if (listaEmpresas.isEmpty()) {
             return ResponseEntity.status(204).build();
         }
 
-        Collections.shuffle(listaUsuarios);
-        List<RegisterResponseDTO> listaUsuariosResponse = usuarioService.convertListaResponseDTO(listaUsuarios);
+        Collections.shuffle(listaEmpresas);
+        List<RegisterResponseDTO> listaUsuariosResponse = empresaService.convertListaResponseDTO(listaEmpresas);
         return ResponseEntity.status(200).body(listaUsuariosResponse);
     }
 
     // http://localhost:8080/usuarios/123456789
     @GetMapping("/{cnpj}")
     public ResponseEntity<RegisterResponseDTO> getUsuarioPorCnpj(@PathVariable String cnpj) {
-        Usuario usuarioCnpj = usuarioService.getUsuarioPorCnpj(cnpj);
+        Empresa empresaCnpj = empresaService.getUsuarioPorCnpj(cnpj);
 
-        if (usuarioCnpj == null) {
+        if (empresaCnpj == null) {
             return ResponseEntity.status(204).build();
         }
-        RegisterResponseDTO resposta = new RegisterResponseDTO(usuarioCnpj.getNome(), usuarioCnpj.getCnpj(), usuarioCnpj.getDataDeCriacao(), usuarioCnpj.getEmail(), usuarioCnpj.getTipoUsuario().toString());
+        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaCnpj.getNome(), empresaCnpj.getCnpj(), empresaCnpj.getDataDeCriacao(), empresaCnpj.getEmail(), empresaCnpj.getTipoPlanos().toString());
         return ResponseEntity.status(200).body(resposta);
     }
 
     // http://localhost:8080/usuarios/123456789
     @PutMapping("/{cnpj}")
     public ResponseEntity<RegisterResponseDTO> editarUsuarioPorCnpj(@RequestBody @Valid RegisterRequestDTO usuario, @PathVariable String cnpj) {
-        Usuario resposta = usuarioService.editarUsuarioPorCnpj(usuario, cnpj);
-        RegisterResponseDTO respostaDTO = new RegisterResponseDTO(resposta.getNome(), resposta.getCnpj(), resposta.getDataDeCriacao(), resposta.getEmail(), resposta.getTipoUsuario().toString());
+        Empresa resposta = empresaService.editarUsuarioPorCnpj(usuario, cnpj);
+        RegisterResponseDTO respostaDTO = new RegisterResponseDTO(resposta.getNome(), resposta.getCnpj(), resposta.getDataDeCriacao(), resposta.getEmail(), resposta.getTipoPlanos().toString());
         return ResponseEntity.status(200).body(respostaDTO);
     }
 
     // http://localhost:8080/usuarios/123456789
     @DeleteMapping("/{cnpj}")
     public ResponseEntity deletarUsuarioPorCnpj(@PathVariable String cnpj) {
-        Void resposta = usuarioService.deletarUsuarioPorCnpj(cnpj);
+        Void resposta = empresaService.deletarUsuarioPorCnpj(cnpj);
         return ResponseEntity.status(200).build();
     }
     // http://localhost:8080/usuarios/ordenado
     @GetMapping("/ordenado")
     public ResponseEntity<List<RegisterResponseDTO>> getUsuariosOrdenadoPorData(){
-        List<Usuario> listaUsuariosOrdenado = usuarioService.getListaOrdenadaPorData();
+        List<Empresa> listaUsuariosOrdenado = empresaService.getListaOrdenadaPorData();
         if(listaUsuariosOrdenado.isEmpty()){
             return ResponseEntity.status(204).build();
         }
-        List<RegisterResponseDTO> listaUsuariosResponse = usuarioService.convertListaResponseDTO(listaUsuariosOrdenado);
+        List<RegisterResponseDTO> listaUsuariosResponse = empresaService.convertListaResponseDTO(listaUsuariosOrdenado);
         return ResponseEntity.status(200).body(listaUsuariosResponse);
     }
 
     // http://localhost:8080/usuarios/ordenado/{DateTime}
     @GetMapping("/ordenado/{data}")
     public ResponseEntity<RegisterResponseDTO> getUsuarioPorData(@PathVariable LocalDateTime data){
-        Usuario usuarioData = usuarioService.getUsuarioPorData(data);
-        if(usuarioData == null){
+        Empresa empresaData = empresaService.getUsuarioPorData(data);
+        if(empresaData == null){
             return ResponseEntity.status(204).build();
         }
-        RegisterResponseDTO resposta = new RegisterResponseDTO(usuarioData.getNome(), usuarioData.getCnpj(), usuarioData.getDataDeCriacao(), usuarioData.getEmail(), usuarioData.getTipoUsuario().toString());
+        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaData.getNome(), empresaData.getCnpj(), empresaData.getDataDeCriacao(), empresaData.getEmail(), empresaData.getTipoPlanos().toString());
 
         return ResponseEntity.status(200).body(resposta);
     }
@@ -96,7 +93,7 @@ public class UsuarioController {
     @GetMapping("/downloadCSV")
     public ResponseEntity downloadCSV() throws IOException {
         try {
-            usuarioService.gerarEGravarArquivoCSV(this.getUsuariosOrdenadoPorData().getBody(), "usuarios");
+            empresaService.gerarEGravarArquivoCSV(this.getUsuariosOrdenadoPorData().getBody(), "usuarios");
             // Ler o conteúdo do arquivo CSV
             File csvFile = new File("usuarios.csv");
             String csvContent = new String(FileCopyUtils.copyToByteArray(csvFile), StandardCharsets.UTF_8);

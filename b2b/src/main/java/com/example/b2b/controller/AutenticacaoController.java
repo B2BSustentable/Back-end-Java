@@ -2,11 +2,11 @@ package com.example.b2b.controller;
 
 import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
 import com.example.b2b.dtos.autenticacao.LoginResponseDTO;
-import com.example.b2b.dtos.usuario.RegisterRequestDTO;
-import com.example.b2b.dtos.usuario.RegisterResponseDTO;
-import com.example.b2b.entity.usuario.Usuario;
+import com.example.b2b.dtos.empresa.RegisterRequestDTO;
+import com.example.b2b.dtos.empresa.RegisterResponseDTO;
+import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.infra.security.TokenService;
-import com.example.b2b.services.UsuarioService;
+import com.example.b2b.services.EmpresaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RestController
@@ -31,7 +30,7 @@ public class AutenticacaoController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UsuarioService usuarioService;
+    private EmpresaService empresaService;
 
     @Autowired
     private TokenService tokenService;
@@ -41,21 +40,21 @@ public class AutenticacaoController {
             var senhaUsuario = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
             var autenticacao = authenticationManager.authenticate(senhaUsuario);
 
-            var token = tokenService.gerarToken((Usuario) autenticacao.getPrincipal());
+            var token = tokenService.gerarToken((Empresa) autenticacao.getPrincipal());
 
             return ResponseEntity.ok(new LoginResponseDTO(token));
         }
 
         @PostMapping("/registrar")
         public ResponseEntity registrar(@RequestBody @Valid RegisterRequestDTO data) {
-            if (this.usuarioService.findByEmail(data.email()) != null) {
+            if (this.empresaService.findByEmail(data.email()) != null) {
                 return ResponseEntity.status(409).build();
             }
 
             String senhaEncriptada = new BCryptPasswordEncoder().encode(data.senha());
-            Usuario usuario = usuarioService.cadastrarUsuario(data.nome(), data.cnpj(), senhaEncriptada, LocalDateTime.now() ,data.email(), data.tipoUsuario(), data.tipoAssinatura(), data.limiteDeProdutos(), data.desconto(), data.suporte24h(), data.acessoVIP());
+            Empresa empresa = empresaService.cadastrarUsuario(data.nome(), data.cnpj(), senhaEncriptada, LocalDateTime.now() ,data.email(), data.tipoPlanos(), data.tipoAssinatura(), data.limiteDeProdutos(), data.desconto(), data.suporte24h(), data.acessoVIP());
 
-            RegisterResponseDTO registroResponse = new RegisterResponseDTO(usuario.getNome(), usuario.getCnpj(), usuario.getDataDeCriacao(), usuario.getEmail(), usuario.getTipoUsuario().toString());
+            RegisterResponseDTO registroResponse = new RegisterResponseDTO(empresa.getNome(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos().toString());
             return ResponseEntity.status(HttpStatus.CREATED).body(registroResponse);
     }
 }

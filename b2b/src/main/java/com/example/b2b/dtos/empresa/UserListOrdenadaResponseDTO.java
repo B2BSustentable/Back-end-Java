@@ -1,4 +1,4 @@
-package com.example.b2b.dtos.usuario;
+package com.example.b2b.dtos.empresa;
 
 public class UserListOrdenadaResponseDTO {
 }

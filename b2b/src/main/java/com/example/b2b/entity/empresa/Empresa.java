@@ -1,6 +1,6 @@
-package com.example.b2b.entity.usuario;
+package com.example.b2b.entity.empresa;
 
-import com.example.b2b.dtos.usuario.RegisterRequestDTO;
+import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -16,28 +16,29 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode(of="id")
-public abstract class Usuario implements UserDetails {
+public abstract class Empresa implements UserDetails {
     @Id
     @NotBlank
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String nome;
     private String email;
-//    @CNPJ
     private String cnpj;
     private String senha;
+    private String descricao;
     private LocalDateTime dataDeCriacao;
     @Enumerated(EnumType.STRING)
-    private TipoUsuario tipoUsuario;
+    private TipoPlanos tipoPlanos;
 
-    public Usuario(RegisterRequestDTO data) {
+    public Empresa(RegisterRequestDTO data) {
         this.nome = data.nome();
         this.cnpj = data.cnpj();
         this.email = data.email();
         this.senha = data.senha();
         this.dataDeCriacao = data.dataDeCriacao();
-        this.tipoUsuario = data.tipoUsuario();
+        this.tipoPlanos = data.tipoPlanos();
     }
 
     public abstract ResponseEntity<String> getEmpresasPorGeoLocalizacao(String latitude, String longitude);
+
 }
