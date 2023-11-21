@@ -1,6 +1,8 @@
-package com.example.b2b.entity.usuario;
+package com.example.b2b.entity.empresa.roles;
 
-import com.example.b2b.dtos.usuario.RegisterRequestDTO;
+import com.example.b2b.dtos.empresa.RegisterRequestDTO;
+import com.example.b2b.entity.empresa.Empresa;
+import com.example.b2b.entity.empresa.TipoPlanos;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -17,13 +19,13 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UsuarioPrata extends Usuario {
+public class EmpresaCommon extends Empresa {
     private String tipoAssinatura = "Prata";
     private int limiteDeProdutos;
     private double desconto;
     private boolean suporte24h;
 
-    public UsuarioPrata(RegisterRequestDTO data) {
+    public EmpresaCommon(RegisterRequestDTO data) {
         super(data);
         this.limiteDeProdutos = data.limiteDeProdutos();
         this.desconto = data.desconto();
@@ -38,7 +40,7 @@ public class UsuarioPrata extends Usuario {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.getTipoUsuario().equals(TipoUsuario.USUARIO_PRATA)) {
+        if (this.getTipoPlanos().equals(TipoPlanos.EMPRESA_COMMON)) {
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         } else {
             return List.of(new SimpleGrantedAuthority("ROLE_USER"));

@@ -1,6 +1,6 @@
 package com.example.b2b.repository;
 
-import com.example.b2b.entity.usuario.Usuario;
+import com.example.b2b.entity.empresa.Empresa;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
-        Optional<Usuario> findByCnpj(String cnpj);
+public interface EmpresaRepository extends JpaRepository<Empresa, Integer> {
+        Optional<Empresa> findByCnpj(String cnpj);
         UserDetails findByEmail(String email);
 }

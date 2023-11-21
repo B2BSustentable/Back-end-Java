@@ -1,7 +1,6 @@
 package com.example.b2b.infra.security;
 
-import com.example.b2b.repository.UsuarioRepository;
-import com.example.b2b.services.UsuarioService;
+import com.example.b2b.services.EmpresaService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +20,7 @@ public class FiltroDeSeguranca extends OncePerRequestFilter {
     TokenService tokenService;
 
     @Autowired
-    UsuarioService usuarioService;
+    EmpresaService empresaService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recuperarToken(request);
@@ -29,7 +28,7 @@ public class FiltroDeSeguranca extends OncePerRequestFilter {
         if (token != null) {
             var login = tokenService.validarToken(token);
 
-            UserDetails usuario = usuarioService.findByEmail(login);
+            UserDetails usuario = empresaService.findByEmail(login);
 
             var autenticacaoUsuario = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(autenticacaoUsuario);

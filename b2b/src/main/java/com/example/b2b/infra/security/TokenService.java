@@ -3,7 +3,7 @@ package com.example.b2b.infra.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
-import com.example.b2b.entity.usuario.Usuario;
+import com.example.b2b.entity.empresa.Empresa;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +16,12 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String chaveSecreta;
 
-    public String gerarToken(Usuario usuario) {
+    public String gerarToken(Empresa empresa) {
         try {
             Algorithm algoritmoCriptografia = Algorithm.HMAC256(chaveSecreta);
             String token = JWT.create()
                     .withIssuer("api-b2b")
-                    .withSubject(usuario.getEmail())
+                    .withSubject(empresa.getEmail())
                     .withExpiresAt(geradorDataExpiracao())
                     .sign(algoritmoCriptografia);
 

@@ -1,11 +1,7 @@
 package com.example.b2b.util;
 
-import com.example.b2b.entity.usuario.Usuario;
-import org.springframework.format.annotation.DateTimeFormat;
+import com.example.b2b.entity.empresa.Empresa;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,7 +116,7 @@ public class Lista<T> {
             for (int i = 0; i < n - 1; i++) {
                 int minIndex = i;
                 for (int j = i + 1; j < n; j++) {
-                    if (((Usuario)buscaPorIndice(j)).getDataDeCriacao().isBefore(((Usuario)buscaPorIndice(minIndex)).getDataDeCriacao())) {
+                    if (((Empresa)buscaPorIndice(j)).getDataDeCriacao().isBefore(((Empresa)buscaPorIndice(minIndex)).getDataDeCriacao())) {
                         minIndex = j;
                     }
                 }
@@ -137,18 +133,18 @@ public class Lista<T> {
             set(j, temp);
         }
 
-    public Usuario buscaBinariaPorDataDeCriacao(LocalDateTime data) {
+    public Empresa buscaBinariaPorDataDeCriacao(LocalDateTime data) {
         int esquerda = 0;
         int direita = nroElem - 1;
 
         while (esquerda <= direita) {
             int meio = (esquerda + direita) / 2;
-            Usuario usuarioMeio = (Usuario) buscaPorIndice(meio);
-            LocalDateTime dataMeio = usuarioMeio.getDataDeCriacao();
+            Empresa empresaMeio = (Empresa) buscaPorIndice(meio);
+            LocalDateTime dataMeio = empresaMeio.getDataDeCriacao();
             int comparacao = data.compareTo(dataMeio);
 
             if (comparacao == 0) {
-                return usuarioMeio; // Encontrado
+                return empresaMeio; // Encontrado
             } else if (comparacao < 0) {
                 direita = meio - 1;
             } else {
