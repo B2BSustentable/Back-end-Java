@@ -8,5 +8,5 @@ import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.time.LocalDateTime;
 
-public record RegisterRequestDTO(@NotBlank String nome, @CNPJ String cnpj, @NotBlank String senha, LocalDateTime dataDeCriacao, @NotBlank @Email String email, @NotNull TipoPlanos tipoPlanos, @NotNull String tipoAssinatura, int limiteDeProdutos, double desconto, boolean suporte24h, String acessoVIP) {
+public record RegisterRequestDTO(@NotBlank String nomeEmpresa, @CNPJ String cnpj, @NotBlank @Email String email, @NotBlank String senha, String descricao, @NotNull LocalDateTime dataDeCriacao, String photo, @NotNull TipoPlanos tipoPlanos, int limiteDeProdutos, double desconto, boolean suporte24h, String acessoVIP) {
     }
