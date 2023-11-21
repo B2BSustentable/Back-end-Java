@@ -19,14 +19,14 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class EmpresaOuro extends Empresa {
+public class EmpresaPremium extends Empresa {
     private String tipoAssinatura = "Ouro";
     private int limiteDeProdutos;
     private double desconto;
     private boolean suporte24h;
     private String acessoVIP;
 
-    public EmpresaOuro(RegisterRequestDTO data) {
+    public EmpresaPremium(RegisterRequestDTO data) {
         super(data);
         this.limiteDeProdutos = data.limiteDeProdutos();
         this.desconto = data.desconto();
@@ -42,7 +42,7 @@ public class EmpresaOuro extends Empresa {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.getTipoPlanos().equals(TipoPlanos.USUARIO_OURO)) {
+        if (this.getTipoPlanos().equals(TipoPlanos.EMPRESA_PREMIUM)) {
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         } else {
             return List.of(new SimpleGrantedAuthority("ROLE_USER"));
