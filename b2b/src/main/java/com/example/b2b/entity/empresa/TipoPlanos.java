@@ -1,25 +1,21 @@
 package com.example.b2b.entity.empresa;
 
-import jakarta.persistence.OneToMany;
-
-import java.util.List;
-
 public enum TipoPlanos {
 
-    USUARIO_BRONZE("usuario_bronze"),
+    EMPRESA_BASIC("empresa_basic"),
 
-    USUARIO_PRATA("usuario_prata"),
+    EMPRESA_COMMON("empresa_common"),
 
-    USUARIO_OURO("usuario_ouro");
+    EMPRESA_PREMIUM("empresa_premium");
 
-    private String tipoUsuario;
+    private String tipoPlanoEmpresa;
 
-    TipoPlanos(String tipoUsuario) {
-        this.tipoUsuario = tipoUsuario;
+    TipoPlanos(String tipoPlanoEmpresa) {
+        this.tipoPlanoEmpresa = tipoPlanoEmpresa;
     }
 
-    public String getTipoUsuario() {
-        return tipoUsuario;
+    public String getTipoPlano() {
+        return tipoPlanoEmpresa;
     }
 
 }
