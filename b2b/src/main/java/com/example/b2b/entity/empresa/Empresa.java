@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of="id")
 public abstract class Empresa implements UserDetails {
     @Id
-    @NotBlank
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String nome;
@@ -40,5 +39,8 @@ public abstract class Empresa implements UserDetails {
     }
 
     public abstract ResponseEntity<String> getEmpresasPorGeoLocalizacao(String latitude, String longitude);
+
+    @ManyToOne
+    private Planos planos;
 
 }

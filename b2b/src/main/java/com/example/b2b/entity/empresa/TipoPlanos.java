@@ -1,5 +1,9 @@
 package com.example.b2b.entity.empresa;
 
+import jakarta.persistence.OneToMany;
+
+import java.util.List;
+
 public enum TipoPlanos {
 
     USUARIO_BRONZE("usuario_bronze"),
@@ -17,4 +21,5 @@ public enum TipoPlanos {
     public String getTipoUsuario() {
         return tipoUsuario;
     }
+
 }
