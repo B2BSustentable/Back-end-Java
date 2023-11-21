@@ -49,7 +49,7 @@ public class EmpresaController {
         if (empresaCnpj == null) {
             return ResponseEntity.status(204).build();
         }
-        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaCnpj.getNome(), empresaCnpj.getCnpj(), empresaCnpj.getDataDeCriacao(), empresaCnpj.getEmail(), empresaCnpj.getTipoPlanos().toString());
+        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaCnpj.getNomeEmpresa(), empresaCnpj.getCnpj(), empresaCnpj.getDataDeCriacao(), empresaCnpj.getEmail(), empresaCnpj.getTipoPlanos(), empresaCnpj.getDescricao(), empresaCnpj.getPhoto());
         return ResponseEntity.status(200).body(resposta);
     }
 
@@ -57,7 +57,7 @@ public class EmpresaController {
     @PutMapping("/{cnpj}")
     public ResponseEntity<RegisterResponseDTO> editarUsuarioPorCnpj(@RequestBody @Valid RegisterRequestDTO usuario, @PathVariable String cnpj) {
         Empresa resposta = empresaService.editarUsuarioPorCnpj(usuario, cnpj);
-        RegisterResponseDTO respostaDTO = new RegisterResponseDTO(resposta.getNome(), resposta.getCnpj(), resposta.getDataDeCriacao(), resposta.getEmail(), resposta.getTipoPlanos().toString());
+        RegisterResponseDTO respostaDTO = new RegisterResponseDTO(resposta.getNomeEmpresa(), resposta.getCnpj(), resposta.getDataDeCriacao(), resposta.getEmail(), resposta.getTipoPlanos(), resposta.getDescricao(), resposta.getPhoto());
         return ResponseEntity.status(200).body(respostaDTO);
     }
 
@@ -85,7 +85,7 @@ public class EmpresaController {
         if(empresaData == null){
             return ResponseEntity.status(204).build();
         }
-        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaData.getNome(), empresaData.getCnpj(), empresaData.getDataDeCriacao(), empresaData.getEmail(), empresaData.getTipoPlanos().toString());
+        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaData.getNomeEmpresa(), empresaData.getCnpj(), empresaData.getDataDeCriacao(), empresaData.getEmail(), empresaData.getTipoPlanos(), empresaData.getDescricao(), empresaData.getPhoto());
 
         return ResponseEntity.status(200).body(resposta);
     }

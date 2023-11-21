@@ -47,14 +47,12 @@ public class AutenticacaoController {
 
         @PostMapping("/registrar")
         public ResponseEntity registrar(@RequestBody @Valid RegisterRequestDTO data) {
-            if (this.empresaService.findByEmail(data.email()) != null) {
-                return ResponseEntity.status(409).build();
-            }
 
             String senhaEncriptada = new BCryptPasswordEncoder().encode(data.senha());
-            Empresa empresa = empresaService.cadastrarUsuario(data.nome(), data.cnpj(), senhaEncriptada, LocalDateTime.now() ,data.email(), data.tipoPlanos(), data.tipoAssinatura(), data.limiteDeProdutos(), data.desconto(), data.suporte24h(), data.acessoVIP());
+            Empresa empresaEntity = empresaService.cadastrarUsuario(new RegisterRequestDTO(data.nomeEmpresa(), data.cnpj(), data.email(), senhaEncriptada, data.descricao(), LocalDateTime.now(), data.photo(), data.tipoPlanos(), data.limiteDeProdutos(), data.desconto(), data.suporte24h(), data.acessoVIP()));
 
-            RegisterResponseDTO registroResponse = new RegisterResponseDTO(empresa.getNome(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos().toString());
+            RegisterResponseDTO registroResponse = new RegisterResponseDTO(empresaEntity.getNomeEmpresa(), empresaEntity.getCnpj(), empresaEntity.getDataDeCriacao(), empresaEntity.getEmail(), empresaEntity.getTipoPlanos(), empresaEntity.getDescricao(), empresaEntity.getPhoto());
+
             return ResponseEntity.status(HttpStatus.CREATED).body(registroResponse);
     }
 }

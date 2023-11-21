@@ -3,16 +3,18 @@ package com.example.b2b.services;
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
 import com.example.b2b.entity.empresa.*;
-import com.example.b2b.entity.empresa.roles.EmpresaBronze;
-import com.example.b2b.entity.empresa.roles.EmpresaOuro;
-import com.example.b2b.entity.empresa.roles.EmpresaPrata;
+import com.example.b2b.entity.empresa.roles.EmpresaBasic;
+import com.example.b2b.entity.empresa.roles.EmpresaPremium;
+import com.example.b2b.entity.empresa.roles.EmpresaCommon;
 import com.example.b2b.repository.EmpresaRepository;
 import com.example.b2b.util.Lista;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -35,25 +37,22 @@ public class EmpresaService {
         return empresaRepository.findAll();
     }
 
-    public Empresa cadastrarUsuario(String nome, String cnpj, String senhaEncriptada, LocalDateTime dataDeCricao, String email, TipoPlanos tipoPlanos, String tipoAssinatura, int limiteDeProdutos, double desconto, boolean suporte24h, String acessoVIP) {
-
-        RegisterRequestDTO data = new RegisterRequestDTO(nome, cnpj, senhaEncriptada, dataDeCricao = LocalDateTime.now() , email, tipoPlanos, tipoAssinatura, limiteDeProdutos, desconto, suporte24h, acessoVIP);
-
+    public Empresa cadastrarUsuario(RegisterRequestDTO data) {
         Empresa empresaExistente = (Empresa) empresaRepository.findByEmail(data.email());
         if (empresaExistente != null) {
-            throw new IllegalStateException("Email já cadastrado");
+            throw new ResponseStatusException(HttpStatus.CONFLICT ,"Email já cadastrado");
         }
 
         Empresa novoEmpresa;
         switch (data.tipoPlanos()) {
-            case USUARIO_BRONZE:
-                novoEmpresa = new EmpresaBronze(data);
+            case EMPRESA_BASIC:
+                novoEmpresa = new EmpresaBasic(data);
                 break;
-            case USUARIO_PRATA:
-                novoEmpresa = new EmpresaPrata(data);
+            case EMPRESA_COMMON:
+                novoEmpresa = new EmpresaCommon(data);
                 break;
-            case USUARIO_OURO:
-                novoEmpresa = new EmpresaOuro(data);
+            case EMPRESA_PREMIUM:
+                novoEmpresa = new EmpresaPremium(data);
                 break;
             default:
                 throw new IllegalStateException("O usuário inserido não é uma opção: " + data.tipoPlanos());
@@ -82,7 +81,7 @@ public class EmpresaService {
             Empresa empresaExistente = usuarioExistenteOptional.get();
 
             // Atualize os campos do usuário existente com os valores do DTO editado
-            empresaExistente.setNome(usuarioEditado.nome());
+            empresaExistente.setNomeEmpresa(usuarioEditado.nomeEmpresa());
             empresaExistente.setCnpj(usuarioEditado.cnpj());
             empresaExistente.setSenha(usuarioEditado.senha());
             empresaExistente.setTipoPlanos(usuarioEditado.tipoPlanos());
@@ -109,7 +108,7 @@ public class EmpresaService {
     public List<RegisterResponseDTO> convertListaResponseDTO(List<Empresa> listaEmpresas) {
         List<RegisterResponseDTO> listaUsuariosResponse = new ArrayList<>();
         for (Empresa empresa : listaEmpresas) {
-            RegisterResponseDTO resposta = new RegisterResponseDTO(empresa.getNome(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos().toString());
+            RegisterResponseDTO resposta = new RegisterResponseDTO(empresa.getNomeEmpresa(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos(), empresa.getDescricao(), empresa.getPhoto());
             listaUsuariosResponse.add(resposta);
         }
         return listaUsuariosResponse;
@@ -153,7 +152,7 @@ public class EmpresaService {
                 RegisterResponseDTO usuariosOrdenadoElemento = listaUsuariosOrdenado.get(i);
 
                 saida.format("%s;%s;%s;%s;%s\n",
-                        usuariosOrdenadoElemento.nome(), usuariosOrdenadoElemento.cnpj(), usuariosOrdenadoElemento.dataDeCriacao(), usuariosOrdenadoElemento.email(), usuariosOrdenadoElemento.tipoUsuario());
+                        usuariosOrdenadoElemento.nomeEmpresa(), usuariosOrdenadoElemento.cnpj(), usuariosOrdenadoElemento.dataDeCriacao(), usuariosOrdenadoElemento.email(), usuariosOrdenadoElemento.tipoPlanos());
             }
         } catch (FormatterClosedException erro) {
             System.out.println("Erro ao gravar o arquivo");

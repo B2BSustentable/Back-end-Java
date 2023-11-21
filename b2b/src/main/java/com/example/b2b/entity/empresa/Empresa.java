@@ -9,8 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "usuario")
-@Table(name = "usuario")
+@Entity(name = "empresa")
+@Table(name = "empresa")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -20,27 +20,29 @@ public abstract class Empresa implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private String nome;
-    private String email;
+    private String nomeEmpresa;
     private String cnpj;
+    private String email;
     private String senha;
     private String descricao;
+    private String photo;
     private LocalDateTime dataDeCriacao;
     @Enumerated(EnumType.STRING)
     private TipoPlanos tipoPlanos;
+    @OneToOne
+    private Plano plano;
 
-    public Empresa(RegisterRequestDTO data) {
-        this.nome = data.nome();
-        this.cnpj = data.cnpj();
-        this.email = data.email();
-        this.senha = data.senha();
-        this.dataDeCriacao = data.dataDeCriacao();
-        this.tipoPlanos = data.tipoPlanos();
+    public Empresa(RegisterRequestDTO registerRequestDTO) {
+        this.nomeEmpresa = registerRequestDTO.nomeEmpresa();
+        this.cnpj = registerRequestDTO.cnpj();
+        this.email = registerRequestDTO.email();
+        this.senha = registerRequestDTO.senha();
+        this.descricao = registerRequestDTO.descricao();
+        this.photo = registerRequestDTO.photo();
+        this.dataDeCriacao = registerRequestDTO.dataDeCriacao();
+        this.tipoPlanos = registerRequestDTO.tipoPlanos();
     }
 
     public abstract ResponseEntity<String> getEmpresasPorGeoLocalizacao(String latitude, String longitude);
-
-    @ManyToOne
-    private Planos planos;
 
 }
