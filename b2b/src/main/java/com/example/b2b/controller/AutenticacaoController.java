@@ -49,7 +49,7 @@ public class AutenticacaoController {
         public ResponseEntity registrar(@RequestBody @Valid RegisterRequestDTO data) {
 
             String senhaEncriptada = new BCryptPasswordEncoder().encode(data.senha());
-            Empresa empresaEntity = empresaService.cadastrarUsuario(new RegisterRequestDTO(data.nomeEmpresa(), data.cnpj(), data.email(), senhaEncriptada, data.descricao(), LocalDateTime.now(), data.photo(), data.tipoPlanos(), data.limiteDeProdutos(), data.desconto(), data.suporte24h(), data.acessoVIP()));
+            Empresa empresaEntity = empresaService.cadastrarEmpresa(new RegisterRequestDTO(data.nomeEmpresa(), data.cnpj(), data.email(), senhaEncriptada, data.descricao(), LocalDateTime.now(), data.photo(), data.tipoPlanos(), data.limiteDeProdutos(), data.desconto(), data.suporte24h(), data.acessoVIP()));
 
             RegisterResponseDTO registroResponse = new RegisterResponseDTO(empresaEntity.getNomeEmpresa(), empresaEntity.getCnpj(), empresaEntity.getDataDeCriacao(), empresaEntity.getEmail(), empresaEntity.getTipoPlanos(), empresaEntity.getDescricao(), empresaEntity.getPhoto());
 

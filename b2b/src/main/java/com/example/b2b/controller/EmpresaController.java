@@ -22,7 +22,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/empresas")
 public class EmpresaController {
 
     @Autowired
@@ -30,21 +30,21 @@ public class EmpresaController {
 
     // http://localhost:8080/usuarios
     @GetMapping
-    public ResponseEntity<List<RegisterResponseDTO>> getUsuarios() {
-        List<Empresa> listaEmpresas = empresaService.getTodosUsuarios();
+    public ResponseEntity<List<RegisterResponseDTO>> getEmpresa() {
+        List<Empresa> listaEmpresas = empresaService.getTodasEmpresas();
         if (listaEmpresas.isEmpty()) {
             return ResponseEntity.status(204).build();
         }
 
         Collections.shuffle(listaEmpresas);
-        List<RegisterResponseDTO> listaUsuariosResponse = empresaService.convertListaResponseDTO(listaEmpresas);
-        return ResponseEntity.status(200).body(listaUsuariosResponse);
+        List<RegisterResponseDTO> listaEmpresasResponse = empresaService.convertListaResponseDTO(listaEmpresas);
+        return ResponseEntity.status(200).body(listaEmpresasResponse);
     }
 
     // http://localhost:8080/usuarios/123456789
     @GetMapping("/{cnpj}")
-    public ResponseEntity<RegisterResponseDTO> getUsuarioPorCnpj(@PathVariable String cnpj) {
-        Empresa empresaCnpj = empresaService.getUsuarioPorCnpj(cnpj);
+    public ResponseEntity<RegisterResponseDTO> getEmpresaPorCnpj(@PathVariable String cnpj) {
+        Empresa empresaCnpj = empresaService.getEmpresaPorCnpj(cnpj);
 
         if (empresaCnpj == null) {
             return ResponseEntity.status(204).build();
@@ -55,33 +55,33 @@ public class EmpresaController {
 
     // http://localhost:8080/usuarios/123456789
     @PutMapping("/{cnpj}")
-    public ResponseEntity<RegisterResponseDTO> editarUsuarioPorCnpj(@RequestBody @Valid RegisterRequestDTO usuario, @PathVariable String cnpj) {
-        Empresa resposta = empresaService.editarUsuarioPorCnpj(usuario, cnpj);
+    public ResponseEntity<RegisterResponseDTO> editarEmpresaPorCnpj(@RequestBody @Valid RegisterRequestDTO empresa, @PathVariable String cnpj) {
+        Empresa resposta = empresaService.editarEmpresaPorCnpj(empresa, cnpj);
         RegisterResponseDTO respostaDTO = new RegisterResponseDTO(resposta.getNomeEmpresa(), resposta.getCnpj(), resposta.getDataDeCriacao(), resposta.getEmail(), resposta.getTipoPlanos(), resposta.getDescricao(), resposta.getPhoto());
         return ResponseEntity.status(200).body(respostaDTO);
     }
 
     // http://localhost:8080/usuarios/123456789
     @DeleteMapping("/{cnpj}")
-    public ResponseEntity deletarUsuarioPorCnpj(@PathVariable String cnpj) {
-        Void resposta = empresaService.deletarUsuarioPorCnpj(cnpj);
+    public ResponseEntity deletarEmpresaPorCnpj(@PathVariable String cnpj) {
+        Void resposta = empresaService.deletarEmpresaPorCnpj(cnpj);
         return ResponseEntity.status(200).build();
     }
     // http://localhost:8080/usuarios/ordenado
     @GetMapping("/ordenado")
-    public ResponseEntity<List<RegisterResponseDTO>> getUsuariosOrdenadoPorData(){
-        List<Empresa> listaUsuariosOrdenado = empresaService.getListaOrdenadaPorData();
-        if(listaUsuariosOrdenado.isEmpty()){
+    public ResponseEntity<List<RegisterResponseDTO>> getEmpresasOrdenadoPorData(){
+        List<Empresa> listaEmpresaOrdenado = empresaService.getListaOrdenadaPorData();
+        if(listaEmpresaOrdenado.isEmpty()){
             return ResponseEntity.status(204).build();
         }
-        List<RegisterResponseDTO> listaUsuariosResponse = empresaService.convertListaResponseDTO(listaUsuariosOrdenado);
-        return ResponseEntity.status(200).body(listaUsuariosResponse);
+        List<RegisterResponseDTO> listaEmpresaResponse = empresaService.convertListaResponseDTO(listaEmpresaOrdenado);
+        return ResponseEntity.status(200).body(listaEmpresaResponse);
     }
 
     // http://localhost:8080/usuarios/ordenado/{DateTime}
     @GetMapping("/ordenado/{data}")
-    public ResponseEntity<RegisterResponseDTO> getUsuarioPorData(@PathVariable LocalDateTime data){
-        Empresa empresaData = empresaService.getUsuarioPorData(data);
+    public ResponseEntity<RegisterResponseDTO> getEmpresaPorData(@PathVariable LocalDateTime data){
+        Empresa empresaData = empresaService.getEmpresaPorData(data);
         if(empresaData == null){
             return ResponseEntity.status(204).build();
         }
@@ -93,14 +93,14 @@ public class EmpresaController {
     @GetMapping("/downloadCSV")
     public ResponseEntity downloadCSV() throws IOException {
         try {
-            empresaService.gerarEGravarArquivoCSV(this.getUsuariosOrdenadoPorData().getBody(), "usuarios");
+            empresaService.gerarEGravarArquivoCSV(this.getEmpresasOrdenadoPorData().getBody(), "empresas");
             // Ler o conteúdo do arquivo CSV
-            File csvFile = new File("usuarios.csv");
+            File csvFile = new File("empresas.csv");
             String csvContent = new String(FileCopyUtils.copyToByteArray(csvFile), StandardCharsets.UTF_8);
 
             // Configurar a resposta HTTP
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=usuarios.csv");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=empresas.csv");
 
             // Definir o tipo de mídia da resposta
             MediaType mediaType = MediaType.parseMediaType("text/csv");

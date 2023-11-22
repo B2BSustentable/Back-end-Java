@@ -29,6 +29,7 @@ public abstract class Empresa implements UserDetails {
     private LocalDateTime dataDeCriacao;
     @Enumerated(EnumType.STRING)
     private TipoPlanos tipoPlanos;
+
     @OneToOne
     private Plano plano;
 

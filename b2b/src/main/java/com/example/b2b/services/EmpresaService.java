@@ -33,11 +33,11 @@ public class EmpresaService {
         return empresaRepository.findByEmail(email);
     }
 
-    public List<Empresa> getTodosUsuarios() {
+    public List<Empresa> getTodasEmpresas() {
         return empresaRepository.findAll();
     }
 
-    public Empresa cadastrarUsuario(RegisterRequestDTO data) {
+    public Empresa cadastrarEmpresa(RegisterRequestDTO data) {
         Empresa empresaExistente = (Empresa) empresaRepository.findByEmail(data.email());
         if (empresaExistente != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT ,"Email já cadastrado");
@@ -55,7 +55,7 @@ public class EmpresaService {
                 novoEmpresa = new EmpresaPremium(data);
                 break;
             default:
-                throw new IllegalStateException("O usuário inserido não é uma opção: " + data.tipoPlanos());
+                throw new IllegalStateException("A empresa inserida não é uma opção: " + data.tipoPlanos());
         }
 
         empresaRepository.save(novoEmpresa);
@@ -63,55 +63,55 @@ public class EmpresaService {
         return (novoEmpresa);
     }
 
-    public Empresa getUsuarioPorCnpj(@PathVariable String cnpj) {
-        Optional<Empresa> usuario = empresaRepository.findByCnpj(cnpj);
+    public Empresa getEmpresaPorCnpj(@PathVariable String cnpj) {
+        Optional<Empresa> empresa = empresaRepository.findByCnpj(cnpj);
 
-        if (usuario.isPresent()) {
-            return usuario.get();
+        if (empresa.isPresent()) {
+            return empresa.get();
         } else {
-            throw new IllegalStateException("Usuário não encontrado");
+            throw new IllegalStateException("Empresa não encontrada");
         }
     }
 
-    public Empresa editarUsuarioPorCnpj(@RequestBody RegisterRequestDTO usuarioEditado, @PathVariable String cnpj) {
+    public Empresa editarEmpresaPorCnpj(@RequestBody RegisterRequestDTO empresaEditada, @PathVariable String cnpj) {
         // Verifique se o usuário com o mesmo CNPJ já existe
-        Optional<Empresa> usuarioExistenteOptional = empresaRepository.findByCnpj(cnpj);
+        Optional<Empresa> empresaExistenteOptional = empresaRepository.findByCnpj(cnpj);
 
-        if (usuarioExistenteOptional.isPresent()) {
-            Empresa empresaExistente = usuarioExistenteOptional.get();
+        if (empresaExistenteOptional.isPresent()) {
+            Empresa empresaExistente = empresaExistenteOptional.get();
 
             // Atualize os campos do usuário existente com os valores do DTO editado
-            empresaExistente.setNomeEmpresa(usuarioEditado.nomeEmpresa());
-            empresaExistente.setCnpj(usuarioEditado.cnpj());
-            empresaExistente.setSenha(usuarioEditado.senha());
-            empresaExistente.setTipoPlanos(usuarioEditado.tipoPlanos());
+            empresaExistente.setNomeEmpresa(empresaEditada.nomeEmpresa());
+            empresaExistente.setCnpj(empresaEditada.cnpj());
+            empresaExistente.setSenha(empresaEditada.senha());
+            empresaExistente.setTipoPlanos(empresaEditada.tipoPlanos());
 
             // Salve o usuário atualizado no banco de dados
             empresaRepository.save(empresaExistente);
 
             return (empresaExistente);
         } else {
-            throw new IllegalStateException("Usuário não encontrado");
+            throw new IllegalStateException("Empresa não encontrada");
         }
     }
 
-    public Void deletarUsuarioPorCnpj(@PathVariable String cnpj) {
-        Optional<Empresa> verificarExistenciaDeUsuario = empresaRepository.findByCnpj(cnpj);
-        if (verificarExistenciaDeUsuario.isPresent()) {
-            empresaRepository.delete(verificarExistenciaDeUsuario.get());
+    public Void deletarEmpresaPorCnpj(@PathVariable String cnpj) {
+        Optional<Empresa> verificarExistenciaDeEmpresa = empresaRepository.findByCnpj(cnpj);
+        if (verificarExistenciaDeEmpresa.isPresent()) {
+            empresaRepository.delete(verificarExistenciaDeEmpresa.get());
         }
 
-        throw new IllegalStateException("Usuário não encontrado");
+        throw new IllegalStateException("Empresa não encontrado");
 
     }
 
     public List<RegisterResponseDTO> convertListaResponseDTO(List<Empresa> listaEmpresas) {
-        List<RegisterResponseDTO> listaUsuariosResponse = new ArrayList<>();
+        List<RegisterResponseDTO> listaEmpresaResponse = new ArrayList<>();
         for (Empresa empresa : listaEmpresas) {
             RegisterResponseDTO resposta = new RegisterResponseDTO(empresa.getNomeEmpresa(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos(), empresa.getDescricao(), empresa.getPhoto());
-            listaUsuariosResponse.add(resposta);
+            listaEmpresaResponse.add(resposta);
         }
-        return listaUsuariosResponse;
+        return listaEmpresaResponse;
     }
 
     public List<Empresa> getListaOrdenadaPorData() {
@@ -122,7 +122,7 @@ public class EmpresaService {
            return lista.toList();
     }
 
-    public Empresa getUsuarioPorData(LocalDateTime data) {
+    public Empresa getEmpresaPorData(LocalDateTime data) {
         List<Empresa> listaDeEmpresas = empresaRepository.findAll();
         Lista<Empresa> lista = new Lista<>();
         lista.adicionarTodos(listaDeEmpresas);
@@ -130,7 +130,7 @@ public class EmpresaService {
         return lista.buscaBinariaPorDataDeCriacao(data);
     }
 
-    public static String gerarEGravarArquivoCSV(List<RegisterResponseDTO> listaUsuariosOrdenado, String nomeArq) {
+    public static String gerarEGravarArquivoCSV(List<RegisterResponseDTO> listaEmpresaOrdenada, String nomeArq) {
         FileWriter arquivo = null;
         Formatter saida = null;
         Boolean deuRuim = false;
@@ -148,11 +148,11 @@ public class EmpresaService {
 
         // Bloco try-catch para gravar o arquivo
         try {
-            for (int i = 0; i < listaUsuariosOrdenado.size(); i++) {
-                RegisterResponseDTO usuariosOrdenadoElemento = listaUsuariosOrdenado.get(i);
+            for (int i = 0; i < listaEmpresaOrdenada.size(); i++) {
+                RegisterResponseDTO EmpresasOrdenadoElemento = listaEmpresaOrdenada.get(i);
 
                 saida.format("%s;%s;%s;%s;%s\n",
-                        usuariosOrdenadoElemento.nomeEmpresa(), usuariosOrdenadoElemento.cnpj(), usuariosOrdenadoElemento.dataDeCriacao(), usuariosOrdenadoElemento.email(), usuariosOrdenadoElemento.tipoPlanos());
+                        EmpresasOrdenadoElemento.nomeEmpresa(), EmpresasOrdenadoElemento.cnpj(), EmpresasOrdenadoElemento.dataDeCriacao(), EmpresasOrdenadoElemento.email(), EmpresasOrdenadoElemento.tipoPlanos());
             }
         } catch (FormatterClosedException erro) {
             System.out.println("Erro ao gravar o arquivo");
@@ -197,9 +197,9 @@ public class EmpresaService {
                 String cnpj = entrada.next();
                 String dataDeCriacao = entrada.next();
                 String email = entrada.next();
-                String tipoUsuario = entrada.next();
+                String tipoEmpresa = entrada.next();
 
-                System.out.printf("%s - %s - %s - %s - %s\n", nome, cnpj, dataDeCriacao, email, tipoUsuario);
+                System.out.printf("%s - %s - %s - %s - %s\n", nome, cnpj, dataDeCriacao, email, tipoEmpresa);
             }
         } catch (NoSuchElementException erro) {
             System.out.println("Arquivo com problemas");
