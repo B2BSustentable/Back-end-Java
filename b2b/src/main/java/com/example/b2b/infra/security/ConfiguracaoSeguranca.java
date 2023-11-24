@@ -16,6 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 public class ConfiguracaoSeguranca {
@@ -23,7 +25,8 @@ public class ConfiguracaoSeguranca {
     FiltroDeSeguranca filtroDeSegurancaDaAutenticacao;
 
     private static final AntPathRequestMatcher[] URLS_PERMITIDAS_PARA_TODOS = {
-            AntPathRequestMatcher.antMatcher("/h2-console/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET,"/h2-console/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.POST,"/h2-console/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/autenticacao/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/v3/api-docs/**"),
@@ -31,8 +34,11 @@ public class ConfiguracaoSeguranca {
     };
 
     private static final AntPathRequestMatcher[] URLS_NECESSITAM_PERMISSAO = {
-            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/usuarios/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/empresas/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/endereco/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/catalogo/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/ordenado/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/endereco/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/ordenado/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/produtos/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/produtos/**"),
@@ -44,6 +50,7 @@ public class ConfiguracaoSeguranca {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(URLS_PERMITIDAS_PARA_TODOS).permitAll()
                         .requestMatchers(URLS_NECESSITAM_PERMISSAO).hasRole("ADMIN")
