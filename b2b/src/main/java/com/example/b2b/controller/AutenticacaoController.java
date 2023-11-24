@@ -3,9 +3,11 @@ package com.example.b2b.controller;
 import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
 import com.example.b2b.dtos.autenticacao.LoginResponseDTO;
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
+import com.example.b2b.dtos.empresa.RegisterResponseCompletaDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
 import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.infra.security.TokenService;
+import com.example.b2b.services.CatalogoService;
 import com.example.b2b.services.EmpresaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +51,11 @@ public class AutenticacaoController {
         public ResponseEntity registrar(@RequestBody @Valid RegisterRequestDTO data) {
 
             String senhaEncriptada = new BCryptPasswordEncoder().encode(data.senha());
-            Empresa empresaEntity = empresaService.cadastrarEmpresa(new RegisterRequestDTO(data.nomeEmpresa(), data.cnpj(), data.email(), senhaEncriptada, data.descricao(), LocalDateTime.now(), data.photo(), data.tipoPlanos(), data.limiteDeProdutos(), data.desconto(), data.suporte24h(), data.acessoVIP()));
+            Empresa empresaEntity = empresaService.cadastrarEmpresa(new RegisterRequestDTO(data.nomeEmpresa(), data.cnpj(), data.email(), senhaEncriptada, data.descricao(), LocalDateTime.now(), data.photo(), data.tipoPlanos(), data.qtdNegociantes(), data.limiteDeProdutos(), data.consultasIlimitadas(), data.addFavoritos(), data.enderecos()));
 
-            RegisterResponseDTO registroResponse = new RegisterResponseDTO(empresaEntity.getNomeEmpresa(), empresaEntity.getCnpj(), empresaEntity.getDataDeCriacao(), empresaEntity.getEmail(), empresaEntity.getTipoPlanos(), empresaEntity.getDescricao(), empresaEntity.getPhoto());
+            RegisterResponseDTO registroResponse = new RegisterResponseDTO(empresaEntity.getNomeEmpresa(), empresaEntity.getCnpj(), empresaEntity.getDataDeCriacao(), empresaEntity.getEmail(), empresaEntity.getTipoPlanos(), empresaEntity.getDescricao(), empresaEntity.getPhoto(), empresaEntity.getEndereco());
+            RegisterResponseCompletaDTO registroResponseCompleta = new RegisterResponseCompletaDTO(empresaEntity.getUIdEmpresa(), empresaEntity.getNomeEmpresa(), empresaEntity.getCnpj(), empresaEntity.getDataDeCriacao(), empresaEntity.getEmail(), empresaEntity.getTipoPlanos(), empresaEntity.getDescricao(), empresaEntity.getPhoto(), empresaEntity.getPlano().getQtdNegociantes(), empresaEntity.getPlano().getLimiteProdutos(), empresaEntity.getPlano().isConsultasIlimitadas(), empresaEntity.getPlano().isAddFavoritos(), empresaEntity.getEndereco());
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(registroResponse);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registroResponseCompleta);
     }
 }

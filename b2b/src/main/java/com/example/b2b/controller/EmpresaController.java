@@ -28,7 +28,7 @@ public class EmpresaController {
     @Autowired
     private EmpresaService empresaService = new EmpresaService();
 
-    // http://localhost:8080/usuarios
+    // http://localhost:8080/empresas
     @GetMapping
     public ResponseEntity<List<RegisterResponseDTO>> getEmpresa() {
         List<Empresa> listaEmpresas = empresaService.getTodasEmpresas();
@@ -41,7 +41,7 @@ public class EmpresaController {
         return ResponseEntity.status(200).body(listaEmpresasResponse);
     }
 
-    // http://localhost:8080/usuarios/123456789
+    // http://localhost:8080/empresas/123456789
     @GetMapping("/{cnpj}")
     public ResponseEntity<RegisterResponseDTO> getEmpresaPorCnpj(@PathVariable String cnpj) {
         Empresa empresaCnpj = empresaService.getEmpresaPorCnpj(cnpj);
@@ -49,25 +49,25 @@ public class EmpresaController {
         if (empresaCnpj == null) {
             return ResponseEntity.status(204).build();
         }
-        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaCnpj.getNomeEmpresa(), empresaCnpj.getCnpj(), empresaCnpj.getDataDeCriacao(), empresaCnpj.getEmail(), empresaCnpj.getTipoPlanos(), empresaCnpj.getDescricao(), empresaCnpj.getPhoto());
+        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaCnpj.getNomeEmpresa(), empresaCnpj.getCnpj(), empresaCnpj.getDataDeCriacao(), empresaCnpj.getEmail(), empresaCnpj.getTipoPlanos(), empresaCnpj.getDescricao(), empresaCnpj.getPhoto(), empresaCnpj.getEndereco());
         return ResponseEntity.status(200).body(resposta);
     }
 
-    // http://localhost:8080/usuarios/123456789
+    // http://localhost:8080/empresas/123456789
     @PutMapping("/{cnpj}")
     public ResponseEntity<RegisterResponseDTO> editarEmpresaPorCnpj(@RequestBody @Valid RegisterRequestDTO empresa, @PathVariable String cnpj) {
         Empresa resposta = empresaService.editarEmpresaPorCnpj(empresa, cnpj);
-        RegisterResponseDTO respostaDTO = new RegisterResponseDTO(resposta.getNomeEmpresa(), resposta.getCnpj(), resposta.getDataDeCriacao(), resposta.getEmail(), resposta.getTipoPlanos(), resposta.getDescricao(), resposta.getPhoto());
+        RegisterResponseDTO respostaDTO = new RegisterResponseDTO(resposta.getNomeEmpresa(), resposta.getCnpj(), resposta.getDataDeCriacao(), resposta.getEmail(), resposta.getTipoPlanos(), resposta.getDescricao(), resposta.getPhoto(), resposta.getEndereco());
         return ResponseEntity.status(200).body(respostaDTO);
     }
 
-    // http://localhost:8080/usuarios/123456789
+    // http://localhost:8080/empresas/123456789
     @DeleteMapping("/{cnpj}")
     public ResponseEntity deletarEmpresaPorCnpj(@PathVariable String cnpj) {
         Void resposta = empresaService.deletarEmpresaPorCnpj(cnpj);
         return ResponseEntity.status(200).build();
     }
-    // http://localhost:8080/usuarios/ordenado
+    // http://localhost:8080/empresas/ordenado
     @GetMapping("/ordenado")
     public ResponseEntity<List<RegisterResponseDTO>> getEmpresasOrdenadoPorData(){
         List<Empresa> listaEmpresaOrdenado = empresaService.getListaOrdenadaPorData();
@@ -78,14 +78,14 @@ public class EmpresaController {
         return ResponseEntity.status(200).body(listaEmpresaResponse);
     }
 
-    // http://localhost:8080/usuarios/ordenado/{DateTime}
+    // http://localhost:8080/empresas/ordenado/{DateTime}
     @GetMapping("/ordenado/{data}")
     public ResponseEntity<RegisterResponseDTO> getEmpresaPorData(@PathVariable LocalDateTime data){
         Empresa empresaData = empresaService.getEmpresaPorData(data);
         if(empresaData == null){
             return ResponseEntity.status(204).build();
         }
-        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaData.getNomeEmpresa(), empresaData.getCnpj(), empresaData.getDataDeCriacao(), empresaData.getEmail(), empresaData.getTipoPlanos(), empresaData.getDescricao(), empresaData.getPhoto());
+        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaData.getNomeEmpresa(), empresaData.getCnpj(), empresaData.getDataDeCriacao(), empresaData.getEmail(), empresaData.getTipoPlanos(), empresaData.getDescricao(), empresaData.getPhoto(), empresaData.getEndereco());
 
         return ResponseEntity.status(200).body(resposta);
     }

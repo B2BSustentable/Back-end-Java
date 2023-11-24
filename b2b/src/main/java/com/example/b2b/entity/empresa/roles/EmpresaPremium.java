@@ -13,25 +13,22 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Collection;
 import java.util.List;
 
-@Entity(name = "usuarioOuro ")
-@Table(name = "usuario_ouro")
+@Entity(name = "empresaPremium")
+@Table(name = "empresa_premium")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class EmpresaPremium extends Empresa {
-    private String tipoAssinatura = "Ouro";
+    private int qtdNegociantes;
     private int limiteDeProdutos;
-    private double desconto;
-    private boolean suporte24h;
-    private String acessoVIP;
+    private boolean consultasIlimitadas;
+    private boolean addFavoritos;
 
     public EmpresaPremium(RegisterRequestDTO data) {
         super(data);
         this.limiteDeProdutos = data.limiteDeProdutos();
-        this.desconto = data.desconto();
-        this.suporte24h = data.suporte24h();
-        this.acessoVIP = data.acessoVIP();
+
     }
 
     @Override

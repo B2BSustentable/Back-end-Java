@@ -1,13 +1,17 @@
 package com.example.b2b.entity.empresa;
 
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
+import com.example.b2b.entity.catalogo.Catalogo;
+import com.example.b2b.entity.endereco.Endereco;
+import com.example.b2b.entity.plano.Plano;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity(name = "empresa")
 @Table(name = "empresa")
@@ -15,11 +19,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of="id")
+@EqualsAndHashCode(of="uIdEmpresa")
 public abstract class Empresa implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private String uIdEmpresa;
     private String nomeEmpresa;
     private String cnpj;
     private String email;
@@ -29,9 +33,11 @@ public abstract class Empresa implements UserDetails {
     private LocalDateTime dataDeCriacao;
     @Enumerated(EnumType.STRING)
     private TipoPlanos tipoPlanos;
-
     @OneToOne
     private Plano plano;
+    @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Endereco> endereco;
 
     public Empresa(RegisterRequestDTO registerRequestDTO) {
         this.nomeEmpresa = registerRequestDTO.nomeEmpresa();

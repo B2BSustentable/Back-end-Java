@@ -1,13 +1,16 @@
 package com.example.b2b.services;
 
+import com.example.b2b.dtos.catalogo.CatalogoRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
+import com.example.b2b.entity.catalogo.Catalogo;
 import com.example.b2b.entity.empresa.*;
 import com.example.b2b.entity.empresa.roles.EmpresaBasic;
 import com.example.b2b.entity.empresa.roles.EmpresaPremium;
 import com.example.b2b.entity.empresa.roles.EmpresaCommon;
 import com.example.b2b.repository.EmpresaRepository;
 import com.example.b2b.util.Lista;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,8 +32,27 @@ public class EmpresaService {
     @Autowired
     private EmpresaRepository empresaRepository;
 
+    @Autowired
+    CatalogoService catalogoService;
+
+    @Autowired
+    private PlanoService planoService;
+
+    @Getter
+    private Empresa empresaCadastrada;
+
     public UserDetails findByEmail(String email) {
         return empresaRepository.findByEmail(email);
+    }
+
+    public Empresa getEmpresaPorId(String idEmpresa) {
+        Optional<Empresa> empresa = empresaRepository.findByuIdEmpresa(idEmpresa);
+
+        if (empresa.isPresent()) {
+            return empresa.get();
+        } else {
+            throw new IllegalStateException("Empresa não encontrada");
+        }
     }
 
     public List<Empresa> getTodasEmpresas() {
@@ -43,24 +65,34 @@ public class EmpresaService {
             throw new ResponseStatusException(HttpStatus.CONFLICT ,"Email já cadastrado");
         }
 
-        Empresa novoEmpresa;
+            Empresa novaEmpresa;
         switch (data.tipoPlanos()) {
             case EMPRESA_BASIC:
-                novoEmpresa = new EmpresaBasic(data);
+                novaEmpresa = new EmpresaBasic(data);
+                planoService.configurarValoresBasicos((EmpresaBasic) novaEmpresa);
+                novaEmpresa.setEndereco(new ArrayList<>());
                 break;
             case EMPRESA_COMMON:
-                novoEmpresa = new EmpresaCommon(data);
+                novaEmpresa = new EmpresaCommon(data);
+                planoService.configurarValoresCommon((EmpresaCommon) novaEmpresa);
+                novaEmpresa.setEndereco(new ArrayList<>());
                 break;
             case EMPRESA_PREMIUM:
-                novoEmpresa = new EmpresaPremium(data);
+                novaEmpresa = new EmpresaPremium(data);
+                planoService.configurarValoresPremium((EmpresaPremium) novaEmpresa);
+                novaEmpresa.setEndereco(new ArrayList<>());
                 break;
             default:
                 throw new IllegalStateException("A empresa inserida não é uma opção: " + data.tipoPlanos());
         }
+        empresaRepository.save(novaEmpresa);
+        empresaCadastrada = novaEmpresa;
 
-        empresaRepository.save(novoEmpresa);
+        Catalogo catalogoVazio = new Catalogo();
+        catalogoVazio.setEmpresa(novaEmpresa);
+        catalogoService.criarCatalogo(catalogoVazio);
 
-        return (novoEmpresa);
+        return (novaEmpresa);
     }
 
     public Empresa getEmpresaPorCnpj(@PathVariable String cnpj) {
@@ -108,7 +140,7 @@ public class EmpresaService {
     public List<RegisterResponseDTO> convertListaResponseDTO(List<Empresa> listaEmpresas) {
         List<RegisterResponseDTO> listaEmpresaResponse = new ArrayList<>();
         for (Empresa empresa : listaEmpresas) {
-            RegisterResponseDTO resposta = new RegisterResponseDTO(empresa.getNomeEmpresa(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos(), empresa.getDescricao(), empresa.getPhoto());
+            RegisterResponseDTO resposta = new RegisterResponseDTO(empresa.getNomeEmpresa(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos(), empresa.getDescricao(), empresa.getPhoto(), empresa.getEndereco());
             listaEmpresaResponse.add(resposta);
         }
         return listaEmpresaResponse;
