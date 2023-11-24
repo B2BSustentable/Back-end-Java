@@ -5,11 +5,9 @@ import com.example.b2b.entity.produto.Produto;
 import com.example.b2b.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,17 +17,26 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository repository;
 
+    @Autowired
+    private CatalogoService catalogoService;
+
     public List<Produto> getTodosProdutos() {
-        return repository.findAll();
+        if (repository.findAll().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum produto encontrado");
+        } else {
+            return repository.findAll();
+        }
     }
 
-    public Produto cadastrarProduto(ProdutoRequestDTO data) {
-        Optional<Produto> produtoExistente = repository.findByNome(data.nome());
-        if (produtoExistente.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Produto já cadastrado");
-        }
-
+    public Produto cadastrarProdutoPorIdEmpresa(ProdutoRequestDTO data, String idEmpresa) {
         Produto novoProduto = new Produto(data);
+
+        novoProduto.setNomeProduto(data.nomeProduto());
+        novoProduto.setCategoria(data.categoria());
+        novoProduto.setDescricao(data.descricao());
+        novoProduto.setCodigoDeBarras(data.codigoDeBarras());
+
+        catalogoService.adicionarProduto(novoProduto, idEmpresa);
 
         repository.save(novoProduto);
 
@@ -48,8 +55,13 @@ public class ProdutoService {
     public Produto atualizarProduto(String id, ProdutoRequestDTO data) {
         Optional<Produto> produto = repository.findById(id);
         if (produto.isPresent()) {
-            produto.get().setNome(data.nome());
-            produto.get().setPreco(data.preco());
+            produto.get().setNomeProduto(data.nomeProduto());
+            produto.get().setCategoria(data.categoria());
+            produto.get().setDescricao(data.descricao());
+            produto.get().setCodigoDeBarras(data.codigoDeBarras());
+
+            catalogoService.atualizarProduto(produto.get(), produto.get().getCatalogo().getEmpresa().getUIdEmpresa());
+
             repository.save(produto.get());
 
             return produto.get();
@@ -58,13 +70,13 @@ public class ProdutoService {
         }
     }
 
-    public Void deletarProduto(String id) {
+    public void deletarProduto(String id) {
         Optional<Produto> produto = repository.findById(id);
         if (produto.isPresent()) {
+            catalogoService.removerProduto(produto.get(), produto.get().getCatalogo().getEmpresa().getUIdEmpresa());
             repository.delete(produto.get());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
         }
-
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
-
     }
 }

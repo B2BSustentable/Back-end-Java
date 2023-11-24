@@ -1,9 +1,17 @@
 package com.example.b2b.dtos.produto;
 
-import com.example.b2b.entity.produto.Produto;
+import jakarta.validation.constraints.NotBlank;
 
-public record ProdutoResponseDTO(String uId, String nome, Double preco) {
-    public ProdutoResponseDTO(Produto produto){
-        this(produto.getId(), produto.getNome(), produto.getPreco());
-    }
+public record ProdutoResponseDTO(
+
+        @NotBlank
+        String nomeProduto,
+
+        String categoria,
+
+        String descricao,
+
+        @NotBlank
+        String codigoDeBarras
+) {
 }

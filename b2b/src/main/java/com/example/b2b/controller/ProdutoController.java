@@ -3,7 +3,6 @@ package com.example.b2b.controller;
 import com.example.b2b.dtos.produto.ProdutoRequestDTO;
 import com.example.b2b.dtos.produto.ProdutoResponseDTO;
 import com.example.b2b.entity.produto.Produto;
-import com.example.b2b.repository.ProdutoRepository;
 import com.example.b2b.services.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,21 +19,17 @@ public class ProdutoController {
     private ProdutoService produtoService;
 
     // POST - http://localhost:8080/produto
-    @PostMapping
-    public ResponseEntity<Produto> cadastrarProduto(@RequestBody @Valid ProdutoRequestDTO body){
-        Produto resposta = produtoService.cadastrarProduto(body);
-        return ResponseEntity.status(201).body(resposta);
+    @PostMapping("/{idEmpresa}")
+    public ResponseEntity<ProdutoResponseDTO> cadastrarProduto(@RequestBody @Valid ProdutoRequestDTO body, @PathVariable String idEmpresa){
+        Produto produtoEntity = produtoService.cadastrarProdutoPorIdEmpresa(body, idEmpresa);
+        ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(produtoEntity.getNomeProduto(), produtoEntity.getCategoria(), produtoEntity.getDescricao(), produtoEntity.getCodigoDeBarras());
+        return ResponseEntity.status(201).body(produtoResponseDTO);
     }
 
     @GetMapping
     public ResponseEntity<List<Produto>> getTodosProdutos(){
         List<Produto> listaProdutos = produtoService.getTodosProdutos();
-
-        if (listaProdutos.isEmpty()) {
-            return ResponseEntity.status(204).build();
-        } else {
-            return ResponseEntity.status(200).body(listaProdutos);
-        }
+        return ResponseEntity.status(200).body(listaProdutos);
     }
 
     @GetMapping("/{uId}")
@@ -44,14 +39,15 @@ public class ProdutoController {
     }
 
     @PutMapping("/{uId}")
-    public ResponseEntity<Produto> atualizarProduto(@PathVariable String uId, @RequestBody @Valid ProdutoRequestDTO body){
-        Produto resposta = produtoService.atualizarProduto(uId, body);
-        return ResponseEntity.status(200).body(resposta);
+    public ResponseEntity<ProdutoResponseDTO> atualizarProduto(@PathVariable String uId, @RequestBody @Valid ProdutoRequestDTO body){
+        Produto produtoEntity = produtoService.atualizarProduto(uId, body);
+        ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(produtoEntity.getNomeProduto(), produtoEntity.getCategoria(), produtoEntity.getDescricao(), produtoEntity.getCodigoDeBarras());
+        return ResponseEntity.status(200).body(produtoResponseDTO);
     }
 
     @DeleteMapping("/{uId}")
-    public ResponseEntity<Produto> deletarProduto(@PathVariable String uId){
-        Void resposta = produtoService.deletarProduto(uId);
+    public ResponseEntity deletarProduto(@PathVariable String uId){
+        produtoService.deletarProduto(uId);
         return ResponseEntity.status(200).build();
     }
 }
