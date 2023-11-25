@@ -68,6 +68,11 @@ public class EmpresaService {
             throw new ResponseStatusException(HttpStatus.CONFLICT ,"Email já cadastrado");
         }
 
+        Optional<Empresa> existeByCnpj = empresaRepository.findByCnpj(data.cnpj());
+        if (existeByCnpj.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT ,"CNPJ já cadastrado");
+        }
+
             Empresa novaEmpresa;
         switch (data.tipoPlanos()) {
             case EMPRESA_BASIC:
