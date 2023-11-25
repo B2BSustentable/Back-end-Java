@@ -3,6 +3,7 @@ package com.example.b2b.services;
 import com.example.b2b.dtos.catalogo.CatalogoRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
+import com.example.b2b.dtos.empresa.UpdateRequestDTO;
 import com.example.b2b.entity.catalogo.Catalogo;
 import com.example.b2b.entity.empresa.*;
 import com.example.b2b.entity.empresa.roles.EmpresaBasic;
@@ -17,12 +18,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -40,6 +40,8 @@ public class EmpresaService {
 
     @Getter
     private Empresa empresaCadastrada;
+
+    private String caminhoImagem = "./com/example/b2b/arquivo";
 
     public UserDetails findByEmail(String email) {
         return empresaRepository.findByEmail(email);
@@ -105,7 +107,7 @@ public class EmpresaService {
         }
     }
 
-    public Empresa editarEmpresaPorCnpj(@RequestBody RegisterRequestDTO empresaEditada, @PathVariable String cnpj) {
+    public Empresa editarEmpresaPorCnpj(@RequestParam(name = "foto", required = false) MultipartFile foto, @RequestBody UpdateRequestDTO empresaEditada, @PathVariable String cnpj) {
         // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByCnpj(cnpj);
 
@@ -114,9 +116,14 @@ public class EmpresaService {
 
             // Atualize os campos do usuário existente com os valores do DTO editado
             empresaExistente.setNomeEmpresa(empresaEditada.nomeEmpresa());
-            empresaExistente.setCnpj(empresaEditada.cnpj());
             empresaExistente.setSenha(empresaEditada.senha());
-            empresaExistente.setTipoPlanos(empresaEditada.tipoPlanos());
+            empresaExistente.setPhoto(empresaEditada.photo());
+
+            if (foto != null && !foto.isEmpty()) {
+                // Se uma nova foto foi fornecida, salve-a no sistema de arquivos e atualize o caminho na empresa
+                String nomeArquivo = salvarFotoNoSistema(foto);
+                empresaExistente.setPhoto(nomeArquivo);
+            }
 
             // Salve o usuário atualizado no banco de dados
             empresaRepository.save(empresaExistente);
@@ -126,6 +133,25 @@ public class EmpresaService {
             throw new IllegalStateException("Empresa não encontrada");
         }
     }
+
+    private String salvarFotoNoSistema(MultipartFile foto) {
+        try {
+            // Nomeie o arquivo de forma exclusiva, por exemplo, usando UUID
+            String nomeArquivo = UUID.randomUUID().toString() + ".png";
+
+            // Caminho completo para o arquivo
+            String caminhoCompleto = caminhoImagem + File.separator + nomeArquivo;
+
+            // Salve a imagem no sistema de arquivos
+            foto.transferTo(new File(caminhoCompleto));
+
+            return caminhoCompleto;
+        } catch (IOException e) {
+            throw new RuntimeException("Falha ao salvar a foto.", e);
+        }
+    }
+
+
 
     public Void deletarEmpresaPorCnpj(@PathVariable String cnpj) {
         Optional<Empresa> verificarExistenciaDeEmpresa = empresaRepository.findByCnpj(cnpj);

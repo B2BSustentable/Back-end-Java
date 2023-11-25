@@ -29,6 +29,7 @@ public abstract class Empresa implements UserDetails {
     private String email;
     private String senha;
     private String descricao;
+    @Column(columnDefinition = "TEXT")
     private String photo;
     private LocalDateTime dataDeCriacao;
     @Enumerated(EnumType.STRING)

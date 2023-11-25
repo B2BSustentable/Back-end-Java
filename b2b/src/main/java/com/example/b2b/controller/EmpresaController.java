@@ -2,6 +2,8 @@ package com.example.b2b.controller;
 
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
+import com.example.b2b.dtos.empresa.UpdateRequestDTO;
+import com.example.b2b.dtos.empresa.UpdateResponseDTO;
 import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.services.EmpresaService;
 import jakarta.validation.Valid;
@@ -12,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,9 +58,15 @@ public class EmpresaController {
 
     // http://localhost:8080/empresas/123456789
     @PutMapping("/{cnpj}")
-    public ResponseEntity<RegisterResponseDTO> editarEmpresaPorCnpj(@RequestBody @Valid RegisterRequestDTO empresa, @PathVariable String cnpj) {
-        Empresa resposta = empresaService.editarEmpresaPorCnpj(empresa, cnpj);
-        RegisterResponseDTO respostaDTO = new RegisterResponseDTO(resposta.getNomeEmpresa(), resposta.getCnpj(), resposta.getDataDeCriacao(), resposta.getEmail(), resposta.getTipoPlanos(), resposta.getDescricao(), resposta.getPhoto(), resposta.getEndereco());
+    public ResponseEntity<UpdateResponseDTO> editarEmpresaPorCnpj(@RequestParam(name = "foto", required = false) MultipartFile foto, @RequestBody @Valid UpdateRequestDTO empresa, @PathVariable String cnpj) {
+        Empresa resposta = empresaService.editarEmpresaPorCnpj(foto, empresa, cnpj);
+        UpdateResponseDTO respostaDTO = new UpdateResponseDTO(
+                resposta.getNomeEmpresa(),
+                resposta.getEmail(),
+                resposta.getDescricao(),
+                resposta.getPhoto(),
+                resposta.getEndereco()
+        );
         return ResponseEntity.status(200).body(respostaDTO);
     }
 
