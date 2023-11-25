@@ -27,6 +27,13 @@ public class ProdutoController {
     }
 
     @GetMapping
+    public ResponseEntity<List<ProdutoResponseDTO>> getProdutoPorNomeParcialIgnoandoCase(@RequestParam String nomeProduto){
+        List<Produto> listaProdutos = produtoService.getProdutoPorNomeParcial(nomeProduto);
+        List<ProdutoResponseDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);
+        return ResponseEntity.status(200).body(listaProdutosResponse);
+    }
+
+    @GetMapping
     public ResponseEntity<List<ProdutoResponseDTO>> getTodosProdutos(){
         List<Produto> listaProdutos = produtoService.getTodosProdutos();
         List<ProdutoResponseDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);

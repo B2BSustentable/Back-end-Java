@@ -91,6 +91,15 @@ public class ProdutoService {
         }
     }
 
+    public List<Produto> getProdutoPorNomeParcial(String nomeParcial){
+        Optional<List<Produto>> listaProdutos = repository.findByNomeProdutoContainingIgnoreCase(nomeParcial);
+        if(listaProdutos.isPresent()){
+            return listaProdutos.get();
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
+        }
+    }
+
     public List<ProdutoResponseDTO> convertListaResponseDTO(List<Produto> listaProdutos){
         List<ProdutoResponseDTO> listaProdutosResponse = new ArrayList<>();
         for(Produto produto : listaProdutos){
