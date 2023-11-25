@@ -2,6 +2,7 @@ package com.example.b2b.services;
 
 import com.example.b2b.dtos.produto.ProdutoRequestDTO;
 import com.example.b2b.dtos.produto.ProdutoResponseDTO;
+import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.entity.produto.Produto;
 import com.example.b2b.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class ProdutoService {
     private ProdutoRepository repository;
 
     @Autowired
+    private EmpresaService empresaService;
+
+    @Autowired
     private CatalogoService catalogoService;
 
     public List<Produto> getTodosProdutos() {
@@ -31,6 +35,11 @@ public class ProdutoService {
     }
 
     public Produto cadastrarProdutoPorIdEmpresa(ProdutoRequestDTO data, String idEmpresa) {
+        Empresa empresa = empresaService.getEmpresaPorId(idEmpresa);
+        if (empresa == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
+        }
+
         Produto novoProduto = new Produto(data);
 
         novoProduto.setNomeProduto(data.nomeProduto());
