@@ -11,6 +11,8 @@ public record EnderecoResponseDTO(String rua,
                                   String cep,
                                   String latitude,
                                   String longitude,
-                                  Empresa empresa
+                                  String nomeEmpresa,
+                                  String cnpj,
+                                  String email
                                   ) {
 }
