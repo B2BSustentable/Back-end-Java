@@ -1,6 +1,7 @@
 package com.example.b2b.services;
 
 import com.example.b2b.dtos.produto.ProdutoRequestDTO;
+import com.example.b2b.dtos.produto.ProdutoResponseDTO;
 import com.example.b2b.entity.produto.Produto;
 import com.example.b2b.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,5 +80,14 @@ public class ProdutoService {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
         }
+    }
+
+    public List<ProdutoResponseDTO> convertListaResponseDTO(List<Produto> listaProdutos){
+        List<ProdutoResponseDTO> listaProdutosResponse = new ArrayList<>();
+        for(Produto produto : listaProdutos){
+            ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(produto.getNomeProduto(), produto.getCategoria(), produto.getDescricao(), produto.getCodigoDeBarras());
+            listaProdutosResponse.add(produtoResponseDTO);
+        }
+        return listaProdutosResponse;
     }
 }

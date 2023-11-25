@@ -27,15 +27,17 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Produto>> getTodosProdutos(){
+    public ResponseEntity<List<ProdutoResponseDTO>> getTodosProdutos(){
         List<Produto> listaProdutos = produtoService.getTodosProdutos();
-        return ResponseEntity.status(200).body(listaProdutos);
+        List<ProdutoResponseDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);
+        return ResponseEntity.status(200).body(listaProdutosResponse);
     }
 
     @GetMapping("/{uId}")
-    public ResponseEntity<Produto> getProdutoPorUId(@PathVariable String uId){
-        Produto produto = produtoService.getProdutoPorUId(uId);
-        return ResponseEntity.status(200).body(produto);
+    public ResponseEntity<ProdutoResponseDTO> getProdutoPorUId(@PathVariable String uId){
+        Produto produtoEntity = produtoService.getProdutoPorUId(uId);
+        ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(produtoEntity.getNomeProduto(), produtoEntity.getCategoria(), produtoEntity.getDescricao(), produtoEntity.getCodigoDeBarras());
+        return ResponseEntity.status(200).body(produtoResponseDTO);
     }
 
     @PutMapping("/{uId}")
