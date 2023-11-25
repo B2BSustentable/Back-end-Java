@@ -43,7 +43,7 @@ public class ResponsavelService {
     }
 
     public Responsavel getResponsavelPorUId(String id) {
-        Optional<Responsavel> responsavel = responsavelRepository.findByUIdResponsavel(id);
+        Optional<Responsavel> responsavel = responsavelRepository.findByuIdResponsavel(id);
 
         if (responsavel.isPresent()) {
             return responsavel.get();
