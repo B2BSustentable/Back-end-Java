@@ -1,5 +1,6 @@
 package com.example.b2b.controller;
 
+import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterRequestDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
 import com.example.b2b.entity.responsavel.Responsavel;
@@ -19,9 +20,9 @@ public class ResponsavelController {
     private ResponsavelService responsavelService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponsavelRegisterResponseDTO> login(@RequestBody @Valid ResponsavelRegisterRequestDTO data) {
+    public ResponseEntity<ResponsavelRegisterResponseDTO> login(@RequestBody @Valid AutenticacaoDTO data) {
         Responsavel responsavel = responsavelService.login(data);
-        ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), false);
+        ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), true);
         return ResponseEntity.status(200).body(responsavelResponseDTO);
     }
 

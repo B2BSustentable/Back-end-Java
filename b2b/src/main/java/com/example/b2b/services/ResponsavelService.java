@@ -1,5 +1,6 @@
 package com.example.b2b.services;
 
+import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterRequestDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
 import com.example.b2b.entity.responsavel.Responsavel;
@@ -79,12 +80,12 @@ public class ResponsavelService {
         }
     }
 
-    public Responsavel login(ResponsavelRegisterRequestDTO data) {
-        Optional<Responsavel> responsavelExistente = responsavelRepository.findByEmailResponsavel(data.emailResponsavel());
+    public Responsavel login(AutenticacaoDTO data) {
+        Optional<Responsavel> responsavelExistente = responsavelRepository.findByEmailResponsavel(data.email());
 
         if (responsavelExistente.isPresent()) {
             Responsavel responsavel = responsavelExistente.get();
-            if (responsavel.getSenhaResponsavel().equals(data.senhaResponsavel())) {
+            if (responsavel.getSenhaResponsavel().equals(data.senha())) {
                 return responsavel;
             } else {
                 throw new RuntimeException("Senha incorreta");
