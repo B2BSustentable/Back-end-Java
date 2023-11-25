@@ -26,7 +26,7 @@ public class ProdutoController {
         return ResponseEntity.status(201).body(produtoResponseDTO);
     }
 
-    @GetMapping
+    @GetMapping("/nomeParcial")
     public ResponseEntity<List<ProdutoResponseDTO>> getProdutoPorNomeParcialIgnoandoCase(@RequestParam String nomeProduto){
         List<Produto> listaProdutos = produtoService.getProdutoPorNomeParcial(nomeProduto);
         List<ProdutoResponseDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);
