@@ -6,6 +6,7 @@ import com.example.b2b.dtos.empresa.UpdateRequestDTO;
 import com.example.b2b.dtos.empresa.UpdateResponseDTO;
 import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.services.EmpresaService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -58,7 +59,7 @@ public class EmpresaController {
 
     // http://localhost:8080/empresas/123456789
     @PutMapping("/{cnpj}")
-    public ResponseEntity<UpdateResponseDTO> editarEmpresaPorCnpj(@RequestParam(name = "foto", required = false) MultipartFile foto, @RequestBody UpdateRequestDTO empresa, @PathVariable String cnpj) {
+    public ResponseEntity<UpdateResponseDTO> editarEmpresaPorCnpj(MultipartFile foto, UpdateRequestDTO empresa, @PathVariable String cnpj) {
         Empresa resposta = empresaService.editarEmpresaPorCnpj(foto, empresa, cnpj);
         UpdateResponseDTO respostaDTO = new UpdateResponseDTO(
                 resposta.getNomeEmpresa(),
