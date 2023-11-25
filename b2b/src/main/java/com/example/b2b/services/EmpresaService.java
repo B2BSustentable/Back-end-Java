@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -41,7 +42,7 @@ public class EmpresaService {
     @Getter
     private Empresa empresaCadastrada;
 
-    private String caminhoImagem = "./com/example/b2b/arquivo";
+    private final Path caminhoImagem = Path.of(System.getProperty("user.dir") + "/arquivo"); // projeto
 
     public UserDetails findByEmail(String email) {
         return empresaRepository.findByEmail(email);
@@ -107,23 +108,33 @@ public class EmpresaService {
         }
     }
 
-    public Empresa editarEmpresaPorCnpj(@RequestParam(name = "foto", required = false) MultipartFile foto, @RequestBody UpdateRequestDTO empresaEditada, @PathVariable String cnpj) {
+    public Empresa editarEmpresaPorCnpj(MultipartFile foto, UpdateRequestDTO empresaEditada, String cnpj) {
         // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByCnpj(cnpj);
 
         if (empresaExistenteOptional.isPresent()) {
             Empresa empresaExistente = empresaExistenteOptional.get();
 
+            if(!this.caminhoImagem.toFile().exists()) {
+                this.caminhoImagem.toFile().mkdir();
+            }
+
+            String nomeArquivoFormatado = formatarNomeArquivo(foto.getOriginalFilename());
+            String filePath = this.caminhoImagem + "/" + nomeArquivoFormatado;
+            File dest = new File(filePath);
+
+            try {
+                foto.transferTo(dest);
+            } catch (IOException e) {
+                throw new RuntimeException("Falha ao salvar a foto.", e);
+            }
+
+
             // Atualize os campos do usuário existente com os valores do DTO editado
             empresaExistente.setNomeEmpresa(empresaEditada.nomeEmpresa());
             empresaExistente.setSenha(empresaEditada.senha());
-            empresaExistente.setPhoto(empresaEditada.photo());
+            empresaExistente.setPhoto(filePath);
 
-            if (foto != null && !foto.isEmpty()) {
-                // Se uma nova foto foi fornecida, salve-a no sistema de arquivos e atualize o caminho na empresa
-                String nomeArquivo = salvarFotoNoSistema(foto);
-                empresaExistente.setPhoto(nomeArquivo);
-            }
 
             // Salve o usuário atualizado no banco de dados
             empresaRepository.save(empresaExistente);
@@ -134,10 +145,14 @@ public class EmpresaService {
         }
     }
 
+    private String formatarNomeArquivo(String nomeOriginal) {
+        return String.format("%s_%s", UUID.randomUUID(), nomeOriginal);
+    }
+
     private String salvarFotoNoSistema(MultipartFile foto) {
         try {
             // Nomeie o arquivo de forma exclusiva, por exemplo, usando UUID
-            String nomeArquivo = UUID.randomUUID().toString() + ".png";
+            String nomeArquivo = UUID.randomUUID().toString();
 
             // Caminho completo para o arquivo
             String caminhoCompleto = caminhoImagem + File.separator + nomeArquivo;

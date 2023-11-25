@@ -58,7 +58,7 @@ public class EmpresaController {
 
     // http://localhost:8080/empresas/123456789
     @PutMapping("/{cnpj}")
-    public ResponseEntity<UpdateResponseDTO> editarEmpresaPorCnpj(@RequestParam(name = "foto", required = false) MultipartFile foto, @RequestBody @Valid UpdateRequestDTO empresa, @PathVariable String cnpj) {
+    public ResponseEntity<UpdateResponseDTO> editarEmpresaPorCnpj(@RequestParam(name = "foto", required = false) MultipartFile foto, @RequestBody UpdateRequestDTO empresa, @PathVariable String cnpj) {
         Empresa resposta = empresaService.editarEmpresaPorCnpj(foto, empresa, cnpj);
         UpdateResponseDTO respostaDTO = new UpdateResponseDTO(
                 resposta.getNomeEmpresa(),
