@@ -38,7 +38,7 @@ public class ResponsavelService {
     public Responsavel cadastrarResponsavel(ResponsavelRegisterRequestDTO data, String idEmpresa) {
         Optional<Responsavel> responsavelExistente = responsavelRepository.findByEmailResponsavel(data.emailResponsavel());
 
-        if (empresaService.getEmpresaCadastrada().getPlano().getQtdNegociantes() <= responsavelRepository.countResponsavelByEmpresa(empresaService.getEmpresaCadastrada()).size()) {
+        if (empresaService.getEmpresaCadastrada().getPlano().getQtdNegociantes() <= responsavelRepository.countResponsavelByEmpresa(empresaService.getEmpresaCadastrada())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de negociantes atingido");
         }
 

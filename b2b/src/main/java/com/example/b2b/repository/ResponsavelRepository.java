@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ResponsavelRepository extends JpaRepository<Responsavel, Long> {
     Optional<Responsavel> findByEmailResponsavel(String email);
 
-    List<Responsavel> countResponsavelByEmpresa(Empresa empresa);
+    int countResponsavelByEmpresa(Empresa empresa);
 
     Optional<Responsavel> findByuIdResponsavel(String uIdResponsavel);
 }
