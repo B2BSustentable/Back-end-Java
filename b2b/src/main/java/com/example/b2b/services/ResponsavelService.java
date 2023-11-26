@@ -6,9 +6,12 @@ import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
 import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.entity.responsavel.Responsavel;
 import com.example.b2b.repository.ResponsavelRepository;
+import com.example.b2b.util.Lista;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,12 +39,12 @@ public class ResponsavelService {
     public Responsavel cadastrarResponsavel(ResponsavelRegisterRequestDTO data, String idEmpresa) {
         Optional<Responsavel> responsavelExistente = responsavelRepository.findByEmailResponsavel(data.emailResponsavel());
 
-        if (empresaService.getEmpresaCadastrada().getUIdEmpresa().equals(idEmpresa)) {
-            throw new RuntimeException("Empresa não é compatível com a empresa logada");
+        if (!empresaService.getEmpresaCadastrada().getUIdEmpresa().equals(idEmpresa)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Empresa não autorizada");
         }
 
         if (responsavelExistente.isPresent()) {
-            throw new RuntimeException("Responsavel já cadastrado");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Responsavel já cadastrado");
         }
 
         Responsavel responsavel = new Responsavel(data);
@@ -121,6 +124,14 @@ public class ResponsavelService {
         } else {
             throw new RuntimeException("Responsavel não encontrado");
         }
+    }
+
+    public List<Responsavel> getListaOrdenadaPorData() {
+        List<Responsavel> listaDeResponsavel = responsavelRepository.findAll();
+        Lista<Responsavel> lista = new Lista<>();
+        lista.adicionarTodos(listaDeResponsavel);
+        lista.selectionSortByDataDeCriacao();
+        return lista.toList();
     }
 
     public List<ResponsavelRegisterResponseDTO> convertListaResponseDTO(List<Responsavel> responsaveis) {

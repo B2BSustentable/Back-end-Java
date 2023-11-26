@@ -4,8 +4,11 @@ import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
 import com.example.b2b.dtos.empresa.UpdateRequestDTO;
 import com.example.b2b.dtos.empresa.UpdateResponseDTO;
+import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
 import com.example.b2b.entity.empresa.Empresa;
+import com.example.b2b.entity.responsavel.Responsavel;
 import com.example.b2b.services.EmpresaService;
+import com.example.b2b.services.ResponsavelService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +33,10 @@ import java.util.List;
 public class EmpresaController {
 
     @Autowired
-    private EmpresaService empresaService = new EmpresaService();
+    private EmpresaService empresaService;
+
+    @Autowired
+    private ResponsavelService responsavelService;
 
     // http://localhost:8080/empresas
     @GetMapping
@@ -39,8 +45,6 @@ public class EmpresaController {
         if (listaEmpresas.isEmpty()) {
             return ResponseEntity.status(204).build();
         }
-
-        Collections.shuffle(listaEmpresas);
         List<RegisterResponseDTO> listaEmpresasResponse = empresaService.convertListaResponseDTO(listaEmpresas);
         return ResponseEntity.status(200).body(listaEmpresasResponse);
     }
@@ -79,13 +83,13 @@ public class EmpresaController {
     }
     // http://localhost:8080/empresas/ordenado
     @GetMapping("/ordenado")
-    public ResponseEntity<List<RegisterResponseDTO>> getEmpresasOrdenadoPorData(){
-        List<Empresa> listaEmpresaOrdenado = empresaService.getListaOrdenadaPorData();
-        if(listaEmpresaOrdenado.isEmpty()){
+    public ResponseEntity<List<ResponsavelRegisterResponseDTO>> getResponsavelOrdenadoPorData(){
+        List<Responsavel> listaResponsavelOrdenado = responsavelService.getListaOrdenadaPorData();
+        if(listaResponsavelOrdenado.isEmpty()){
             return ResponseEntity.status(204).build();
         }
-        List<RegisterResponseDTO> listaEmpresaResponse = empresaService.convertListaResponseDTO(listaEmpresaOrdenado);
-        return ResponseEntity.status(200).body(listaEmpresaResponse);
+        List<ResponsavelRegisterResponseDTO> listaResponsavelResponse = responsavelService.convertListaResponseDTO(listaResponsavelOrdenado);
+        return ResponseEntity.status(200).body(listaResponsavelResponse);
     }
 
     // http://localhost:8080/empresas/ordenado/{DateTime}
@@ -103,14 +107,14 @@ public class EmpresaController {
     @GetMapping("/downloadCSV")
     public ResponseEntity downloadCSV() throws IOException {
         try {
-            empresaService.gerarEGravarArquivoCSV(this.getEmpresasOrdenadoPorData().getBody(), "empresas");
+            empresaService.gerarEGravarArquivoCSV(this.getResponsavelOrdenadoPorData().getBody(), "responsaveis");
             // Ler o conteúdo do arquivo CSV
-            File csvFile = new File("empresas.csv");
+            File csvFile = new File("responsaveis.csv");
             String csvContent = new String(FileCopyUtils.copyToByteArray(csvFile), StandardCharsets.UTF_8);
 
             // Configurar a resposta HTTP
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=empresas.csv");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=responsaveis.csv");
 
             // Definir o tipo de mídia da resposta
             MediaType mediaType = MediaType.parseMediaType("text/csv");

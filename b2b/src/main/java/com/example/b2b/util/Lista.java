@@ -1,6 +1,7 @@
 package com.example.b2b.util;
 
 import com.example.b2b.entity.empresa.Empresa;
+import com.example.b2b.entity.responsavel.Responsavel;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -116,7 +117,7 @@ public class Lista<T> {
             for (int i = 0; i < n - 1; i++) {
                 int minIndex = i;
                 for (int j = i + 1; j < n; j++) {
-                    if (((Empresa)buscaPorIndice(j)).getDataDeCriacao().isBefore(((Empresa)buscaPorIndice(minIndex)).getDataDeCriacao())) {
+                    if (((Responsavel)buscaPorIndice(j)).getDataDeCriacaoResponsavel().isBefore(((Responsavel)buscaPorIndice(minIndex)).getDataDeCriacaoResponsavel())) {
                         minIndex = j;
                     }
                 }

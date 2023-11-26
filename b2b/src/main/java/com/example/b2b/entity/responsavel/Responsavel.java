@@ -5,6 +5,8 @@ import com.example.b2b.entity.empresa.Empresa;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity(name = "responsavel")
 @Table(name = "responsavel")
 @AllArgsConstructor
@@ -22,6 +24,7 @@ public class Responsavel {
     private String senhaResponsavel;
     private String  photoResponsavel;
     private boolean isLogado;
+    private LocalDateTime dataDeCriacaoResponsavel;
     @ManyToOne
     private Empresa empresa;
 

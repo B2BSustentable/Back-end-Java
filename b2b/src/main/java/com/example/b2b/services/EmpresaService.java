@@ -4,6 +4,7 @@ import com.example.b2b.dtos.catalogo.CatalogoRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
 import com.example.b2b.dtos.empresa.UpdateRequestDTO;
+import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
 import com.example.b2b.entity.catalogo.Catalogo;
 import com.example.b2b.entity.empresa.*;
 import com.example.b2b.entity.empresa.roles.EmpresaBasic;
@@ -17,8 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -173,14 +172,6 @@ public class EmpresaService {
         return listaEmpresaResponse;
     }
 
-    public List<Empresa> getListaOrdenadaPorData() {
-           List<Empresa> listaDeEmpresas = empresaRepository.findAll();
-           Lista<Empresa> lista = new Lista<>();
-           lista.adicionarTodos(listaDeEmpresas);
-           lista.selectionSortByDataDeCriacao();
-           return lista.toList();
-    }
-
     public Empresa getEmpresaPorData(LocalDateTime data) {
         List<Empresa> listaDeEmpresas = empresaRepository.findAll();
         Lista<Empresa> lista = new Lista<>();
@@ -189,7 +180,7 @@ public class EmpresaService {
         return lista.buscaBinariaPorDataDeCriacao(data);
     }
 
-    public static String gerarEGravarArquivoCSV(List<RegisterResponseDTO> listaEmpresaOrdenada, String nomeArq) {
+    public static String gerarEGravarArquivoCSV(List<ResponsavelRegisterResponseDTO> listaResponsaveisOrdenada, String nomeArq) {
         FileWriter arquivo = null;
         Formatter saida = null;
         Boolean deuRuim = false;
@@ -207,11 +198,11 @@ public class EmpresaService {
 
         // Bloco try-catch para gravar o arquivo
         try {
-            for (int i = 0; i < listaEmpresaOrdenada.size(); i++) {
-                RegisterResponseDTO EmpresasOrdenadoElemento = listaEmpresaOrdenada.get(i);
+            for (int i = 0; i < listaResponsaveisOrdenada.size(); i++) {
+                ResponsavelRegisterResponseDTO responsavelRegisterResponseDTO = listaResponsaveisOrdenada.get(i);
 
-                saida.format("%s;%s;%s;%s;%s\n",
-                        EmpresasOrdenadoElemento.nomeEmpresa(), EmpresasOrdenadoElemento.cnpj(), EmpresasOrdenadoElemento.dataDeCriacao(), EmpresasOrdenadoElemento.email(), EmpresasOrdenadoElemento.tipoPlanos());
+                saida.format("%s;%s;%s;\n",
+                        responsavelRegisterResponseDTO.nomeResponsavel(), responsavelRegisterResponseDTO.sobrenomeResponsavel(), responsavelRegisterResponseDTO.emailResponsavel());
             }
         } catch (FormatterClosedException erro) {
             System.out.println("Erro ao gravar o arquivo");
@@ -249,16 +240,14 @@ public class EmpresaService {
 
         // Bloco try-catch para ler o arquivo
         try {
-            System.out.println("%s %s %s %s %s\n");
+            System.out.println("%s %s %s\n");
 
             while (entrada.hasNext()) {
                 String nome = entrada.next();
-                String cnpj = entrada.next();
-                String dataDeCriacao = entrada.next();
+                String sobrenome = entrada.next();
                 String email = entrada.next();
-                String tipoEmpresa = entrada.next();
 
-                System.out.printf("%s - %s - %s - %s - %s\n", nome, cnpj, dataDeCriacao, email, tipoEmpresa);
+                System.out.printf("%s - %s - %s\n", nome, sobrenome, email);
             }
         } catch (NoSuchElementException erro) {
             System.out.println("Arquivo com problemas");

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -34,6 +35,7 @@ public class ResponsavelController {
             return ResponseEntity.status(204).build();
         }
 
+        Collections.shuffle(responsaveis);
         List<ResponsavelRegisterResponseDTO> responsaveisResponseDTO = responsavelService.convertListaResponseDTO(responsaveis);
         return ResponseEntity.status(200).body(responsaveisResponseDTO);
     }
