@@ -112,16 +112,6 @@ public class EmpresaService {
         }
     }
 
-    public Empresa getEmpresaPorEmail(@PathVariable String email) {
-        Optional<Empresa> empresa = Optional.ofNullable(empresaRepository.findEmpresaByEmail(email));
-
-        if (empresa.isPresent()) {
-            return empresa.get();
-        } else {
-            throw new IllegalStateException("Empresa não encontrada");
-        }
-    }
-
     public Empresa editarEmpresaPorCnpj(MultipartFile foto, UpdateRequestDTO empresaEditada, String cnpj) {
         // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByCnpj(cnpj);
@@ -158,8 +148,6 @@ public class EmpresaService {
             throw new IllegalStateException("Empresa não encontrada");
         }
     }
-
-
 
     private String formatarNomeArquivo(String nomeOriginal) {
         return String.format("%s_%s", UUID.randomUUID(), nomeOriginal);
