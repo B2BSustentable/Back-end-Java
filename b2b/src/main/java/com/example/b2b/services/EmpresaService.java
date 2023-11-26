@@ -154,25 +154,6 @@ public class EmpresaService {
         return String.format("%s_%s", UUID.randomUUID(), nomeOriginal);
     }
 
-    private String salvarFotoNoSistema(MultipartFile foto) {
-        try {
-            // Nomeie o arquivo de forma exclusiva, por exemplo, usando UUID
-            String nomeArquivo = UUID.randomUUID().toString();
-
-            // Caminho completo para o arquivo
-            String caminhoCompleto = caminhoImagem + File.separator + nomeArquivo;
-
-            // Salve a imagem no sistema de arquivos
-            foto.transferTo(new File(caminhoCompleto));
-
-            return caminhoCompleto;
-        } catch (IOException e) {
-            throw new RuntimeException("Falha ao salvar a foto.", e);
-        }
-    }
-
-
-
     public Void deletarEmpresaPorCnpj(@PathVariable String cnpj) {
         Optional<Empresa> verificarExistenciaDeEmpresa = empresaRepository.findByCnpj(cnpj);
         if (verificarExistenciaDeEmpresa.isPresent()) {
