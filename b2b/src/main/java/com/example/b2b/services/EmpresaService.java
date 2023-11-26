@@ -122,6 +122,26 @@ public class EmpresaService {
         }
     }
 
+    public String getLatitudePorCnpj(@PathVariable String cnpj) {
+        Optional<Empresa> empresa = empresaRepository.findByCnpj(cnpj);
+
+        if (empresa.isPresent()) {
+            return empresa.get().getEndereco().get(0).getLatitude();
+        } else {
+            throw new IllegalStateException("Empresa não encontrada");
+        }
+    }
+
+    public String getLongitudePorCnpj(@PathVariable String cnpj) {
+        Optional<Empresa> empresa = empresaRepository.findByCnpj(cnpj);
+
+        if (empresa.isPresent()) {
+            return empresa.get().getEndereco().get(0).getLongitude();
+        } else {
+            throw new IllegalStateException("Empresa não encontrada");
+        }
+    }
+
     public Empresa editarEmpresaPorCnpj(MultipartFile foto, UpdateRequestDTO empresaEditada, String cnpj) {
         // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByCnpj(cnpj);
