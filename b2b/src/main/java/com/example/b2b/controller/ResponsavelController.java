@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -52,8 +53,8 @@ public class ResponsavelController {
     }
 
     @PutMapping("/{email}")
-    public ResponseEntity<ResponsavelRegisterResponseDTO> editarResponsavel(@PathVariable String email, @RequestBody @Valid ResponsavelRegisterRequestDTO data) {
-        Responsavel responsavel = responsavelService.editarResponsavelPorEmail(email, data);
+    public ResponseEntity<ResponsavelRegisterResponseDTO> editarResponsavel(MultipartFile foto, @PathVariable String email, ResponsavelRegisterRequestDTO data) {
+        Responsavel responsavel = responsavelService.editarResponsavelPorEmail(foto, email, data);
         ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), false);
         return ResponseEntity.status(200).body(responsavelResponseDTO);
     }

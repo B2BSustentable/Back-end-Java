@@ -3,13 +3,19 @@ package com.example.b2b.services;
 import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterRequestDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
+import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.entity.responsavel.Responsavel;
 import com.example.b2b.repository.ResponsavelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +26,8 @@ public class ResponsavelService {
 
     @Autowired
     private EmpresaService empresaService;
+
+    private final Path caminhoImagem = Path.of(System.getProperty("user.dir") + "/arquivo"); // projeto
 
     public List<Responsavel> getResponsaveis() {
         return responsavelRepository.findAll();
@@ -52,18 +60,38 @@ public class ResponsavelService {
         }
     }
 
-    public Responsavel editarResponsavelPorEmail(String email, ResponsavelRegisterRequestDTO data) {
-        Optional<Responsavel> responsavelExistente = responsavelRepository.findByEmailResponsavel(email);
+    private String formatarNomeArquivo(String nomeOriginal) {
+        return String.format("%s_%s", UUID.randomUUID(), nomeOriginal);
+    }
 
-        if (responsavelExistente.isPresent()) {
-            Responsavel responsavel = responsavelExistente.get();
-            responsavel.setNomeResponsavel(data.nomeResponsavel());
-            responsavel.setSobrenomeResponsavel(data.sobrenomeResponsavel());
-            responsavel.setEmailResponsavel(data.emailResponsavel());
-            responsavel.setSenhaResponsavel(data.senhaResponsavel());
-            responsavel.setPhotoResponsavel(data.photoResponsavel());
 
-            return responsavelRepository.save(responsavel);
+    public Responsavel editarResponsavelPorEmail(MultipartFile foto, String email, ResponsavelRegisterRequestDTO data) {
+        Optional<Responsavel> responsavelExistenteOptional = responsavelRepository.findByEmailResponsavel(email);
+
+        if (responsavelExistenteOptional.isPresent()) {
+            Responsavel responsavelExistente = responsavelExistenteOptional.get();
+
+            if (!this.caminhoImagem.toFile().exists()) {
+                this.caminhoImagem.toFile().mkdir();
+            }
+
+            String nomeArquivoFormatado = formatarNomeArquivo(foto.getOriginalFilename());
+            String filePath = this.caminhoImagem + "/" + nomeArquivoFormatado;
+            File dest = new File(filePath);
+
+            try {
+                foto.transferTo(dest);
+            } catch (IOException e) {
+                throw new RuntimeException("Falha ao salvar a foto.", e);
+            }
+
+            responsavelExistente.setNomeResponsavel(data.nomeResponsavel());
+            responsavelExistente.setSobrenomeResponsavel(data.sobrenomeResponsavel());
+            responsavelExistente.setEmailResponsavel(data.emailResponsavel());
+            responsavelExistente.setSenhaResponsavel(data.senhaResponsavel());
+            responsavelExistente.setPhotoResponsavel(data.photoResponsavel());
+
+            return responsavelRepository.save(responsavelExistente);
         } else {
             throw new RuntimeException("Responsavel não encontrado");
         }
