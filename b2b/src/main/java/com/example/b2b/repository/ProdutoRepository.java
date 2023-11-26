@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
     Optional<Produto> findByIdProduto(String id);
 
-    List<Produto> countProdutoByCatalogoEmpresa(Empresa empresa);
+    int countProdutoByCatalogoEmpresa(Empresa empresa);
 
     Optional<List<Produto>> findByNomeProdutoContainingIgnoreCase(String nomeProduto);
 }

@@ -41,7 +41,7 @@ public class ProdutoService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
         }
 
-        if (empresaService.getEmpresaCadastrada().getPlano().getLimiteProdutos() <= repository.countProdutoByCatalogoEmpresa(empresa).size()) {
+        if (empresaService.getEmpresaCadastrada().getPlano().getLimiteProdutos() <= repository.countProdutoByCatalogoEmpresa(empresa)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de produtos atingido");
         }
 
