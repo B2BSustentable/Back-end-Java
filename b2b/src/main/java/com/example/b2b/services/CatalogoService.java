@@ -34,7 +34,7 @@ public class CatalogoService {
    }
 
     public Catalogo atualizarCatalogo(String id, Catalogo catalogo) {
-         Optional<Catalogo> catalogoExistente = catalogoRepository.findById(id);
+         Optional<Catalogo> catalogoExistente = catalogoRepository.findByIdCatalogo(id);
 
          if (catalogoExistente.isPresent()) {
               catalogoExistente.get().setProdutos(catalogo.getProdutos());

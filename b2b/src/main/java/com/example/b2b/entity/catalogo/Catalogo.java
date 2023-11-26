@@ -15,11 +15,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "idCatalogo")
 public class Catalogo {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private String idCatalogo;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "catalogo")

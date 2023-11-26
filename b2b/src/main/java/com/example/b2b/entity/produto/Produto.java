@@ -14,12 +14,12 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "idProduto")
 public class Produto {
     @Id
     @NotBlank
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private String idProduto;
     private String nomeProduto;
     private String categoria;
     private String descricao;

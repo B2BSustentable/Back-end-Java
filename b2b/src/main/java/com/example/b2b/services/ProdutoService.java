@@ -55,7 +55,7 @@ public class ProdutoService {
     }
 
     public Produto getProdutoPorUId(String id) {
-        Optional<Produto> produto = repository.findById(id);
+        Optional<Produto> produto = repository.findByIdProduto(id);
         if (produto.isPresent()) {
             return produto.get();
         } else {
@@ -64,7 +64,7 @@ public class ProdutoService {
     }
 
     public Produto atualizarProduto(String id, ProdutoRequestDTO data) {
-        Optional<Produto> produto = repository.findById(id);
+        Optional<Produto> produto = repository.findByIdProduto(id);
         if (produto.isPresent()) {
             produto.get().setNomeProduto(data.nomeProduto());
             produto.get().setCategoria(data.categoria());
@@ -82,7 +82,7 @@ public class ProdutoService {
     }
 
     public void deletarProduto(String id) {
-        Optional<Produto> produto = repository.findById(id);
+        Optional<Produto> produto = repository.findByIdProduto(id);
         if (produto.isPresent()) {
             catalogoService.removerProduto(produto.get(), produto.get().getCatalogo().getEmpresa().getUIdEmpresa());
             repository.delete(produto.get());

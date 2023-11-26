@@ -12,5 +12,5 @@ public interface CatalogoRepository extends JpaRepository<Catalogo, Integer> {
     @Query("SELECT c FROM catalogo c WHERE c.empresa.uIdEmpresa = :uIdEmpresa")
     Optional<Catalogo> findByEmpresaUId(@Param("uIdEmpresa") String uIdEmpresa);
 
-    Optional<Catalogo> findById(String id);
+    Optional<Catalogo> findByIdCatalogo(String id);
 }
