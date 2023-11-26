@@ -7,5 +7,5 @@ import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.util.List;
 
-public record RegisterResponseDTO(String nomeEmpresa, @CNPJ String cnpj, java.time.LocalDateTime dataDeCriacao, @Email String email, TipoPlanos tipoPlanos, String descricao, String photo, List<Endereco> enderecos) {
+public record RegisterResponseDTO(String nomeEmpresa, @CNPJ String cnpj, java.time.LocalDateTime dataDeCriacao, @Email String email, TipoPlanos tipoPlanos, String descricao, String photo, String photoCapa, List<Endereco> enderecos) {
 }

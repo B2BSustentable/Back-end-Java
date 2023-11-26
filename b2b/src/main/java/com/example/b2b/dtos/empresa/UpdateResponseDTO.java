@@ -4,5 +4,5 @@ import com.example.b2b.entity.endereco.Endereco;
 
 import java.util.List;
 
-public record UpdateResponseDTO(String nomeEmpresa, String email, String descricao, String photo, List<Endereco> enderecos) {
+public record UpdateResponseDTO(String nomeEmpresa, String email, String descricao, String photo, String photoCapa ,List<Endereco> enderecos) {
 }

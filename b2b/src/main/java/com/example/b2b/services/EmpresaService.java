@@ -1,6 +1,5 @@
 package com.example.b2b.services;
 
-import com.example.b2b.dtos.catalogo.CatalogoRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
 import com.example.b2b.dtos.empresa.UpdateRequestDTO;
@@ -142,7 +141,7 @@ public class EmpresaService {
         }
     }
 
-    public Empresa editarEmpresaPorCnpj(MultipartFile foto, UpdateRequestDTO empresaEditada, String cnpj) {
+    public Empresa editarEmpresaPorCnpj(MultipartFile foto, MultipartFile fotoCapa, UpdateRequestDTO empresaEditada, String cnpj) {
         // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByCnpj(cnpj);
 
@@ -154,11 +153,15 @@ public class EmpresaService {
             }
 
             String nomeArquivoFormatado = formatarNomeArquivo(foto.getOriginalFilename());
+            String nomeArquivoFormartadoCapa = formatarNomeArquivo(fotoCapa.getOriginalFilename());
             String filePath = this.caminhoImagem + "/" + nomeArquivoFormatado;
+            String filePathCapa = this.caminhoImagem + "/" + nomeArquivoFormartadoCapa;
             File dest = new File(filePath);
+            File destCapa = new File(filePathCapa);
 
             try {
                 foto.transferTo(dest);
+                fotoCapa.transferTo(destCapa);
             } catch (IOException e) {
                 throw new RuntimeException("Falha ao salvar a foto.", e);
             }
@@ -168,6 +171,7 @@ public class EmpresaService {
             empresaExistente.setNomeEmpresa(empresaEditada.nomeEmpresa());
             empresaExistente.setSenha(empresaEditada.senha());
             empresaExistente.setPhoto(filePath);
+            empresaExistente.setPhotoCapa(filePathCapa);
 
 
             // Salve o usuário atualizado no banco de dados
@@ -196,7 +200,7 @@ public class EmpresaService {
     public List<RegisterResponseDTO> convertListaResponseDTO(List<Empresa> listaEmpresas) {
         List<RegisterResponseDTO> listaEmpresaResponse = new ArrayList<>();
         for (Empresa empresa : listaEmpresas) {
-            RegisterResponseDTO resposta = new RegisterResponseDTO(empresa.getNomeEmpresa(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos(), empresa.getDescricao(), empresa.getPhoto(), empresa.getEndereco());
+            RegisterResponseDTO resposta = new RegisterResponseDTO(empresa.getNomeEmpresa(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos(), empresa.getDescricao(), empresa.getPhoto(), empresa.getPhotoCapa() ,empresa.getEndereco());
             listaEmpresaResponse.add(resposta);
         }
         return listaEmpresaResponse;

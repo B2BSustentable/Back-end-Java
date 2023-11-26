@@ -29,8 +29,8 @@ public abstract class Empresa implements UserDetails {
     private String email;
     private String senha;
     private String descricao;
-    @Column(columnDefinition = "TEXT")
     private String photo;
+    private String photoCapa;
     private LocalDateTime dataDeCriacao;
     @Enumerated(EnumType.STRING)
     private TipoPlanos tipoPlanos;
@@ -47,6 +47,7 @@ public abstract class Empresa implements UserDetails {
         this.senha = registerRequestDTO.senha();
         this.descricao = registerRequestDTO.descricao();
         this.photo = registerRequestDTO.photo();
+        this.photoCapa = registerRequestDTO.photoCapa();
         this.dataDeCriacao = registerRequestDTO.dataDeCriacao();
         this.tipoPlanos = registerRequestDTO.tipoPlanos();
     }
