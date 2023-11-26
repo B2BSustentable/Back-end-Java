@@ -61,6 +61,17 @@ public class EmpresaController {
         return ResponseEntity.status(200).body(resposta);
     }
 
+    @GetMapping("getEmpresaEmail/{email}")
+    public ResponseEntity<RegisterResponseDTO> getEmpresaPorEmail(@PathVariable String email) {
+        Empresa empresaEmail = empresaService.getEmpresaPorEmail(email);
+
+        if (empresaEmail == null) {
+            return ResponseEntity.status(204).build();
+        }
+        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaEmail.getNomeEmpresa(), empresaEmail.getCnpj(), empresaEmail.getDataDeCriacao(), empresaEmail.getEmail(), empresaEmail.getTipoPlanos(), empresaEmail.getDescricao(), empresaEmail.getPhoto(), empresaEmail.getEndereco());
+        return ResponseEntity.status(200).body(resposta);
+    }
+
     // http://localhost:8080/empresas/123456789
     @PutMapping("/{cnpj}")
     public ResponseEntity<UpdateResponseDTO> editarEmpresaPorCnpj(MultipartFile foto, UpdateRequestDTO empresa, @PathVariable String cnpj) {
