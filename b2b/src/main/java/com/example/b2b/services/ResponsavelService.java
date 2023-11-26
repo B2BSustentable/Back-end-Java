@@ -3,7 +3,6 @@ package com.example.b2b.services;
 import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterRequestDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
-import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.entity.responsavel.Responsavel;
 import com.example.b2b.repository.ResponsavelRepository;
 import com.example.b2b.util.Lista;
@@ -38,6 +37,10 @@ public class ResponsavelService {
 
     public Responsavel cadastrarResponsavel(ResponsavelRegisterRequestDTO data, String idEmpresa) {
         Optional<Responsavel> responsavelExistente = responsavelRepository.findByEmailResponsavel(data.emailResponsavel());
+
+        if (empresaService.getEmpresaCadastrada().getPlano().getQtdNegociantes() <= responsavelRepository.countResponsavelByEmpresa(empresaService.getEmpresaCadastrada()).size()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de negociantes atingido");
+        }
 
         if (!empresaService.getEmpresaCadastrada().getUIdEmpresa().equals(idEmpresa)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Empresa não autorizada");
