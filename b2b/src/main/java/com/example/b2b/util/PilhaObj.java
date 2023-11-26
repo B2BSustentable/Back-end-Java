@@ -43,6 +43,11 @@ public class PilhaObj<T> {
             }
         }
     }
+
+    public void clear() {
+        topo = -1;
+    }
+
     public int getTopo() {
         return topo;
     }
