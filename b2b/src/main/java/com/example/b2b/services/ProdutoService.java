@@ -2,6 +2,7 @@ package com.example.b2b.services;
 
 import com.example.b2b.dtos.produto.ProdutoRequestDTO;
 import com.example.b2b.dtos.produto.ProdutoResponseDTO;
+import com.example.b2b.dtos.produto.ProdutoResponseListaLatELongDTO;
 import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.entity.produto.Produto;
 import com.example.b2b.repository.ProdutoRepository;
@@ -38,6 +39,10 @@ public class ProdutoService {
         Empresa empresa = empresaService.getEmpresaPorId(idEmpresa);
         if (empresa == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
+        }
+
+        if (empresaService.getEmpresaCadastrada().getPlano().getLimiteProdutos() <= repository.countProdutoByCatalogoEmpresa(empresa).size()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de produtos atingido");
         }
 
         Produto novoProduto = new Produto(data);
@@ -93,6 +98,14 @@ public class ProdutoService {
 
     public List<Produto> getProdutoPorNomeParcial(String nomeParcial){
         Optional<List<Produto>> listaProdutos = repository.findByNomeProdutoContainingIgnoreCase(nomeParcial);
+        if (empresaService.getEmpresaCadastrada().getPlano().isConsultasIlimitadas() == false) {
+            if (listaProdutos.isPresent()) {
+                if (listaProdutos.get().size() > 10) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de consultas atingido");
+                }
+            }
+        }
+
         if(listaProdutos.isPresent()){
             return listaProdutos.get();
         }else{
@@ -100,10 +113,10 @@ public class ProdutoService {
         }
     }
 
-    public List<ProdutoResponseDTO> convertListaResponseDTO(List<Produto> listaProdutos){
-        List<ProdutoResponseDTO> listaProdutosResponse = new ArrayList<>();
+    public List<ProdutoResponseListaLatELongDTO> convertListaResponseDTO(List<Produto> listaProdutos){
+        List<ProdutoResponseListaLatELongDTO> listaProdutosResponse = new ArrayList<>();
         for(Produto produto : listaProdutos){
-            ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(produto.getNomeProduto(), produto.getCategoria(), produto.getDescricao(), produto.getCodigoDeBarras());
+            ProdutoResponseListaLatELongDTO produtoResponseDTO = new ProdutoResponseListaLatELongDTO(produto.getNomeProduto(), produto.getCategoria(), produto.getDescricao(), produto.getCodigoDeBarras(), produto.getCatalogo().getEmpresa().getNomeEmpresa(), empresaService.getLatitudePorCnpj(empresaService.getEmpresaCadastrada().getCnpj()), empresaService.getLongitudePorCnpj(empresaService.getEmpresaCadastrada().getCnpj()));
             listaProdutosResponse.add(produtoResponseDTO);
         }
         return listaProdutosResponse;

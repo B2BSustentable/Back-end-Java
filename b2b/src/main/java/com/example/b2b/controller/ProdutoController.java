@@ -2,6 +2,7 @@ package com.example.b2b.controller;
 
 import com.example.b2b.dtos.produto.ProdutoRequestDTO;
 import com.example.b2b.dtos.produto.ProdutoResponseDTO;
+import com.example.b2b.dtos.produto.ProdutoResponseListaLatELongDTO;
 import com.example.b2b.entity.produto.Produto;
 import com.example.b2b.services.ProdutoService;
 import jakarta.validation.Valid;
@@ -27,16 +28,16 @@ public class ProdutoController {
     }
 
     @GetMapping("/nomeParcial")
-    public ResponseEntity<List<ProdutoResponseDTO>> getProdutoPorNomeParcialIgnoandoCase(@RequestParam String nomeProduto){
+    public ResponseEntity<List<ProdutoResponseListaLatELongDTO>> getProdutoPorNomeParcialIgnoandoCase(@RequestParam String nomeProduto){
         List<Produto> listaProdutos = produtoService.getProdutoPorNomeParcial(nomeProduto);
-        List<ProdutoResponseDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);
+        List<ProdutoResponseListaLatELongDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);
         return ResponseEntity.status(200).body(listaProdutosResponse);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProdutoResponseDTO>> getTodosProdutos(){
+    public ResponseEntity<List<ProdutoResponseListaLatELongDTO>> getTodosProdutos(){
         List<Produto> listaProdutos = produtoService.getTodosProdutos();
-        List<ProdutoResponseDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);
+        List<ProdutoResponseListaLatELongDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);
         return ResponseEntity.status(200).body(listaProdutosResponse);
     }
 
