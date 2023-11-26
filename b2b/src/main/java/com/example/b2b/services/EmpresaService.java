@@ -112,6 +112,16 @@ public class EmpresaService {
         }
     }
 
+    public Empresa getEmpresaPorEmail(@PathVariable String email) {
+        Optional<UserDetails> empresaExistente = Optional.ofNullable(empresaRepository.findByEmail(email));
+
+        if (empresaExistente.isPresent()) {
+            return (Empresa) empresaExistente.get();
+        } else {
+            throw new IllegalStateException("Empresa não encontrada");
+        }
+    }
+
     public Empresa editarEmpresaPorCnpj(MultipartFile foto, UpdateRequestDTO empresaEditada, String cnpj) {
         // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByCnpj(cnpj);
