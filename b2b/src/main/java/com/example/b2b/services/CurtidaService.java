@@ -8,7 +8,9 @@ import com.example.b2b.entity.responsavel.Responsavel;
 import com.example.b2b.repository.CurtidaRepository;
 import com.example.b2b.util.PilhaObj;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -16,10 +18,17 @@ import java.util.List;
 public class CurtidaService {
     @Autowired
     private CurtidaRepository curtidaRepository;
+    @Autowired
+    private EmpresaService empresaService;
     private PilhaObj<Curtida> undoStack = new PilhaObj<>(3);
     private PilhaObj<Curtida> redoStack = new PilhaObj<>(3);
 
     public void curtirProduto(Responsavel responsavel, Catalogo catalogo, Produto produto) {
+
+        if (empresaService.getEmpresaCadastrada().getPlano().isAddFavoritos() == false) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Plano não permite curtidas");
+        }
+
         Curtida curtida = new Curtida();
         curtida.setResponsavelQueCurtiu(responsavel);
         curtida.setCatalogoDaEmpresa(catalogo);
