@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity(name = "empresaBasic")
-@Table(name = "empresa_basic")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
