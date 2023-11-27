@@ -21,8 +21,8 @@ public class CurtidaController {
     private ResponsavelService responsavelService;
 
     @PostMapping("/curtir")
-    public void curtirProduto(@RequestParam RequestCurtidaDTO request) {
-        curtidaService.curtirProduto(request.responsavel(), request.catalogo(), request.produto());
+    public void curtirProduto(@RequestParam RequestCurtidaDTO request, @PathVariable String uIdEmpresa) {
+        curtidaService.curtirProduto(request.responsavel(), request.catalogo(), request.produto(), uIdEmpresa);
     }
 
     @PostMapping("/desfazer")

@@ -38,12 +38,16 @@ public class ResponsavelService {
     public Responsavel cadastrarResponsavel(ResponsavelRegisterRequestDTO data, String idEmpresa) {
         Optional<Responsavel> responsavelExistente = responsavelRepository.findByEmailResponsavel(data.emailResponsavel());
 
-        if (empresaService.getEmpresaCadastrada().getPlano().getQtdNegociantes() <= responsavelRepository.countResponsavelByEmpresa(empresaService.getEmpresaCadastrada())) {
+        if (empresaService.getEmpresaPorId(idEmpresa).getPlano().getQtdNegociantes() <= responsavelRepository.countResponsavelByEmpresa(empresaService.getEmpresaPorId(idEmpresa))) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de negociantes atingido");
         }
 
-        if (!empresaService.getEmpresaCadastrada().getUIdEmpresa().equals(idEmpresa)) {
+        if (!empresaService.getEmpresaPorId(idEmpresa).getUIdEmpresa().equals(idEmpresa)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Empresa não autorizada");
+        }
+
+        if (empresaService.getEmpresaPorId(idEmpresa).equals(null)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Empresa não cadastrada");
         }
 
         if (responsavelExistente.isPresent()) {
@@ -51,7 +55,7 @@ public class ResponsavelService {
         }
 
         Responsavel responsavel = new Responsavel(data);
-        responsavel.setEmpresa(empresaService.getEmpresaCadastrada());
+        responsavel.setEmpresa(empresaService.getEmpresaPorId(idEmpresa));
 
         return responsavelRepository.save(responsavel);
     }

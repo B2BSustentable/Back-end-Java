@@ -41,7 +41,7 @@ public class ProdutoService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
         }
 
-        if (empresaService.getEmpresaCadastrada().getPlano().getLimiteProdutos() <= repository.countProdutoByCatalogoEmpresa(empresa)) {
+        if (empresaService.getEmpresaPorId(idEmpresa).getPlano().getLimiteProdutos() <= repository.countProdutoByCatalogoEmpresa(empresa)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de produtos atingido");
         }
 
@@ -96,9 +96,9 @@ public class ProdutoService {
         }
     }
 
-    public List<Produto> getProdutoPorNomeParcial(String nomeParcial){
+    public List<Produto> getProdutoPorNomeParcial(String nomeParcial, String uIdEmpresa){
         Optional<List<Produto>> listaProdutos = repository.findByNomeProdutoContainingIgnoreCase(nomeParcial);
-        if (empresaService.getEmpresaCadastrada().getPlano().isConsultasIlimitadas() == false) {
+        if (empresaService.getEmpresaPorId(uIdEmpresa).getPlano().isConsultasIlimitadas() == false) {
             if (listaProdutos.isPresent()) {
                 if (listaProdutos.get().size() > 10) {
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de consultas atingido");
@@ -113,10 +113,19 @@ public class ProdutoService {
         }
     }
 
-    public List<ProdutoResponseListaLatELongDTO> convertListaResponseDTO(List<Produto> listaProdutos){
+    public List<ProdutoResponseDTO> convertListaResponseDTO(List<Produto> listaProdutos) {
+        List<ProdutoResponseDTO> listaProdutosResponse = new ArrayList<>();
+        for (Produto produto : listaProdutos) {
+            ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(produto.getNomeProduto(), produto.getCategoria(), produto.getDescricao(), produto.getCodigoDeBarras());
+            listaProdutosResponse.add(produtoResponseDTO);
+        }
+        return listaProdutosResponse;
+    }
+
+    public List<ProdutoResponseListaLatELongDTO> convertListaLatELongResponseDTO(List<Produto> listaProdutos, String uIdEmpresa){
         List<ProdutoResponseListaLatELongDTO> listaProdutosResponse = new ArrayList<>();
         for(Produto produto : listaProdutos){
-            ProdutoResponseListaLatELongDTO produtoResponseDTO = new ProdutoResponseListaLatELongDTO(produto.getNomeProduto(), produto.getCategoria(), produto.getDescricao(), produto.getCodigoDeBarras(), produto.getCatalogo().getEmpresa().getNomeEmpresa(), empresaService.getLatitudePorCnpj(empresaService.getEmpresaCadastrada().getCnpj()), empresaService.getLongitudePorCnpj(empresaService.getEmpresaCadastrada().getCnpj()));
+            ProdutoResponseListaLatELongDTO produtoResponseDTO = new ProdutoResponseListaLatELongDTO(produto.getNomeProduto(), produto.getCategoria(), produto.getDescricao(), produto.getCodigoDeBarras(), produto.getCatalogo().getEmpresa().getNomeEmpresa(), empresaService.getLatitudePorCnpj(empresaService.getEmpresaPorId(uIdEmpresa).getCnpj()), empresaService.getLongitudePorCnpj(empresaService.getEmpresaPorId(uIdEmpresa).getCnpj()));
             listaProdutosResponse.add(produtoResponseDTO);
         }
         return listaProdutosResponse;

@@ -16,9 +16,9 @@ public class EnderecoController {
     @Autowired
     private EnderecoService enderecoService;
 
-    @PostMapping
-    public ResponseEntity<EnderecoResponseDTO> cadastrarEndereco(@RequestBody @Valid EnderecoRequestDTO endereco) throws Throwable {
-        Endereco enderecoEntity = enderecoService.cadastrarEndereco(endereco);
+    @PostMapping("/{uIdEmpresa}")
+    public ResponseEntity<EnderecoResponseDTO> cadastrarEndereco(@RequestBody @Valid EnderecoRequestDTO endereco, @PathVariable String uIdEmpresa) throws Throwable {
+        Endereco enderecoEntity = enderecoService.cadastrarEndereco(endereco, uIdEmpresa);
         EnderecoResponseDTO enderecoResponseDTO = new EnderecoResponseDTO(enderecoEntity.getRua(), enderecoEntity.getNumero(), enderecoEntity.getBairro(), enderecoEntity.getCidade(), enderecoEntity.getEstado(), enderecoEntity.getPais(), enderecoEntity.getCep(), enderecoEntity.getLatitude(), enderecoEntity.getLongitude(), enderecoEntity.getEmpresa().getNomeEmpresa(), enderecoEntity.getEmpresa().getCnpj(), enderecoEntity.getEmpresa().getEmail());
         return ResponseEntity.status(201).body(enderecoResponseDTO);
     }
