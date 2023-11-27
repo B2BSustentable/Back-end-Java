@@ -3,6 +3,8 @@ package com.example.b2b.services;
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
 import com.example.b2b.dtos.empresa.UpdateRequestDTO;
+import com.example.b2b.dtos.produto.ProdutoRequestDTO;
+import com.example.b2b.dtos.produto.ProdutoResponseDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
 import com.example.b2b.entity.catalogo.Catalogo;
 import com.example.b2b.entity.empresa.*;
@@ -23,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.*;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -37,8 +40,14 @@ public class EmpresaService {
     @Autowired
     private PlanoService planoService;
 
+    @Autowired
+    private static ProdutoService produtoService;
+
     @Getter
     private Empresa empresaCadastrada;
+
+    static List<ProdutoRequestDTO> listaLidaTxt = new ArrayList<ProdutoRequestDTO>();
+
 
     private final Path caminhoImagem = Path.of(System.getProperty("user.dir") + "/arquivo"); // projeto
 
@@ -302,6 +311,168 @@ public class EmpresaService {
             }
         }
     }
+
+    public static void gravaRegistroTXT(String registro, String nomeArq) {
+        BufferedWriter saida = null;
+
+        try {
+            saida = new BufferedWriter(new FileWriter(nomeArq, true));
+        }
+        catch (IOException erro) {
+            System.out.println("Erro ao abrir o arquivo");
+        }
+
+        try {
+            saida.append(registro + "\n");
+            saida.close();
+        }
+        catch (IOException erro) {
+            System.out.println("Erro ao gravar o arquivo");
+            erro.printStackTrace();
+        }
+    }
+    public static String gravarArquivoTXT(List<ProdutoResponseDTO> listaCatalogo, String nomeArq){
+        int contaRegDadosGravados = 0;
+
+        // Monta o registro de header
+        String header = "00CATALOGO20232";
+        header += LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+        header += "01";
+
+        // Grava o header
+        gravaRegistroTXT(header, nomeArq);
+
+        // Monta e grava os registros de dados (registros de corpo)
+        for (ProdutoResponseDTO c : listaCatalogo) {
+            String corpo = "02";
+            corpo += String.format("%-32.32s", c.codigoDeBarras());
+            corpo += String.format("%-15.15s", c.nomeProduto());
+            corpo += String.format("%-25.25s", c.descricao());
+            corpo += String.format("%-10.10s", c.categoria());
+
+            gravaRegistroTXT(corpo, nomeArq);
+            contaRegDadosGravados++;
+        }
+
+        String trailer = "01";
+        trailer += String.format("%010d", contaRegDadosGravados);
+
+        gravaRegistroTXT(trailer, nomeArq);
+        return null;
+    }
+
+    public static void leArquivoTxt(String nomeArq) {
+        BufferedReader entrada = null;
+        String registro, tipoRegistro;
+        String codigoDeBarras, nomeProduto, descricao, categoria;
+        int contaRegDadosLidos = 0;
+        int qtdRegDadosGravados;
+
+
+        try {
+            entrada = new BufferedReader(new FileReader(nomeArq));
+        }
+        catch (IOException erro) {
+            System.out.println("Erro ao abrir o arquivo");
+        }
+
+        try {
+            registro = entrada.readLine();
+
+            while (registro != null) {
+
+                tipoRegistro = registro.substring(0,2);
+                if (tipoRegistro.equals("00")) {
+                    System.out.println("Eh um registro de header");
+                    System.out.println("Tipo de arquivo: " + registro.substring(2, 10));
+                    System.out.println("Ano e semestre: " + registro.substring(10, 15));
+                    System.out.println("Data e hora de gravação do arquivo: " + registro.substring(15, 34));
+                    System.out.println("Versão do documento: " + registro.substring(34, 36));
+                }
+                else if (tipoRegistro.equals("01")) {
+                    System.out.println("Eh um registro de trailer");
+                    qtdRegDadosGravados = Integer.parseInt(registro.substring(2, 10));
+                    if (qtdRegDadosGravados == contaRegDadosLidos) {
+                        System.out.println("Quantidade de reg de dados gravados é compatível com a " +
+                                "quantidade de reg de dados lidos");
+                    }
+                    else {
+                        System.out.println("Quantidade de reg de dados gravados é incompatível com a " +
+                                "quantidade de reg de dados lidos");
+                    }
+                }
+                else if (tipoRegistro.equals("02")) {
+                    System.out.println("Eh um registro de corpo");
+
+                    codigoDeBarras = registro.substring(2, 34).trim();
+                    nomeProduto = registro.substring(34, 49).trim();
+                    descricao = registro.substring(49, 74).trim();
+                    categoria = registro.substring(74, 84).trim();
+                    contaRegDadosLidos++;
+
+                    ProdutoRequestDTO c = new ProdutoRequestDTO(nomeProduto, categoria, descricao, codigoDeBarras);
+
+                    listaLidaTxt.add(c);
+                }
+                else {
+                    System.out.println("Eh um registro inválido");
+                }
+
+                registro = entrada.readLine();
+            }
+
+            entrada.close();
+
+        }
+        catch (IOException erro) {
+            System.out.println("Erro ao ler o arquivo");
+            erro.printStackTrace();
+        }
+
+
+        System.out.println("\nLista lida:");
+        for (ProdutoRequestDTO c : listaLidaTxt) {
+            System.out.println(c);
+        }
+
+    }
+
+    public Empresa importarTxtPorId(MultipartFile arquivo, Integer id) {
+        // Verifique se o usuário com o mesmo CNPJ já existe
+        Optional<Empresa> empresaExistenteOptional = empresaRepository.findById(id);
+
+        if (empresaExistenteOptional.isPresent()) {
+            Empresa empresaExistente = empresaExistenteOptional.get();
+
+            if(!this.caminhoImagem.toFile().exists()) {
+                this.caminhoImagem.toFile().mkdir();
+            }
+
+            String nomeArquivoFormatado = formatarNomeArquivo(arquivo.getOriginalFilename());
+            String filePath = this.caminhoImagem + "/" + nomeArquivoFormatado;
+            File dest = new File(filePath);
+
+            try {
+                arquivo.transferTo(dest);
+            } catch (IOException e) {
+                throw new RuntimeException("Falha ao salvar arquivo.", e);
+            }
+
+            leArquivoTxt(nomeArquivoFormatado);
+
+            for (ProdutoRequestDTO c : listaLidaTxt) {
+                produtoService.cadastrarProdutoPorIdEmpresa(c,String.valueOf(id));
+            }
+
+            listaLidaTxt.clear();
+
+            return catalogoService.getCatalogoPorIdEmpresa(String.valueOf(id)).getEmpresa();
+        } else {
+            throw new IllegalStateException("Empresa não encontrada");
+        }
+    }
+
+
 }
 
 
