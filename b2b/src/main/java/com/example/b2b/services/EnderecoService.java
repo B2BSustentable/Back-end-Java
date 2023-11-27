@@ -23,7 +23,7 @@ public class EnderecoService {
 
     private ApiCepAberto apiCepAberto = new ApiCepAberto();
 
-    public Endereco cadastrarEndereco(EnderecoRequestDTO endereco) {
+    public Endereco cadastrarEndereco(EnderecoRequestDTO endereco, String uIdEmpresa) {
         if (enderecoRepository.findByCep(endereco.cep()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Endereço já cadastrado");
         } else {
@@ -43,10 +43,8 @@ public class EnderecoService {
                 novoEndereco.setCep(cep.getCep());
                 novoEndereco.setLatitude(String.valueOf(cep.getLatitude()));
                 novoEndereco.setLongitude(String.valueOf(cep.getLongitude()));
-                // Obtém a empresa que está sendo cadastrada
-                Empresa empresaCadastrada = empresaService.getEmpresaCadastrada();
                 // Associa o endereço à empresa
-                novoEndereco.setEmpresa(empresaCadastrada);
+                novoEndereco.setEmpresa(empresaService.getEmpresaPorId(uIdEmpresa));
             });
 
             enderecoRepository.save(novoEndereco);

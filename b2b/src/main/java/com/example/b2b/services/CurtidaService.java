@@ -23,9 +23,9 @@ public class CurtidaService {
     private PilhaObj<Curtida> undoStack = new PilhaObj<>(3);
     private PilhaObj<Curtida> redoStack = new PilhaObj<>(3);
 
-    public void curtirProduto(Responsavel responsavel, Catalogo catalogo, Produto produto) {
+    public void curtirProduto(Responsavel responsavel, Catalogo catalogo, Produto produto, String uIdEmpresa) {
 
-        if (empresaService.getEmpresaCadastrada().getPlano().isAddFavoritos() == false) {
+        if (empresaService.getEmpresaPorId(uIdEmpresa).getPlano().isAddFavoritos() == false) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Plano não permite curtidas");
         }
 
