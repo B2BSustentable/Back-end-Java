@@ -10,6 +10,7 @@ import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.entity.produto.Produto;
 import com.example.b2b.entity.responsavel.Responsavel;
 import com.example.b2b.services.EmpresaService;
+import com.example.b2b.services.ProdutoService;
 import com.example.b2b.services.ResponsavelService;
 import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class EmpresaController {
     private ResponsavelService responsavelService;
 
     @Autowired
-    private ProdutoController produtoController;
+    private ProdutoService produtoService;
 
     @Autowired
     private CatalogoController catalogoController;
@@ -81,7 +82,7 @@ public class EmpresaController {
 
     // http://localhost:8080/empresas/123456789
     @PutMapping("/{cnpj}")
-    public ResponseEntity<UpdateResponseDTO> editarEmpresaPorCnpj(MultipartFile foto, MultipartFile fotoCapa,UpdateRequestDTO empresa, @PathVariable String cnpj) {
+    public ResponseEntity<UpdateResponseDTO> editarEmpresaPorCnpj(MultipartFile foto, MultipartFile fotoCapa, UpdateRequestDTO empresa, @PathVariable String cnpj) {
         Empresa resposta = empresaService.editarEmpresaPorCnpj(foto, fotoCapa, empresa, cnpj);
         UpdateResponseDTO respostaDTO = new UpdateResponseDTO(
                 resposta.getNomeEmpresa(),
@@ -152,16 +153,21 @@ public class EmpresaController {
     @GetMapping("/downloadTXT")
     public ResponseEntity downloadTXT() throws IOException {
         try {
-            List<ProdutoResponseDTO> catalogo = (List<ProdutoResponseDTO>) produtoController.getTodosProdutos();
+            List<ProdutoResponseDTO> catalogo = produtoService.convertListaResponseDTO(produtoService.getTodosProdutos());
             empresaService.gravarArquivoTXT(catalogo, "catalogo");
 
             // Ler o conteúdo do arquivo CSV
-            File txtFile = new File("catalogo.txt");
+            File txtFile = new File("catalogo");
+
+            if (!txtFile.exists()) {
+                txtFile.createNewFile();
+            }
+
             String txtContent = new String(FileCopyUtils.copyToByteArray(txtFile), StandardCharsets.UTF_8);
 
             // Configurar a resposta HTTP
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"catalogo.txt");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=/catalogo.txt");
 
             // Definir o tipo de mídia da resposta
             MediaType mediaType = MediaType.parseMediaType("text/csv");
@@ -177,12 +183,12 @@ public class EmpresaController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<List<Produto>> importarTxt(MultipartFile arquivo, @PathVariable String id) {
+    @PutMapping("/importarTXT/{id}")
+    public ResponseEntity<List<ProdutoResponseDTO>> importarTxt(MultipartFile arquivo, @PathVariable String id, String nomeArq) {
 
-        Empresa resposta = empresaService.importarTxtPorId(arquivo, id);
+        Empresa resposta = empresaService.importarTxtPorId(arquivo, id, nomeArq);
 
-        List<Produto> catalogo = (List<Produto>) catalogoController.getCatalogoPorIdEmpresa(String.valueOf(id));
+        List<ProdutoResponseDTO> catalogo = (List<ProdutoResponseDTO>) catalogoController.getCatalogoPorIdEmpresa(String.valueOf(id));
 
         return ResponseEntity.status(200).body(catalogo);
     }

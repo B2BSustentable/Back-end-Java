@@ -368,7 +368,6 @@ public class EmpresaService {
         int contaRegDadosLidos = 0;
         int qtdRegDadosGravados;
 
-
         try {
             entrada = new BufferedReader(new FileReader(nomeArq));
         }
@@ -437,7 +436,7 @@ public class EmpresaService {
 
     }
 
-    public Empresa importarTxtPorId(MultipartFile arquivo, String id) {
+    public Empresa importarTxtPorId(MultipartFile arquivo, String id, String nomeArq) {
         // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByuIdEmpresa(id);
 
@@ -448,8 +447,8 @@ public class EmpresaService {
                 this.caminhoImagem.toFile().mkdir();
             }
 
-            String nomeArquivoFormatado = formatarNomeArquivo(arquivo.getOriginalFilename());
-            String filePath = this.caminhoImagem + "/" + nomeArquivoFormatado;
+
+            String filePath = this.caminhoImagem + "/" + nomeArq;
             File dest = new File(filePath);
 
             try {
@@ -458,7 +457,7 @@ public class EmpresaService {
                 throw new RuntimeException("Falha ao salvar arquivo.", e);
             }
 
-            leArquivoTxt(nomeArquivoFormatado);
+            leArquivoTxt(nomeArq);
 
             for (ProdutoRequestDTO c : listaLidaTxt) {
                 produtoService.cadastrarProdutoPorIdEmpresa(c,id);
