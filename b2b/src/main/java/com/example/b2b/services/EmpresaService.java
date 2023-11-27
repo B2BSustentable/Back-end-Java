@@ -437,9 +437,9 @@ public class EmpresaService {
 
     }
 
-    public Empresa importarTxtPorId(MultipartFile arquivo, Integer id) {
+    public Empresa importarTxtPorId(MultipartFile arquivo, String id) {
         // Verifique se o usuário com o mesmo CNPJ já existe
-        Optional<Empresa> empresaExistenteOptional = empresaRepository.findById(id);
+        Optional<Empresa> empresaExistenteOptional = empresaRepository.findByuIdEmpresa(id);
 
         if (empresaExistenteOptional.isPresent()) {
             Empresa empresaExistente = empresaExistenteOptional.get();
@@ -461,12 +461,12 @@ public class EmpresaService {
             leArquivoTxt(nomeArquivoFormatado);
 
             for (ProdutoRequestDTO c : listaLidaTxt) {
-                produtoService.cadastrarProdutoPorIdEmpresa(c,String.valueOf(id));
+                produtoService.cadastrarProdutoPorIdEmpresa(c,id);
             }
 
             listaLidaTxt.clear();
 
-            return catalogoService.getCatalogoPorIdEmpresa(String.valueOf(id)).getEmpresa();
+            return catalogoService.getCatalogoPorIdEmpresa(id).getEmpresa();
         } else {
             throw new IllegalStateException("Empresa não encontrada");
         }

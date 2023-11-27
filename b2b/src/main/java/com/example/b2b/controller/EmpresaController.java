@@ -150,7 +150,7 @@ public class EmpresaController {
     }
 
     @GetMapping("/downloadTXT")
-    public ResponseEntity downloadTXT(List<Catalogo> data) throws IOException {
+    public ResponseEntity downloadTXT() throws IOException {
         try {
             List<ProdutoResponseDTO> catalogo = (List<ProdutoResponseDTO>) produtoController.getTodosProdutos();
             empresaService.gravarArquivoTXT(catalogo, "catalogo");
@@ -178,7 +178,7 @@ public class EmpresaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<List<Produto>> importarTxt(MultipartFile arquivo, @PathVariable Integer id) {
+    public ResponseEntity<List<Produto>> importarTxt(MultipartFile arquivo, @PathVariable String id) {
 
         Empresa resposta = empresaService.importarTxtPorId(arquivo, id);
 

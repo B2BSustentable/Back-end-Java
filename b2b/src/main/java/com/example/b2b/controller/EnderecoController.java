@@ -2,6 +2,7 @@ package com.example.b2b.controller;
 
 import com.example.b2b.dtos.endereco.EnderecoRequestDTO;
 import com.example.b2b.dtos.endereco.EnderecoResponseDTO;
+import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.entity.endereco.Endereco;
 import com.example.b2b.services.EnderecoService;
 import jakarta.validation.Valid;
@@ -15,9 +16,12 @@ public class EnderecoController {
 
     @Autowired
     private EnderecoService enderecoService;
+    @Autowired
+    private EmpresaController empresaController;
 
     @PostMapping
     public ResponseEntity<EnderecoResponseDTO> cadastrarEndereco(@RequestBody @Valid EnderecoRequestDTO endereco) throws Throwable {
+
         Endereco enderecoEntity = enderecoService.cadastrarEndereco(endereco);
         EnderecoResponseDTO enderecoResponseDTO = new EnderecoResponseDTO(enderecoEntity.getRua(), enderecoEntity.getNumero(), enderecoEntity.getBairro(), enderecoEntity.getCidade(), enderecoEntity.getEstado(), enderecoEntity.getPais(), enderecoEntity.getCep(), enderecoEntity.getLatitude(), enderecoEntity.getLongitude(), enderecoEntity.getEmpresa().getNomeEmpresa(), enderecoEntity.getEmpresa().getCnpj(), enderecoEntity.getEmpresa().getEmail());
         return ResponseEntity.status(201).body(enderecoResponseDTO);
