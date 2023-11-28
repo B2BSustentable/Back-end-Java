@@ -107,11 +107,11 @@ public class ResponsavelService {
             String filePathCapa = "";
 
             if (foto != null) {
-                empresaService.salvarFoto(foto, this.caminhoImagem);
+                 filePath = empresaService.salvarFoto(foto, this.caminhoImagem);
             }
 
             if (fotoCapa != null) {
-                empresaService.salvarFoto(fotoCapa, this.caminhoImagem);
+                filePath = empresaService.salvarFoto(fotoCapa, this.caminhoImagem);
             }
 
             // Atualize os campos do responsável existente com os valores do DTO editado
