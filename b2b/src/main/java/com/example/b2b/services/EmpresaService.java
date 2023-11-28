@@ -76,12 +76,17 @@ public class EmpresaService {
         if (empresa.isPresent()) {
             return empresa.get();
         } else {
-            throw new IllegalStateException("Empresa não encontrada");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada")
         }
     }
 
     public List<Empresa> getTodasEmpresas() {
-        return empresaRepository.findAll();
+        Optional<List<Empresa>> listaEmpresas = Optional.ofNullable(empresaRepository.findAll());
+        if (listaEmpresas.isPresent()) {
+            return listaEmpresas.get();
+        } else {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Lista de empresas vazia");
+        }
     }
 
     public Empresa cadastrarEmpresa(RegisterRequestDTO data) {
@@ -113,7 +118,7 @@ public class EmpresaService {
                 novaEmpresa.setEndereco(new ArrayList<>());
                 break;
             default:
-                throw new IllegalStateException("A empresa inserida não é uma opção: " + data.tipoPlanos());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de plano inválido");
         }
         empresaRepository.save(novaEmpresa);
         empresaCadastrada = novaEmpresa;
@@ -145,7 +150,7 @@ public class EmpresaService {
                 planoService.configurarValoresPremium((EmpresaPremium) empresa);
                 break;
             default:
-                throw new IllegalStateException("A empresa inserida não é uma opção: " + tipoPlano);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de plano inválido");
         }
 
         empresaRepository.save(empresa);
@@ -159,7 +164,7 @@ public class EmpresaService {
         if (empresa.isPresent()) {
             return empresa.get();
         } else {
-            throw new IllegalStateException("Empresa não encontrada");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
         }
     }
 
@@ -169,7 +174,7 @@ public class EmpresaService {
         if (empresaExistente.isPresent()) {
             return (Empresa) empresaExistente.get();
         } else {
-            throw new IllegalStateException("Empresa não encontrada");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
         }
     }
 
@@ -179,7 +184,7 @@ public class EmpresaService {
         if (empresaExistente.isPresent()) {
             return empresaExistente.get();
         } else {
-            throw new IllegalStateException("Empresa não encontrada");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
         }
     }
 
@@ -189,7 +194,7 @@ public class EmpresaService {
         if (empresa.isPresent()) {
             return empresa.get().getEndereco().get(0).getLatitude();
         } else {
-            throw new IllegalStateException("Empresa não encontrada");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
         }
     }
 
@@ -199,7 +204,7 @@ public class EmpresaService {
         if (empresa.isPresent()) {
             return empresa.get().getEndereco().get(0).getLongitude();
         } else {
-            throw new IllegalStateException("Empresa não encontrada");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
         }
     }
 
@@ -244,7 +249,7 @@ public class EmpresaService {
 
             return empresaExistente;
         } else {
-            throw new IllegalStateException("Empresa não encontrada");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
         }
     }
 
@@ -257,7 +262,7 @@ public class EmpresaService {
         try {
             foto.transferTo(dest);
         } catch (IOException e) {
-            throw new RuntimeException("Falha ao salvar a foto.", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Falha ao salvar arquivo.", e);
         }
 
         return filePath;
@@ -279,7 +284,7 @@ public class EmpresaService {
             empresaRepository.delete(verificarExistenciaDeEmpresa.get());
         }
 
-        throw new IllegalStateException("Empresa não encontrado");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
 
     }
 
