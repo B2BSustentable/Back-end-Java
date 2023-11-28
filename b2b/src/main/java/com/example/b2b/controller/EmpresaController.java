@@ -47,13 +47,24 @@ public class EmpresaController {
 
     // http://localhost:8080/empresas
     @GetMapping
-    public ResponseEntity<List<RegisterResponseDTO>> getEmpresa() {
+    public ResponseEntity<List<RegisterResponseDTO>> getListaEmpresas() {
         List<Empresa> listaEmpresas = empresaService.getTodasEmpresas();
         if (listaEmpresas.isEmpty()) {
             return ResponseEntity.status(204).build();
         }
         List<RegisterResponseDTO> listaEmpresasResponse = empresaService.convertListaResponseDTO(listaEmpresas);
         return ResponseEntity.status(200).body(listaEmpresasResponse);
+    }
+
+    // http://localhost:8080/empresas
+    @GetMapping("{uIdEmpresa}")
+    public ResponseEntity<RegisterResponseDTO> getEmpresaPorUIdEmpresa(@PathVariable String uIdEmpresa) {
+        Empresa empresaUIdEmpresa = empresaService.getEmpresaPorUIdEmpresa(uIdEmpresa);
+        if (empresaUIdEmpresa == null) {
+            return ResponseEntity.status(204).build();
+        }
+        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaUIdEmpresa.getNomeEmpresa(), empresaUIdEmpresa.getCnpj(), empresaUIdEmpresa.getDataDeCriacao(), empresaUIdEmpresa.getEmail(), empresaUIdEmpresa.getTipoPlanos(), empresaUIdEmpresa.getDescricao(), empresaUIdEmpresa.getPhoto(), empresaUIdEmpresa.getPhotoCapa(), empresaUIdEmpresa.getEndereco());
+        return ResponseEntity.status(200).body(resposta);
     }
 
     // http://localhost:8080/empresas/123456789

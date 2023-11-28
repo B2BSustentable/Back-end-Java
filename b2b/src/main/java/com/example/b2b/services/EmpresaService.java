@@ -173,6 +173,16 @@ public class EmpresaService {
         }
     }
 
+    public Empresa getEmpresaPorUIdEmpresa(@PathVariable String uIdEmpresa) {
+        Optional<Empresa> empresaExistente = empresaRepository.findByuIdEmpresa(uIdEmpresa);
+
+        if (empresaExistente.isPresent()) {
+            return empresaExistente.get();
+        } else {
+            throw new IllegalStateException("Empresa não encontrada");
+        }
+    }
+
     public String getLatitudePorCnpj(@PathVariable String cnpj) {
         Optional<Empresa> empresa = empresaRepository.findByCnpj(cnpj);
 
