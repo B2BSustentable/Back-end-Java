@@ -25,7 +25,9 @@ public abstract class Empresa implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uIdEmpresa;
     private String nomeEmpresa;
+    @Column(unique = true)
     private String cnpj;
+    @Column(unique = true)
     private String email;
     private String senha;
     private String descricao;
