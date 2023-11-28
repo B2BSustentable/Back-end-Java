@@ -3,6 +3,8 @@ package com.example.b2b.controller;
 import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterRequestDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
+import com.example.b2b.dtos.responsavel.UpdateResponsavelRequestDTO;
+import com.example.b2b.dtos.responsavel.UpdateResponsavelResponseDTO;
 import com.example.b2b.entity.responsavel.Responsavel;
 import com.example.b2b.services.ResponsavelService;
 import jakarta.validation.Valid;
@@ -55,9 +57,9 @@ public class ResponsavelController {
     }
 
     @PutMapping("/{email}")
-    public ResponseEntity<ResponsavelRegisterResponseDTO> editarResponsavel(MultipartFile foto, @PathVariable String email, ResponsavelRegisterRequestDTO data) {
-        Responsavel responsavel = responsavelService.editarResponsavelPorEmail(foto, email, data);
-        ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), false);
+    public ResponseEntity<UpdateResponsavelResponseDTO> editarResponsavel(MultipartFile foto, MultipartFile fotoCapa, @PathVariable String email, UpdateResponsavelRequestDTO data) {
+        Responsavel responsavel = responsavelService.editarResponsavelPorEmail(foto, fotoCapa, email, data);
+        UpdateResponsavelResponseDTO responsavelResponseDTO = new UpdateResponsavelResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), responsavel.getPhotoResponsavel(), responsavel.getPhotoCapaResponsavel());
         return ResponseEntity.status(200).body(responsavelResponseDTO);
     }
 

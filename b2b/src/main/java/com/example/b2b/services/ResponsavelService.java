@@ -3,10 +3,13 @@ package com.example.b2b.services;
 import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterRequestDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
+import com.example.b2b.dtos.responsavel.UpdateResponsavelRequestDTO;
 import com.example.b2b.entity.responsavel.Responsavel;
 import com.example.b2b.repository.ResponsavelRepository;
 import com.example.b2b.util.Lista;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +32,18 @@ public class ResponsavelService {
     @Autowired
     private EmpresaService empresaService;
 
-    private final Path caminhoImagem = Path.of(System.getProperty("user.dir") + "/arquivo"); // projeto
+    @Value("${user.dir}")
+    private String diretorioProjeto;
+
+    private Path caminhoImagem;
+
+    private Path caminhoArquivo;
+
+    @PostConstruct
+    private void initializePaths() {
+        this.caminhoArquivo = Path.of(diretorioProjeto, "arquivo");
+        this.caminhoImagem = Path.of(caminhoArquivo.toString(), "imgResponsavel");
+    }
 
     public List<Responsavel> getResponsaveis() {
         return responsavelRepository.findAll();
@@ -75,37 +89,44 @@ public class ResponsavelService {
     }
 
 
-    public Responsavel editarResponsavelPorEmail(MultipartFile foto, String email, ResponsavelRegisterRequestDTO data) {
+    public Responsavel editarResponsavelPorEmail(MultipartFile foto, MultipartFile fotoCapa, String email, UpdateResponsavelRequestDTO data) {
         Optional<Responsavel> responsavelExistenteOptional = responsavelRepository.findByEmailResponsavel(email);
 
         if (responsavelExistenteOptional.isPresent()) {
             Responsavel responsavelExistente = responsavelExistenteOptional.get();
 
+            if (!this.caminhoArquivo.toFile().exists()) {
+                this.caminhoArquivo.toFile().mkdir();
+            }
+
             if (!this.caminhoImagem.toFile().exists()) {
                 this.caminhoImagem.toFile().mkdir();
             }
 
-            String nomeArquivoFormatado = formatarNomeArquivo(foto.getOriginalFilename());
-            String filePath = this.caminhoImagem + "/" + nomeArquivoFormatado;
-            File dest = new File(filePath);
+            String filePath = "";
+            String filePathCapa = "";
 
-            try {
-                foto.transferTo(dest);
-            } catch (IOException e) {
-                throw new RuntimeException("Falha ao salvar a foto.", e);
+            if (foto != null) {
+                empresaService.salvarFoto(foto, this.caminhoImagem);
             }
 
-            responsavelExistente.setNomeResponsavel(data.nomeResponsavel());
-            responsavelExistente.setSobrenomeResponsavel(data.sobrenomeResponsavel());
-            responsavelExistente.setEmailResponsavel(data.emailResponsavel());
-            responsavelExistente.setSenhaResponsavel(data.senhaResponsavel());
-            responsavelExistente.setPhotoResponsavel(data.photoResponsavel());
+            if (fotoCapa != null) {
+                empresaService.salvarFoto(fotoCapa, this.caminhoImagem);
+            }
 
+            // Atualize os campos do responsável existente com os valores do DTO editado
+            empresaService.atualizarCampoSeNaoNulo(data.nomeResponsavel(), responsavelExistente::setNomeResponsavel);
+            empresaService.atualizarCampoSeNaoNulo(data.sobrenomeResponsavel(), responsavelExistente::setSobrenomeResponsavel);
+            empresaService.atualizarCampoSeNaoNulo(data.emailResponsavel(), responsavelExistente::setEmailResponsavel);
+            empresaService.atualizarCampoSeNaoNulo(data.senhaResponsavel(), responsavelExistente::setSenhaResponsavel);
+            empresaService.atualizarCampoSeNaoNulo(filePath, responsavelExistente::setPhotoResponsavel);
+            empresaService.atualizarCampoSeNaoNulo(filePathCapa, responsavelExistente::setPhotoCapaResponsavel);
+
+            // Salve o responsável atualizado no banco de dados
             return responsavelRepository.save(responsavelExistente);
         } else {
             throw new RuntimeException("Responsavel não encontrado");
         }
-
     }
 
     public Void deletarResponsavelPorEmail(String email) {
