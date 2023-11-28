@@ -2,7 +2,6 @@ package com.example.b2b.controller;
 
 import com.example.b2b.dtos.produto.ProdutoRequestDTO;
 import com.example.b2b.dtos.produto.ProdutoResponseDTO;
-import com.example.b2b.dtos.produto.ProdutoResponseListaLatELongDTO;
 import com.example.b2b.entity.produto.Produto;
 import com.example.b2b.services.ProdutoService;
 import jakarta.validation.Valid;
@@ -27,9 +26,16 @@ public class ProdutoController {
         return ResponseEntity.status(201).body(produtoResponseDTO);
     }
 
-    @GetMapping("/nomeParcial")
+    @GetMapping("/nomeParcial/{uIdEmpresa}")
     public ResponseEntity<List<ProdutoResponseDTO>> getProdutoPorNomeParcialIgnoandoCase(@RequestParam String nomeProduto, @PathVariable String uIdEmpresa){
-        List<Produto> listaProdutos = produtoService.getProdutoPorNomeParcial(nomeProduto, uIdEmpresa);
+        List<Produto> listaProdutos = produtoService.getProdutosPorNomeParcial(nomeProduto, uIdEmpresa);
+        List<ProdutoResponseDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);
+        return ResponseEntity.status(200).body(listaProdutosResponse);
+    }
+
+    @GetMapping("/categoriaParcial/{uIdEmpresa}")
+    public ResponseEntity<List<ProdutoResponseDTO>> getProdutoPorCategoriaParcialIgnoandoCase(@RequestParam String categoria, @PathVariable String uIdEmpresa){
+        List<Produto> listaProdutos = produtoService.getProdutosPorCategoriaParcial(categoria, uIdEmpresa);
         List<ProdutoResponseDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);
         return ResponseEntity.status(200).body(listaProdutosResponse);
     }
@@ -50,7 +56,7 @@ public class ProdutoController {
 
     @PutMapping("/{uId}")
     public ResponseEntity<ProdutoResponseDTO> atualizarProduto(@PathVariable String uId, @RequestBody @Valid ProdutoRequestDTO body){
-        Produto produtoEntity = produtoService.atualizarProduto(uId, body);
+        Produto produtoEntity = produtoService.atualizarProduto(body, uId);
         ProdutoResponseDTO produtoResponseDTO = new ProdutoResponseDTO(produtoEntity.getNomeProduto(), produtoEntity.getCategoria(), produtoEntity.getDescricao(), produtoEntity.getCodigoDeBarras());
         return ResponseEntity.status(200).body(produtoResponseDTO);
     }

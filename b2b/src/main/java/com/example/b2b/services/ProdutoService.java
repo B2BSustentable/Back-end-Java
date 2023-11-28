@@ -41,6 +41,11 @@ public class ProdutoService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
         }
 
+        Optional<Produto> produtoExiste = repository.findByCodigoDeBarras(data.codigoDeBarras());
+        if (produtoExiste.isPresent()) {
+            this.atualizarProduto(data, produtoExiste.get().getIdProduto());
+        }
+
         if (empresaService.getEmpresaPorId(idEmpresa).getPlano().getLimiteProdutos() <= repository.countProdutoByCatalogoEmpresa(empresa)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de produtos atingido");
         }
@@ -68,8 +73,8 @@ public class ProdutoService {
         }
     }
 
-    public Produto atualizarProduto(String id, ProdutoRequestDTO data) {
-        Optional<Produto> produto = repository.findByIdProduto(id);
+    public Produto atualizarProduto(ProdutoRequestDTO data, String uIdEmpresa) {
+        Optional<Produto> produto = repository.findByIdProduto(uIdEmpresa);
         if (produto.isPresent()) {
             produto.get().setNomeProduto(data.nomeProduto());
             produto.get().setCategoria(data.categoria());
@@ -96,7 +101,7 @@ public class ProdutoService {
         }
     }
 
-    public List<Produto> getProdutoPorNomeParcial(String nomeParcial, String uIdEmpresa){
+    public List<Produto> getProdutosPorNomeParcial(String nomeParcial, String uIdEmpresa){
         Optional<List<Produto>> listaProdutos = repository.findByNomeProdutoContainingIgnoreCase(nomeParcial);
         if (empresaService.getEmpresaPorId(uIdEmpresa).getPlano().isConsultasIlimitadas() == false) {
             if (listaProdutos.isPresent()) {
@@ -109,7 +114,24 @@ public class ProdutoService {
         if(listaProdutos.isPresent()){
             return listaProdutos.get();
         }else{
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Produto não encontrado");
+        }
+    }
+
+    public List<Produto> getProdutosPorCategoriaParcial(String categoria, String uIdEmpresa){
+        Optional<List<Produto>> listaProdutos = repository.findByCategoriaContainingIgnoreCase(categoria);
+        if (empresaService.getEmpresaPorId(uIdEmpresa).getPlano().isConsultasIlimitadas() == false) {
+            if (listaProdutos.isPresent()) {
+                if (listaProdutos.get().size() > 10) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de consultas atingido");
+                }
+            }
+        }
+
+        if(listaProdutos.isPresent()){
+            return listaProdutos.get();
+        }else{
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Produto não encontrado");
         }
     }
 
