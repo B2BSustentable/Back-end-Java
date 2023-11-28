@@ -95,6 +95,21 @@ public class EmpresaController {
         return ResponseEntity.status(200).body(respostaDTO);
     }
 
+    @PutMapping("/editarPlano/{uIdEmpresa}")
+    public ResponseEntity<UpdateResponseDTO> editarPlanoEmpresaPorUIdEmpresa(@PathVariable String uIdEmpresa, @PathVariable String tipoPlano){
+        Empresa resposta = empresaService.editarPlanoPorIdEmpresa(uIdEmpresa, tipoPlano);
+        UpdateResponseDTO respostaDTO = new UpdateResponseDTO(
+                resposta.getNomeEmpresa(),
+                resposta.getEmail(),
+                resposta.getDescricao(),
+                resposta.getPhoto(),
+                resposta.getPhotoCapa(),
+                resposta.getEndereco()
+        );
+        return ResponseEntity.status(200).body(respostaDTO);
+    }
+
+
     // http://localhost:8080/empresas/123456789
     @DeleteMapping("/{cnpj}")
     public ResponseEntity deletarEmpresaPorCnpj(@PathVariable String cnpj) {

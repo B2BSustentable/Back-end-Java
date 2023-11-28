@@ -13,8 +13,11 @@ import com.example.b2b.entity.empresa.roles.EmpresaPremium;
 import com.example.b2b.entity.empresa.roles.EmpresaCommon;
 import com.example.b2b.repository.EmpresaRepository;
 import com.example.b2b.util.Lista;
+import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -27,9 +30,13 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Consumer;
 
 @Service
 public class EmpresaService {
+
+    @Value("${user.dir}")
+    private String diretorioProjeto;
 
     @Autowired
     private EmpresaRepository empresaRepository;
@@ -42,14 +49,22 @@ public class EmpresaService {
 
     @Autowired
     private static ProdutoService produtoService;
-
     @Getter
     private Empresa empresaCadastrada;
-
     static List<ProdutoRequestDTO> listaLidaTxt = new ArrayList<ProdutoRequestDTO>();
+    private Path caminhoArquivo;
+    private Path caminhoImagem;
+    private Path caminhoCsv;
+    private Path caminhoTxt;
 
+    @PostConstruct
+    private void initializePaths() {
+        this.caminhoArquivo = Path.of(diretorioProjeto, "arquivo");
+        this.caminhoImagem = Path.of(caminhoArquivo.toString(), "imgEmpresa");
+        this.caminhoCsv = Path.of(caminhoArquivo.toString(), "csv");
+        this.caminhoTxt = Path.of(caminhoArquivo.toString(), "txt");
+    }
 
-    private final Path caminhoImagem = Path.of(System.getProperty("user.dir") + "/arquivo"); // projeto
 
     public UserDetails findByEmail(String email) {
         return empresaRepository.findByEmail(email);
@@ -110,6 +125,34 @@ public class EmpresaService {
         return (novaEmpresa);
     }
 
+    public Empresa editarPlanoPorIdEmpresa(String idEmpresa, String tipoPlano) {
+        Empresa empresa = getEmpresaPorId(idEmpresa);
+        if (empresa == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
+        }
+
+        switch (tipoPlano) {
+            case "EMPRESA_BASIC":
+                empresa.setTipoPlanos(TipoPlanos.EMPRESA_BASIC);
+                planoService.configurarValoresBasicos((EmpresaBasic) empresa);
+                break;
+            case "EMPRESA_COMMON":
+                empresa.setTipoPlanos(TipoPlanos.EMPRESA_COMMON);
+                planoService.configurarValoresCommon((EmpresaCommon) empresa);
+                break;
+            case "EMPRESA_PREMIUM":
+                empresa.setTipoPlanos(TipoPlanos.EMPRESA_PREMIUM);
+                planoService.configurarValoresPremium((EmpresaPremium) empresa);
+                break;
+            default:
+                throw new IllegalStateException("A empresa inserida não é uma opção: " + tipoPlano);
+        }
+
+        empresaRepository.save(empresa);
+
+        return (empresa);
+    }
+
     public Empresa getEmpresaPorCnpj(@PathVariable String cnpj) {
         Optional<Empresa> empresa = empresaRepository.findByCnpj(cnpj);
 
@@ -151,44 +194,68 @@ public class EmpresaService {
     }
 
     public Empresa editarEmpresaPorCnpj(MultipartFile foto, MultipartFile fotoCapa, UpdateRequestDTO empresaEditada, String cnpj) {
-        // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByCnpj(cnpj);
 
         if (empresaExistenteOptional.isPresent()) {
             Empresa empresaExistente = empresaExistenteOptional.get();
 
-            if(!this.caminhoImagem.toFile().exists()) {
+            if (!this.caminhoArquivo.toFile().exists()) {
+                this.caminhoArquivo.toFile().mkdir();
+            }
+
+            if (!this.caminhoImagem.toFile().exists()) {
                 this.caminhoImagem.toFile().mkdir();
             }
 
-            String nomeArquivoFormatado = formatarNomeArquivo(foto.getOriginalFilename());
-            String nomeArquivoFormartadoCapa = formatarNomeArquivo(fotoCapa.getOriginalFilename());
-            String filePath = this.caminhoImagem + "/" + nomeArquivoFormatado;
-            String filePathCapa = this.caminhoImagem + "/" + nomeArquivoFormartadoCapa;
-            File dest = new File(filePath);
-            File destCapa = new File(filePathCapa);
+            String filePath = "";
+            String filePathCapa = "";
 
-            try {
-                foto.transferTo(dest);
-                fotoCapa.transferTo(destCapa);
-            } catch (IOException e) {
-                throw new RuntimeException("Falha ao salvar a foto.", e);
+            if (foto != null) {
+                filePath = salvarFoto(foto, this.caminhoImagem);
             }
 
+            if (fotoCapa != null) {
+                filePathCapa = salvarFoto(fotoCapa, this.caminhoImagem);
+            }
 
-            // Atualize os campos do usuário existente com os valores do DTO editado
-            empresaExistente.setNomeEmpresa(empresaEditada.nomeEmpresa());
-            empresaExistente.setSenha(empresaEditada.senha());
-            empresaExistente.setPhoto(filePath);
-            empresaExistente.setPhotoCapa(filePathCapa);
+            // Atualizar campos usando método auxiliar
+            atualizarCampoSeNaoNulo(empresaEditada.nomeEmpresa(), empresaExistente::setNomeEmpresa);
+            atualizarCampoSeNaoNulo(empresaEditada.email(), empresaExistente::setEmail);
+            atualizarCampoSeNaoNulo(empresaEditada.senha(), empresaExistente::setSenha);
+            atualizarCampoSeNaoNulo(empresaEditada.descricao(), empresaExistente::setDescricao);
+            atualizarCampoSeNaoNulo(empresaEditada.enderecos(), empresaExistente::setEndereco);
 
+            // Atualizar campos de foto
+            atualizarCampoSeNaoNulo(filePath, empresaExistente::setPhoto);
+            atualizarCampoSeNaoNulo(filePathCapa, empresaExistente::setPhotoCapa);
 
             // Salve o usuário atualizado no banco de dados
             empresaRepository.save(empresaExistente);
 
-            return (empresaExistente);
+            return empresaExistente;
         } else {
             throw new IllegalStateException("Empresa não encontrada");
+        }
+    }
+
+    public String salvarFoto(MultipartFile foto, Path caminhoImagem) {
+        String nomeArquivoFormatado = formatarNomeArquivo(foto.getOriginalFilename());
+        String filePath = caminhoImagem + "/" + nomeArquivoFormatado;
+
+        File dest = new File(filePath);
+
+        try {
+            foto.transferTo(dest);
+        } catch (IOException e) {
+            throw new RuntimeException("Falha ao salvar a foto.", e);
+        }
+
+        return filePath;
+    }
+
+    public <T> void atualizarCampoSeNaoNulo(T novoValor, Consumer<T> atualizador) {
+        if (novoValor != null) {
+            atualizador.accept(novoValor);
         }
     }
 
@@ -223,17 +290,28 @@ public class EmpresaService {
         return lista.buscaBinariaPorDataDeCriacao(data);
     }
 
-    public static String gerarEGravarArquivoCSV(List<ResponsavelRegisterResponseDTO> listaResponsaveisOrdenada, String nomeArq) {
+    public String gerarEGravarArquivoCSV(List<ResponsavelRegisterResponseDTO> listaResponsaveisOrdenada, String nomeArq) {
         FileWriter arquivo = null;
         Formatter saida = null;
         Boolean deuRuim = false;
 
         nomeArq += ".csv";
 
+        if (!this.caminhoArquivo.toFile().exists()) {
+            this.caminhoArquivo.toFile().mkdir();
+        }
+
+        if (!this.caminhoCsv.toFile().exists()) {
+            this.caminhoCsv.toFile().mkdir();
+        }
+
         // Bloco try-catch para abrir o arquivo
         try {
+            Path caminhoCsvCompleto = Path.of(this.caminhoCsv.toString(), nomeArq);
+            File dest = new File(caminhoCsvCompleto.toString());
             arquivo = new FileWriter(nomeArq);
             saida = new Formatter(arquivo);
+            arquivo = new FileWriter(dest);
         } catch (IOException erro) {
             System.out.println("Erro ao abrir o arquivo");
             System.exit(1);
