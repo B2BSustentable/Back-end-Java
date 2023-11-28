@@ -15,4 +15,6 @@ public interface ResponsavelRepository extends JpaRepository<Responsavel, Long> 
     int countResponsavelByEmpresa(Empresa empresa);
 
     Optional<Responsavel> findByuIdResponsavel(String uIdResponsavel);
+
+    List<Responsavel> findAllByEmpresa(Empresa empresa);
 }

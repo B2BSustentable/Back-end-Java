@@ -80,14 +80,18 @@ public class ResponsavelService {
         if (responsavel.isPresent()) {
             return responsavel.get();
         } else {
-            throw new RuntimeException("Responsavel não encontrado");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsavel não encontrado");
         }
     }
 
-    private String formatarNomeArquivo(String nomeOriginal) {
-        return String.format("%s_%s", UUID.randomUUID(), nomeOriginal);
+    public List<Responsavel> getTodosResponsaveisPorEmpresa(String idEmpresa) {
+        Optional<List> responsaveis = Optional.ofNullable(responsavelRepository.findAllByEmpresa(empresaService.getEmpresaPorId(idEmpresa)));
+        if (responsaveis.isPresent()) {
+            return responsaveis.get();
+        } else {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Lista de responsáveis vazia");
+        }
     }
-
 
     public Responsavel editarResponsavelPorEmail(MultipartFile foto, MultipartFile fotoCapa, String email, UpdateResponsavelRequestDTO data) {
         Optional<Responsavel> responsavelExistenteOptional = responsavelRepository.findByEmailResponsavel(email);
@@ -125,7 +129,7 @@ public class ResponsavelService {
             // Salve o responsável atualizado no banco de dados
             return responsavelRepository.save(responsavelExistente);
         } else {
-            throw new RuntimeException("Responsavel não encontrado");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsavel não encontrado");
         }
     }
 
@@ -135,7 +139,7 @@ public class ResponsavelService {
             responsavelRepository.delete(responsavelExistente.get());
             return null;
         } else {
-            throw new RuntimeException("Responsavel não encontrado");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsavel não encontrado");
         }
     }
 
@@ -150,7 +154,7 @@ public class ResponsavelService {
                 throw new RuntimeException("Senha incorreta");
             }
         } else {
-            throw new RuntimeException("Responsavel não encontrado");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsavel não encontrado");
         }
     }
 
