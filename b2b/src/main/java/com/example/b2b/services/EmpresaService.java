@@ -76,7 +76,7 @@ public class EmpresaService {
         if (empresa.isPresent()) {
             return empresa.get();
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada")
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
         }
     }
 
