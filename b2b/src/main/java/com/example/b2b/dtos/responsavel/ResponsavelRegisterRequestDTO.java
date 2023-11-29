@@ -8,7 +8,6 @@ public record ResponsavelRegisterRequestDTO(
         @NotBlank String sobrenomeResponsavel,
         @Email @NotBlank String emailResponsavel,
         @NotBlank String senhaResponsavel,
-        String photoResponsavel,
-        String photoCapaResponsavel
+        String photoResponsavel
 ) {
 }

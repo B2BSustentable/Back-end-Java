@@ -121,7 +121,6 @@ public class ResponsavelService {
             empresaService.atualizarCampoSeNaoNulo(data.emailResponsavel(), responsavelExistente::setEmailResponsavel);
             empresaService.atualizarCampoSeNaoNulo(data.senhaResponsavel(), responsavelExistente::setSenhaResponsavel);
             empresaService.atualizarCampoSeNaoNulo(filePath, responsavelExistente::setPhotoResponsavel);
-            empresaService.atualizarCampoSeNaoNulo(filePathCapa, responsavelExistente::setPhotoCapaResponsavel);
 
             // Salve o responsável atualizado no banco de dados
             return responsavelRepository.save(responsavelExistente);

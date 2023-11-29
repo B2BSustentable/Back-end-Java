@@ -1,4 +1,4 @@
-package com.example.b2b.repository.services;
+package com.example.b2b.services;
 
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
@@ -11,7 +11,6 @@ import com.example.b2b.entity.empresa.*;
 import com.example.b2b.entity.empresa.roles.EmpresaBasic;
 import com.example.b2b.entity.empresa.roles.EmpresaPremium;
 import com.example.b2b.entity.empresa.roles.EmpresaCommon;
-import com.example.b2b.entity.produto.Produto;
 import com.example.b2b.repository.EmpresaRepository;
 import com.example.b2b.util.Lista;
 import jakarta.annotation.PostConstruct;
@@ -39,7 +38,8 @@ public class EmpresaService {
     private String diretorioProjeto;
 
     @Autowired
-    private ProdutoService produtoService;
+    private ArquivoService imagemService;
+
     @Autowired
     private EmpresaRepository empresaRepository;
 
@@ -49,6 +49,8 @@ public class EmpresaService {
     @Autowired
     private PlanoService planoService;
 
+    @Autowired
+    private static ProdutoService produtoService;
     @Getter
     private Empresa empresaCadastrada;
     static List<ProdutoRequestDTO> listaLidaTxt = new ArrayList<ProdutoRequestDTO>();
@@ -208,7 +210,7 @@ public class EmpresaService {
         }
     }
 
-    public Empresa editarEmpresaPorCnpj(MultipartFile foto, MultipartFile fotoCapa, UpdateRequestDTO empresaEditada, String cnpj) {
+    public Empresa editarEmpresaPorCnpj(MultipartFile file, UpdateRequestDTO empresaEditada, String cnpj) throws IOException {
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByCnpj(cnpj);
 
         if (empresaExistenteOptional.isPresent()) {
@@ -225,12 +227,9 @@ public class EmpresaService {
             String filePath = "";
             String filePathCapa = "";
 
-            if (foto != null) {
-                filePath = salvarFoto(foto, this.caminhoImagem);
-            }
-
-            if (fotoCapa != null) {
-                filePathCapa = salvarFoto(fotoCapa, this.caminhoImagem);
+            if (file != null) {
+                filePath = salvarFoto(file, this.caminhoImagem);
+                imagemService.uploadImagem(file);
             }
 
             // Atualizar campos usando método auxiliar
@@ -242,7 +241,6 @@ public class EmpresaService {
 
             // Atualizar campos de foto
             atualizarCampoSeNaoNulo(filePath, empresaExistente::setPhoto);
-            atualizarCampoSeNaoNulo(filePathCapa, empresaExistente::setPhotoCapa);
 
             // Salve o usuário atualizado no banco de dados
             empresaRepository.save(empresaExistente);
@@ -291,7 +289,7 @@ public class EmpresaService {
     public List<RegisterResponseDTO> convertListaResponseDTO(List<Empresa> listaEmpresas) {
         List<RegisterResponseDTO> listaEmpresaResponse = new ArrayList<>();
         for (Empresa empresa : listaEmpresas) {
-            RegisterResponseDTO resposta = new RegisterResponseDTO(empresa.getNomeEmpresa(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos(), empresa.getDescricao(), empresa.getPhoto(), empresa.getPhotoCapa() ,empresa.getEndereco());
+            RegisterResponseDTO resposta = new RegisterResponseDTO(empresa.getNomeEmpresa(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos(), empresa.getDescricao(), empresa.getPhoto(), empresa.getEndereco());
             listaEmpresaResponse.add(resposta);
         }
         return listaEmpresaResponse;
@@ -529,24 +527,19 @@ public class EmpresaService {
 
     }
 
-    public List<Produto> importarTxtPorId(MultipartFile arquivo, String id, String nomeArq) {
+    public Empresa importarTxtPorId(MultipartFile arquivo, String id, String nomeArq) {
         // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByuIdEmpresa(id);
 
         if (empresaExistenteOptional.isPresent()) {
             Empresa empresaExistente = empresaExistenteOptional.get();
 
-            if(!this.caminhoArquivo.toFile().exists()) {
-                this.caminhoArquivo.toFile().mkdirs();
+            if(!this.caminhoImagem.toFile().exists()) {
+                this.caminhoImagem.toFile().mkdir();
             }
 
-            if (!this.caminhoArquivo.toFile().exists()) {
-                if (!this.caminhoArquivo.toFile().mkdirs()) {
-                    throw new RuntimeException("Falha ao criar diretório: " + this.caminhoArquivo);
-                }
-            }
 
-            String filePath = this.caminhoArquivo + "/" + nomeArq;
+            String filePath = this.caminhoImagem + "/" + nomeArq;
             File dest = new File(filePath);
 
             try {
@@ -558,15 +551,15 @@ public class EmpresaService {
             leArquivoTxt(nomeArq);
 
             for (ProdutoRequestDTO c : listaLidaTxt) {
-
                 produtoService.cadastrarProdutoPorIdEmpresa(c,id);
             }
 
+            listaLidaTxt.clear();
+
+            return catalogoService.getCatalogoPorIdEmpresa(id).getEmpresa();
         } else {
             throw new IllegalStateException("Empresa não encontrada");
         }
-
-        return produtoService.getTodosProdutosPoruIdEmpresa(id);
     }
 
 

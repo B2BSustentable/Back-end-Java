@@ -23,7 +23,6 @@ public class Responsavel {
     private String emailResponsavel;
     private String senhaResponsavel;
     private String  photoResponsavel;
-    private String  photoCapaResponsavel;
     private boolean isLogado;
     private LocalDateTime dataDeCriacaoResponsavel;
     @ManyToOne
@@ -35,7 +34,6 @@ public class Responsavel {
         this.emailResponsavel = data.emailResponsavel();
         this.senhaResponsavel = data.senhaResponsavel();
         this.photoResponsavel = data.photoResponsavel();
-        this.photoCapaResponsavel = data.photoCapaResponsavel();
         this.isLogado = false;
     }
 }
