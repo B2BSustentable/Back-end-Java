@@ -56,14 +56,12 @@ public class EmpresaService {
     private Empresa empresaCadastrada;
     static List<ProdutoRequestDTO> listaLidaTxt = new ArrayList<ProdutoRequestDTO>();
     private Path caminhoArquivo;
-    private Path caminhoImagem;
     private Path caminhoCsv;
     private Path caminhoTxt;
 
     @PostConstruct
     private void initializePaths() {
         this.caminhoArquivo = Path.of(diretorioProjeto, "arquivo");
-        this.caminhoImagem = Path.of(caminhoArquivo.toString(), "imgEmpresa");
         this.caminhoCsv = Path.of(caminhoArquivo.toString(), "csv");
         this.caminhoTxt = Path.of(caminhoArquivo.toString(), "txt");
     }
@@ -217,19 +215,10 @@ public class EmpresaService {
         if (empresaExistenteOptional.isPresent()) {
             Empresa empresaExistente = empresaExistenteOptional.get();
 
-            if (!this.caminhoArquivo.toFile().exists()) {
-                this.caminhoArquivo.toFile().mkdir();
-            }
-
-            if (!this.caminhoImagem.toFile().exists()) {
-                this.caminhoImagem.toFile().mkdir();
-            }
-
             String filePath = "";
 
             if (file != null) {
-                filePath = salvarFoto(file, this.caminhoImagem);
-                imagemService.uploadImagem(file);
+                filePath = imagemService.uploadImagem(file);
             }
 
             // Atualizar campos usando método auxiliar
@@ -249,21 +238,6 @@ public class EmpresaService {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
         }
-    }
-
-    public String salvarFoto(MultipartFile foto, Path caminhoImagem) {
-        String nomeArquivoFormatado = formatarNomeArquivo(foto.getOriginalFilename());
-        String filePath = caminhoImagem + "/" + nomeArquivoFormatado;
-
-        File dest = new File(filePath);
-
-        try {
-            foto.transferTo(dest);
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Falha ao salvar arquivo.", e);
-        }
-
-        return filePath;
     }
 
     public <T> void atualizarCampoSeNaoNulo(T novoValor, Consumer<T> atualizador) {

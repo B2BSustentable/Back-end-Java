@@ -33,19 +33,6 @@ public class ResponsavelService {
     @Autowired
     private ArquivoService imagemService;
 
-    @Value("${user.dir}")
-    private String diretorioProjeto;
-
-    private Path caminhoImagem;
-
-    private Path caminhoArquivo;
-
-    @PostConstruct
-    private void initializePaths() {
-        this.caminhoArquivo = Path.of(diretorioProjeto, "arquivo");
-        this.caminhoImagem = Path.of(caminhoArquivo.toString(), "imgResponsavel");
-    }
-
     public List<Responsavel> getResponsaveis() {
         return responsavelRepository.findAll();
     }
@@ -100,18 +87,9 @@ public class ResponsavelService {
         if (responsavelExistenteOptional.isPresent()) {
             Responsavel responsavelExistente = responsavelExistenteOptional.get();
 
-            if (!this.caminhoArquivo.toFile().exists()) {
-                this.caminhoArquivo.toFile().mkdir();
-            }
-
-            if (!this.caminhoImagem.toFile().exists()) {
-                this.caminhoImagem.toFile().mkdir();
-            }
-
             String filePath = "";
             if (foto != null) {
-                 filePath = empresaService.salvarFoto(foto, this.caminhoImagem);
-                 imagemService.uploadImagem(foto);
+                 filePath = imagemService.uploadImagem(foto);
             }
 
             // Atualize os campos do responsável existente com os valores do DTO editado

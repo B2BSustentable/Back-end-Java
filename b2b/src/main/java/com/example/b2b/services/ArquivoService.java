@@ -44,6 +44,6 @@ public class ArquivoService {
 
     public String uploadImagem(MultipartFile file) throws IOException {
         String url = this.enviarImagemParaSupabase(file);
-        return "Imagem enviada com sucesso. URL: " + url;
+        return url;
     }
 }
