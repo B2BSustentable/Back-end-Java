@@ -27,7 +27,7 @@ public class ResponsavelController {
     @PostMapping("/login")
     public ResponseEntity<ResponsavelRegisterResponseDTO> login(@RequestBody @Valid AutenticacaoDTO data) {
         Responsavel responsavel = responsavelService.login(data);
-        ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), true);
+        ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), true, responsavel.getPhotoResponsavel());
         return ResponseEntity.status(200).body(responsavelResponseDTO);
     }
 
@@ -46,14 +46,14 @@ public class ResponsavelController {
     @GetMapping("/{idResponsavel}")
     public ResponseEntity<ResponsavelRegisterResponseDTO> getResponsavelPorUId(@PathVariable String idResponsavel) {
         Responsavel responsavel = responsavelService.getResponsavelPorUId(idResponsavel);
-        ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), false);
+        ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), false, responsavel.getPhotoResponsavel());
         return ResponseEntity.status(200).body(responsavelResponseDTO);
     }
 
     @PostMapping("/{idEmpresa}")
     public ResponseEntity<ResponsavelRegisterResponseDTO> cadastrarResponsavel(@RequestBody @Valid ResponsavelRegisterRequestDTO data, @PathVariable String idEmpresa) {
         Responsavel responsavel = responsavelService.cadastrarResponsavel(data, idEmpresa);
-        ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), false);
+        ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), false, responsavel.getPhotoResponsavel());
         return ResponseEntity.status(201).body(responsavelResponseDTO);
     }
 

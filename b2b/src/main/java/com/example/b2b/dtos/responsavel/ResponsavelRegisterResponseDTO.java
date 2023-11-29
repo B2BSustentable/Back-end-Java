@@ -4,6 +4,7 @@ public record ResponsavelRegisterResponseDTO(
         String nomeResponsavel,
         String sobrenomeResponsavel,
         String emailResponsavel,
-        boolean isLogado
+        boolean isLogado,
+        String photo
 ) {
 }

@@ -162,6 +162,6 @@ public class ResponsavelService {
     }
 
     public List<ResponsavelRegisterResponseDTO> convertListaResponseDTO(List<Responsavel> responsaveis) {
-        return responsaveis.stream().map(responsavel -> new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), false)).collect(Collectors.toList());
+        return responsaveis.stream().map(responsavel -> new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), false, responsavel.getPhotoResponsavel())).collect(Collectors.toList());
     }
 }
