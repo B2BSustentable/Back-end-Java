@@ -31,8 +31,8 @@ public class ResponsavelController {
         return ResponseEntity.status(200).body(responsavelResponseDTO);
     }
 
-    @GetMapping("/{uIdEmpresa}")
-    public ResponseEntity<List<ResponsavelRegisterResponseDTO>> getTodosResponsaveis(@PathVariable String uIdEmpresa) {
+    @GetMapping("/empresa/{uIdEmpresa}")
+    public ResponseEntity<List<ResponsavelRegisterResponseDTO>> getTodosResponsaveisPorEmpresa(@PathVariable String uIdEmpresa) {
         List<Responsavel> responsaveis = responsavelService.getTodosResponsaveisPorEmpresa(uIdEmpresa);
         if (responsaveis.isEmpty()) {
             return ResponseEntity.status(204).build();
