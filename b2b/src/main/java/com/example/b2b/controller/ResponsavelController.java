@@ -59,7 +59,7 @@ public class ResponsavelController {
     @PutMapping("/{email}")
     public ResponseEntity<UpdateResponsavelResponseDTO> editarResponsavel(MultipartFile foto, MultipartFile fotoCapa, @PathVariable String email, UpdateResponsavelRequestDTO data) {
         Responsavel responsavel = responsavelService.editarResponsavelPorEmail(foto, fotoCapa, email, data);
-        UpdateResponsavelResponseDTO responsavelResponseDTO = new UpdateResponsavelResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), responsavel.getPhotoResponsavel(), responsavel.getPhotoCapaResponsavel());
+        UpdateResponsavelResponseDTO responsavelResponseDTO = new UpdateResponsavelResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), responsavel.getPhotoResponsavel());
         return ResponseEntity.status(200).body(responsavelResponseDTO);
     }
 
