@@ -1,15 +1,20 @@
 package com.example.b2b.services;
 
 import com.example.b2b.dtos.endereco.EnderecoRequestDTO;
+import com.example.b2b.dtos.endereco.OperacaoEnderecoDTO;
 import com.example.b2b.entity.endereco.Endereco;
 import com.example.b2b.infra.ApiCepAberto;
 import com.example.b2b.repository.EnderecoRepository;
+import com.example.b2b.util.FilaObj;
+import com.example.b2b.util.Operacao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
+
+import static com.example.b2b.util.Operacao.*;
 
 @Service
 public class EnderecoService {
@@ -21,6 +26,38 @@ public class EnderecoService {
     private EmpresaService empresaService;
 
     private ApiCepAberto apiCepAberto = new ApiCepAberto();
+
+    private FilaObj<OperacaoEnderecoDTO> filaOperacoes = new FilaObj<>(10);
+
+    public Endereco processarFila() {
+        if (!filaOperacoes.isEmpty()) {
+            OperacaoEnderecoDTO operacaoEnderecoDTO = filaOperacoes.poll();
+            switch (operacaoEnderecoDTO.operacao()) {
+                case CADASTRO:
+                    return cadastrarEndereco(operacaoEnderecoDTO.endereco(), operacaoEnderecoDTO.uIdEmpresa());
+                case ATUALIZACAO:
+                    return atualizarEndereco(operacaoEnderecoDTO.uIdEndereco(), operacaoEnderecoDTO.endereco());
+                case EXCLUSAO:
+                    deletarEndereco(operacaoEnderecoDTO.uIdEndereco());
+                    break;
+                default:
+                    throw new IllegalArgumentException("Operação não suportada: " + operacaoEnderecoDTO.operacao());
+            }
+        }
+        return null;
+    }
+
+    public void enfileirarOperacaoEndereco(Operacao operacao, EnderecoRequestDTO endereco, String uIdEmpresa, String uIdEndereco) {
+        filaOperacoes.insert(new OperacaoEnderecoDTO(operacao, endereco, uIdEmpresa, uIdEndereco));
+    }
+
+    public OperacaoEnderecoDTO desenfileirarOperacaoEndereco() {
+        return filaOperacoes.poll();
+    }
+
+    public void exibirFilaEnderecos() {
+        filaOperacoes.exibe();
+    }
 
     public Endereco cadastrarEndereco(EnderecoRequestDTO endereco, String uIdEmpresa) {
         if (enderecoRepository.findByCep(endereco.cep()).isPresent()) {
