@@ -1,4 +1,4 @@
-package com.example.b2b.services;
+package com.example.b2b.repository.services;
 
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
@@ -11,6 +11,7 @@ import com.example.b2b.entity.empresa.*;
 import com.example.b2b.entity.empresa.roles.EmpresaBasic;
 import com.example.b2b.entity.empresa.roles.EmpresaPremium;
 import com.example.b2b.entity.empresa.roles.EmpresaCommon;
+import com.example.b2b.entity.produto.Produto;
 import com.example.b2b.repository.EmpresaRepository;
 import com.example.b2b.util.Lista;
 import jakarta.annotation.PostConstruct;
@@ -38,7 +39,7 @@ public class EmpresaService {
     private String diretorioProjeto;
 
     @Autowired
-    private ArquivoService imagemService;
+    private com.example.b2b.services.ArquivoService imagemService;
 
     @Autowired
     private EmpresaRepository empresaRepository;
@@ -527,19 +528,24 @@ public class EmpresaService {
 
     }
 
-    public Empresa importarTxtPorId(MultipartFile arquivo, String id, String nomeArq) {
+    public List<Produto> importarTxtPorId(MultipartFile arquivo, String id, String nomeArq) {
         // Verifique se o usuário com o mesmo CNPJ já existe
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByuIdEmpresa(id);
 
         if (empresaExistenteOptional.isPresent()) {
             Empresa empresaExistente = empresaExistenteOptional.get();
 
-            if(!this.caminhoImagem.toFile().exists()) {
-                this.caminhoImagem.toFile().mkdir();
+            if(!this.caminhoArquivo.toFile().exists()) {
+                this.caminhoArquivo.toFile().mkdirs();
             }
 
+            if (!this.caminhoArquivo.toFile().exists()) {
+                if (!this.caminhoArquivo.toFile().mkdirs()) {
+                    throw new RuntimeException("Falha ao criar diretório: " + this.caminhoArquivo);
+                }
+            }
 
-            String filePath = this.caminhoImagem + "/" + nomeArq;
+            String filePath = this.caminhoArquivo + "/" + nomeArq;
             File dest = new File(filePath);
 
             try {
@@ -551,15 +557,15 @@ public class EmpresaService {
             leArquivoTxt(nomeArq);
 
             for (ProdutoRequestDTO c : listaLidaTxt) {
+
                 produtoService.cadastrarProdutoPorIdEmpresa(c,id);
             }
 
-            listaLidaTxt.clear();
-
-            return catalogoService.getCatalogoPorIdEmpresa(id).getEmpresa();
         } else {
             throw new IllegalStateException("Empresa não encontrada");
         }
+
+        return produtoService.getTodosProdutosPoruIdEmpresa(id);
     }
 
 
