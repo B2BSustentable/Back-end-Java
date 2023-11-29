@@ -3,7 +3,7 @@ package com.example.b2b.controller;
 import com.example.b2b.dtos.endereco.EnderecoRequestDTO;
 import com.example.b2b.dtos.endereco.EnderecoResponseDTO;
 import com.example.b2b.entity.endereco.Endereco;
-import com.example.b2b.repository.services.EnderecoService;
+import com.example.b2b.services.EnderecoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -7,7 +7,7 @@ import com.example.b2b.dtos.empresa.RegisterResponseCompletaDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
 import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.infra.security.TokenService;
-import com.example.b2b.repository.services.EmpresaService;
+import com.example.b2b.services.EmpresaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

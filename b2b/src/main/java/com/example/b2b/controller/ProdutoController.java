@@ -3,7 +3,7 @@ package com.example.b2b.controller;
 import com.example.b2b.dtos.produto.ProdutoRequestDTO;
 import com.example.b2b.dtos.produto.ProdutoResponseDTO;
 import com.example.b2b.entity.produto.Produto;
-import com.example.b2b.repository.services.ProdutoService;
+import com.example.b2b.services.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

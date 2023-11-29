@@ -1,4 +1,4 @@
-package com.example.b2b.repository.services;
+package com.example.b2b.services;
 
 import com.example.b2b.dtos.produto.ProdutoRequestDTO;
 import com.example.b2b.dtos.produto.ProdutoResponseDTO;

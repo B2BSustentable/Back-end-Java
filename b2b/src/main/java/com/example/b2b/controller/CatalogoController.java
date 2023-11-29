@@ -2,7 +2,7 @@ package com.example.b2b.controller;
 
 import com.example.b2b.dtos.catalogo.CatalogoResponseDTO;
 import com.example.b2b.entity.catalogo.Catalogo;
-import com.example.b2b.repository.services.CatalogoService;
+import com.example.b2b.services.CatalogoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

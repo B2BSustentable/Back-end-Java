@@ -1,4 +1,4 @@
-package com.example.b2b.repository.services;
+package com.example.b2b.services;
 
 import com.example.b2b.dtos.empresa.RegisterRequestDTO;
 import com.example.b2b.dtos.empresa.RegisterResponseDTO;
@@ -41,7 +41,7 @@ public class EmpresaService {
     private ProdutoService produtoService;
 
     @Autowired
-    private com.example.b2b.services.ArquivoService imagemService;
+    private ArquivoService imagemService;
 
     @Autowired
     private EmpresaRepository empresaRepository;
@@ -226,7 +226,6 @@ public class EmpresaService {
             }
 
             String filePath = "";
-            String filePathCapa = "";
 
             if (file != null) {
                 filePath = salvarFoto(file, this.caminhoImagem);
@@ -545,7 +544,11 @@ public class EmpresaService {
                 }
             }
 
-            String filePath = this.caminhoArquivo + "/" + nomeArq;
+            if (this.caminhoTxt.toFile().exists()) {
+                this.caminhoTxt.toFile().mkdirs();
+            }
+
+            String filePath = this.caminhoTxt + "/" + nomeArq;
             File dest = new File(filePath);
 
             try {

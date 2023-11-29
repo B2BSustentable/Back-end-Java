@@ -1,6 +1,6 @@
 package com.example.b2b.infra.security;
 
-import com.example.b2b.repository.services.EmpresaService;
+import com.example.b2b.services.EmpresaService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
