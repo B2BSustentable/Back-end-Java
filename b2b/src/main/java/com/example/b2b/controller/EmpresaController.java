@@ -5,14 +5,12 @@ import com.example.b2b.dtos.empresa.UpdateRequestDTO;
 import com.example.b2b.dtos.empresa.UpdateResponseDTO;
 import com.example.b2b.dtos.produto.ProdutoResponseDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
-import com.example.b2b.entity.catalogo.Catalogo;
 import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.entity.produto.Produto;
 import com.example.b2b.entity.responsavel.Responsavel;
-import com.example.b2b.services.EmpresaService;
-import com.example.b2b.services.ProdutoService;
-import com.example.b2b.services.ResponsavelService;
-import org.hibernate.validator.constraints.UniqueElements;
+import com.example.b2b.repository.services.EmpresaService;
+import com.example.b2b.repository.services.ProdutoService;
+import com.example.b2b.repository.services.ResponsavelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -209,14 +207,14 @@ public class EmpresaController {
         }
     }
 
-    @PutMapping("/importarTXT/{id}")
-    public ResponseEntity<List<ProdutoResponseDTO>> importarTxt(MultipartFile arquivo, @PathVariable String id, String nomeArq) {
+    @PutMapping("/importarTXTProdutos/{id}/{nomeArq}")
+    public ResponseEntity<List<Produto>>  importarTxt(MultipartFile arquivo, @PathVariable String id, @PathVariable String nomeArq) {
 
-        Empresa resposta = empresaService.importarTxtPorId(arquivo, id, nomeArq);
+        List<Produto> response = empresaService.importarTxtPorId(arquivo, id, nomeArq);
 
-        List<ProdutoResponseDTO> catalogo = (List<ProdutoResponseDTO>) catalogoController.getCatalogoPorIdEmpresa(String.valueOf(id));
+//        List<ProdutoResponseDTO> catalogo = (List<ProdutoResponseDTO>) catalogoController.getCatalogoPorIdEmpresa(String.valueOf(id));
 
-        return ResponseEntity.status(200).body(catalogo);
+        return ResponseEntity.status(200).body(response);
     }
 }
 

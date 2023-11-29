@@ -6,7 +6,7 @@ import com.example.b2b.dtos.responsavel.ResponsavelRegisterResponseDTO;
 import com.example.b2b.dtos.responsavel.UpdateResponsavelRequestDTO;
 import com.example.b2b.dtos.responsavel.UpdateResponsavelResponseDTO;
 import com.example.b2b.entity.responsavel.Responsavel;
-import com.example.b2b.services.ResponsavelService;
+import com.example.b2b.repository.services.ResponsavelService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

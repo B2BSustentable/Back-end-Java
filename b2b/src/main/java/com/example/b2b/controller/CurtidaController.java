@@ -4,8 +4,8 @@ import com.example.b2b.dtos.curtida.RequestCurtidaDTO;
 import com.example.b2b.dtos.curtida.ResponseCurtidaDTO;
 import com.example.b2b.entity.curtida.Curtida;
 import com.example.b2b.entity.responsavel.Responsavel;
-import com.example.b2b.services.CurtidaService;
-import com.example.b2b.services.ResponsavelService;
+import com.example.b2b.repository.services.CurtidaService;
+import com.example.b2b.repository.services.ResponsavelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

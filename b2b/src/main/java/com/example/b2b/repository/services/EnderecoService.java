@@ -1,7 +1,6 @@
-package com.example.b2b.services;
+package com.example.b2b.repository.services;
 
 import com.example.b2b.dtos.endereco.EnderecoRequestDTO;
-import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.entity.endereco.Endereco;
 import com.example.b2b.infra.ApiCepAberto;
 import com.example.b2b.repository.EnderecoRepository;
