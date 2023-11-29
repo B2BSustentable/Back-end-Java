@@ -14,7 +14,6 @@ import com.example.b2b.entity.empresa.roles.EmpresaCommon;
 import com.example.b2b.repository.EmpresaRepository;
 import com.example.b2b.util.Lista;
 import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +36,9 @@ public class EmpresaService {
 
     @Value("${user.dir}")
     private String diretorioProjeto;
+
+    @Autowired
+    private ArquivoService imagemService;
 
     @Autowired
     private EmpresaRepository empresaRepository;
@@ -208,7 +210,7 @@ public class EmpresaService {
         }
     }
 
-    public Empresa editarEmpresaPorCnpj(MultipartFile foto, MultipartFile fotoCapa, UpdateRequestDTO empresaEditada, String cnpj) {
+    public Empresa editarEmpresaPorCnpj(MultipartFile file, UpdateRequestDTO empresaEditada, String cnpj) throws IOException {
         Optional<Empresa> empresaExistenteOptional = empresaRepository.findByCnpj(cnpj);
 
         if (empresaExistenteOptional.isPresent()) {
@@ -225,12 +227,9 @@ public class EmpresaService {
             String filePath = "";
             String filePathCapa = "";
 
-            if (foto != null) {
-                filePath = salvarFoto(foto, this.caminhoImagem);
-            }
-
-            if (fotoCapa != null) {
-                filePathCapa = salvarFoto(fotoCapa, this.caminhoImagem);
+            if (file != null) {
+                filePath = salvarFoto(file, this.caminhoImagem);
+                imagemService.uploadImagem(file);
             }
 
             // Atualizar campos usando método auxiliar
@@ -242,7 +241,6 @@ public class EmpresaService {
 
             // Atualizar campos de foto
             atualizarCampoSeNaoNulo(filePath, empresaExistente::setPhoto);
-            atualizarCampoSeNaoNulo(filePathCapa, empresaExistente::setPhotoCapa);
 
             // Salve o usuário atualizado no banco de dados
             empresaRepository.save(empresaExistente);
@@ -291,7 +289,7 @@ public class EmpresaService {
     public List<RegisterResponseDTO> convertListaResponseDTO(List<Empresa> listaEmpresas) {
         List<RegisterResponseDTO> listaEmpresaResponse = new ArrayList<>();
         for (Empresa empresa : listaEmpresas) {
-            RegisterResponseDTO resposta = new RegisterResponseDTO(empresa.getNomeEmpresa(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos(), empresa.getDescricao(), empresa.getPhoto(), empresa.getPhotoCapa() ,empresa.getEndereco());
+            RegisterResponseDTO resposta = new RegisterResponseDTO(empresa.getNomeEmpresa(), empresa.getCnpj(), empresa.getDataDeCriacao(), empresa.getEmail(), empresa.getTipoPlanos(), empresa.getDescricao(), empresa.getPhoto(), empresa.getEndereco());
             listaEmpresaResponse.add(resposta);
         }
         return listaEmpresaResponse;
