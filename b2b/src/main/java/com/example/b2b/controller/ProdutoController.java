@@ -41,8 +41,8 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProdutoResponseDTO>> getTodosProdutos(){
-        List<Produto> listaProdutos = produtoService.getTodosProdutos();
+    public ResponseEntity<List<ProdutoResponseDTO>> getTodosProdutos(@PathVariable String uIdEmpresa){
+        List<Produto> listaProdutos = produtoService.getTodosProdutosPoruIdEmpresa(uIdEmpresa);
         List<ProdutoResponseDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);
         return ResponseEntity.status(200).body(listaProdutosResponse);
     }

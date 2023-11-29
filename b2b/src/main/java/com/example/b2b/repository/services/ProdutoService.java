@@ -27,11 +27,12 @@ public class ProdutoService {
     @Autowired
     private CatalogoService catalogoService;
 
-    public List<Produto> getTodosProdutos() {
-        if (repository.findAll().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum produto encontrado");
+    public List<Produto> getTodosProdutosPoruIdEmpresa(String uIdEmpresa) {
+        Optional<List<Produto>> listaProdutos = repository.findAllByCatalogoEmpresaUIdEmpresa(uIdEmpresa);
+        if (listaProdutos.isPresent()) {
+            return listaProdutos.get();
         } else {
-            return repository.findAll();
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum produto encontrado");
         }
     }
 

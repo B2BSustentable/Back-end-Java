@@ -174,10 +174,10 @@ public class EmpresaController {
         }
     }
 
-    @GetMapping("/downloadTXT")
-    public ResponseEntity downloadTXT() throws IOException {
+    @GetMapping("/downloadTXT/{uIdEmpresa}")
+    public ResponseEntity downloadTXT(@PathVariable String uIdEmpresa) throws IOException {
         try {
-            List<ProdutoResponseDTO> catalogo = produtoService.convertListaResponseDTO(produtoService.getTodosProdutos());
+            List<ProdutoResponseDTO> catalogo = produtoService.convertListaResponseDTO(produtoService.getTodosProdutosPoruIdEmpresa(uIdEmpresa));
             empresaService.gravarArquivoTXT(catalogo, "catalogo");
 
             // Ler o conteúdo do arquivo CSV
