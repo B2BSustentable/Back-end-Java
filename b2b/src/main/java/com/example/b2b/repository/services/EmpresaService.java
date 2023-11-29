@@ -566,7 +566,7 @@ public class EmpresaService {
             throw new IllegalStateException("Empresa não encontrada");
         }
 
-        return produtoService.getTodosProdutos();
+        return produtoService.getTodosProdutosPoruIdEmpresa(id);
     }
 
 
