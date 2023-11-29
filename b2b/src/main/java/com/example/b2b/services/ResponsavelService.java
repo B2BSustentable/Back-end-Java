@@ -1,4 +1,4 @@
-package com.example.b2b.repository.services;
+package com.example.b2b.services;
 
 import com.example.b2b.dtos.autenticacao.AutenticacaoDTO;
 import com.example.b2b.dtos.responsavel.ResponsavelRegisterRequestDTO;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,9 @@ public class ResponsavelService {
 
     @Autowired
     private EmpresaService empresaService;
+
+    @Autowired
+    private ArquivoService imagemService;
 
     @Value("${user.dir}")
     private String diretorioProjeto;
@@ -90,7 +94,7 @@ public class ResponsavelService {
         }
     }
 
-    public Responsavel editarResponsavelPorEmail(MultipartFile foto, MultipartFile fotoCapa, String email, UpdateResponsavelRequestDTO data) {
+    public Responsavel editarResponsavelPorEmail(MultipartFile foto, String email, UpdateResponsavelRequestDTO data) throws IOException {
         Optional<Responsavel> responsavelExistenteOptional = responsavelRepository.findByEmailResponsavel(email);
 
         if (responsavelExistenteOptional.isPresent()) {
@@ -105,14 +109,9 @@ public class ResponsavelService {
             }
 
             String filePath = "";
-            String filePathCapa = "";
-
             if (foto != null) {
                  filePath = empresaService.salvarFoto(foto, this.caminhoImagem);
-            }
-
-            if (fotoCapa != null) {
-                filePath = empresaService.salvarFoto(fotoCapa, this.caminhoImagem);
+                 imagemService.uploadImagem(foto);
             }
 
             // Atualize os campos do responsável existente com os valores do DTO editado
