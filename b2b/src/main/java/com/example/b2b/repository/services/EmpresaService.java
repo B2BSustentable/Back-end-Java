@@ -37,6 +37,8 @@ public class EmpresaService {
 
     @Value("${user.dir}")
     private String diretorioProjeto;
+    @Autowired
+    private ProdutoService produtoService;
 
     @Autowired
     private com.example.b2b.services.ArquivoService imagemService;
@@ -50,8 +52,6 @@ public class EmpresaService {
     @Autowired
     private PlanoService planoService;
 
-    @Autowired
-    private static ProdutoService produtoService;
     @Getter
     private Empresa empresaCadastrada;
     static List<ProdutoRequestDTO> listaLidaTxt = new ArrayList<ProdutoRequestDTO>();
