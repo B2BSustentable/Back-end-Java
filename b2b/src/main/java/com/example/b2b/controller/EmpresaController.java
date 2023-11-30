@@ -91,7 +91,7 @@ public class EmpresaController {
 
     // http://localhost:8080/empresas/123456789
     @PutMapping("/{cnpj}")
-    public ResponseEntity<UpdateResponseDTO> editarEmpresaPorCnpj(MultipartFile file, UpdateRequestDTO empresa, @PathVariable String cnpj) throws IOException {
+    public ResponseEntity<UpdateResponseDTO> editarEmpresaPorCnpj(MultipartFile file, @RequestBody UpdateRequestDTO empresa, @PathVariable String cnpj) throws IOException {
         Empresa resposta = empresaService.editarEmpresaPorCnpj(file, empresa, cnpj);
         UpdateResponseDTO respostaDTO = new UpdateResponseDTO(
                 resposta.getNomeEmpresa(),

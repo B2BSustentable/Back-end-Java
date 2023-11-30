@@ -35,7 +35,8 @@ public class ConfiguracaoSeguranca {
     private static final AntPathRequestMatcher[] URLS_PERMITIDAS_PARA_TODOS = {
             AntPathRequestMatcher.antMatcher(HttpMethod.GET,"/h2-console/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.POST,"/h2-console/**"),
-            AntPathRequestMatcher.antMatcher(HttpMethod.POST,"/responsavel/login"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.POST,"/responsavel/**"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET,"/responsavel/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/autenticacao/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/v3/api-docs/**"),
