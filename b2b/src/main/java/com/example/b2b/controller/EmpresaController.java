@@ -134,6 +134,17 @@ public class EmpresaController {
         return ResponseEntity.status(200).body(listaResponsavelResponse);
     }
 
+    @GetMapping("/empresaPorIdProduto/{idProduto}")
+    public ResponseEntity<RegisterResponseDTO> getEmpresaPorIdProduto(@PathVariable String idProduto){
+        Empresa empresaIdProduto = empresaService.getEmpresaPorIdProduto(idProduto);
+        if(empresaIdProduto == null){
+            return ResponseEntity.status(204).build();
+        }
+        RegisterResponseDTO resposta = new RegisterResponseDTO(empresaIdProduto.getNomeEmpresa(), empresaIdProduto.getCnpj(), empresaIdProduto.getDataDeCriacao(), empresaIdProduto.getEmail(), empresaIdProduto.getTipoPlanos(), empresaIdProduto.getDescricao(), empresaIdProduto.getPhoto(), empresaIdProduto.getEndereco());
+
+        return ResponseEntity.status(200).body(resposta);
+    }
+
     // http://localhost:8080/empresas/ordenado/{DateTime}
     @GetMapping("/ordenado/{data}")
     public ResponseEntity<RegisterResponseDTO> getEmpresaPorData(@PathVariable LocalDateTime data){
