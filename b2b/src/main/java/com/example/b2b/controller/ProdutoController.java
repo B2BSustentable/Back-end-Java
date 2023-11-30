@@ -2,6 +2,7 @@ package com.example.b2b.controller;
 
 import com.example.b2b.dtos.produto.ProdutoRequestDTO;
 import com.example.b2b.dtos.produto.ProdutoResponseDTO;
+import com.example.b2b.dtos.produto.ProdutoResponseListaLatELongDTO;
 import com.example.b2b.entity.produto.Produto;
 import com.example.b2b.services.ProdutoService;
 import jakarta.validation.Valid;
@@ -27,10 +28,9 @@ public class ProdutoController {
     }
 
     @GetMapping("/nomeParcial/{uIdEmpresa}")
-    public ResponseEntity<List<ProdutoResponseDTO>> getProdutoPorNomeParcialIgnoandoCase(@RequestParam String nomeProduto, @PathVariable String uIdEmpresa){
-        List<Produto> listaProdutos = produtoService.getProdutosPorNomeParcial(nomeProduto, uIdEmpresa);
-        List<ProdutoResponseDTO> listaProdutosResponse = produtoService.convertListaResponseDTO(listaProdutos);
-        return ResponseEntity.status(200).body(listaProdutosResponse);
+    public ResponseEntity<List<ProdutoResponseListaLatELongDTO>> getProdutoPorNomeParcialIgnoandoCase(@RequestParam String nomeProduto, @PathVariable String uIdEmpresa){
+        List<ProdutoResponseListaLatELongDTO> listaProdutos = produtoService.getProdutosPorNomeParcial(nomeProduto, uIdEmpresa);
+        return ResponseEntity.status(200).body(listaProdutos);
     }
 
     @GetMapping("/categoriaParcial/{uIdEmpresa}")

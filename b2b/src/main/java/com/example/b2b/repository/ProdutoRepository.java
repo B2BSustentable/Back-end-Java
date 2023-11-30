@@ -1,5 +1,6 @@
 package com.example.b2b.repository;
 
+import com.example.b2b.dtos.produto.ProdutoResponseListaLatELongDTO;
 import com.example.b2b.entity.empresa.Empresa;
 import com.example.b2b.entity.produto.Produto;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +14,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
 
     int countProdutoByCatalogoEmpresa(Empresa empresa);
 
-    Optional<List<Produto>> findByNomeProdutoContainingIgnoreCase(String nomeProduto);
+    Optional<List<ProdutoResponseListaLatELongDTO>> findByNomeProdutoContainingIgnoreCase(String nomeProduto);
 
     Optional<List<Produto>> findByCategoriaContainingIgnoreCase(String categoria);
 
