@@ -169,6 +169,16 @@ public class EmpresaService {
         }
     }
 
+    public Empresa getEmpresaPorIdProduto(@PathVariable String idProduto) {
+        Produto produto = produtoService.getProdutoPorUId(idProduto);
+
+        if (produto != null) {
+            return produto.getCatalogo().getEmpresa();
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
+        }
+    }
+
     public Empresa getEmpresaPorEmail(@PathVariable String email) {
         Optional<UserDetails> empresaExistente = Optional.ofNullable(empresaRepository.findByEmail(email));
 
