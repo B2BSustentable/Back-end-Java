@@ -518,14 +518,10 @@ public class EmpresaService {
                 this.caminhoArquivo.toFile().mkdirs();
             }
 
-            if (!this.caminhoArquivo.toFile().exists()) {
-                if (!this.caminhoArquivo.toFile().mkdirs()) {
-                    throw new RuntimeException("Falha ao criar diretório: " + this.caminhoArquivo);
+            if (!this.caminhoTxt.toFile().exists()) {
+                if (!this.caminhoTxt.toFile().mkdirs()) {
+                    throw new RuntimeException("Falha ao criar diretório: " + this.caminhoTxt);
                 }
-            }
-
-            if (this.caminhoTxt.toFile().exists()) {
-                this.caminhoTxt.toFile().mkdirs();
             }
 
             String filePath = this.caminhoTxt + "/" + nomeArq;
