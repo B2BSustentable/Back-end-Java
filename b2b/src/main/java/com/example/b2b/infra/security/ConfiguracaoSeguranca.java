@@ -40,10 +40,7 @@ public class ConfiguracaoSeguranca {
             AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/autenticacao/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/v3/api-docs/**"),
-            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/produtos/**")
-    };
-
-    private static final AntPathRequestMatcher[] URLS_NECESSITAM_PERMISSAO = {
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/produtos/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/empresas/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/endereco/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/catalogo/**"),
@@ -53,6 +50,18 @@ public class ConfiguracaoSeguranca {
             AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/produtos/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/produtos/**"),
             AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/produtos/**")
+    };
+
+    private static final AntPathRequestMatcher[] URLS_NECESSITAM_PERMISSAO = {
+//            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/empresas/**"),
+//            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/endereco/**"),
+//            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/catalogo/**"),
+//            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/ordenado/**"),
+//            AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/endereco/**"),
+//            AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/ordenado/**"),
+//            AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/produtos/**"),
+//            AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/produtos/**"),
+//            AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/produtos/**")
     };
 
     @Bean
