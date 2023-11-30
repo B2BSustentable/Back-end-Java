@@ -14,7 +14,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
 
     int countProdutoByCatalogoEmpresa(Empresa empresa);
 
-    Optional<List<ProdutoResponseListaLatELongDTO>> findByNomeProdutoContainingIgnoreCase(String nomeProduto);
+    Optional<List<Produto>> findByNomeProdutoContainingIgnoreCase(String nomeProduto);
 
     Optional<List<Produto>> findByCategoriaContainingIgnoreCase(String categoria);
 

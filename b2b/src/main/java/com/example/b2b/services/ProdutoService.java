@@ -102,8 +102,8 @@ public class ProdutoService {
         }
     }
 
-    public List<ProdutoResponseListaLatELongDTO> getProdutosPorNomeParcial(String nomeParcial, String uIdEmpresa){
-        Optional<List<ProdutoResponseListaLatELongDTO>> listaProdutos = repository.findByNomeProdutoContainingIgnoreCase(nomeParcial);
+    public List<Produto> getProdutosPorNomeParcial(String nomeParcial, String uIdEmpresa){
+        Optional<List<Produto>> listaProdutos = repository.findByNomeProdutoContainingIgnoreCase(nomeParcial);
         if (empresaService.getEmpresaPorId(uIdEmpresa).getPlano().isConsultasIlimitadas() == false) {
             if (listaProdutos.isPresent()) {
                 if (listaProdutos.get().size() > 10) {
