@@ -10,5 +10,5 @@ import org.hibernate.validator.constraints.br.CNPJ;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record RegisterRequestDTO(@NotBlank String nomeEmpresa,@NotBlank @CNPJ String cnpj, @NotBlank @Email String email, @NotBlank String senha, String descricao, LocalDateTime dataDeCriacao, String photo, @NotNull TipoPlanos tipoPlanos, int qtdNegociantes, int limiteDeProdutos, boolean consultasIlimitadas, boolean addFavoritos, List<Endereco> enderecos) {
+public record RegisterRequestDTO(@NotBlank String nomeEmpresa,@NotBlank String cnpj, @NotBlank @Email String email, @NotBlank String senha, String descricao, LocalDateTime dataDeCriacao, String photo, @NotNull TipoPlanos tipoPlanos, int qtdNegociantes, int limiteDeProdutos, boolean consultasIlimitadas, boolean addFavoritos, List<Endereco> enderecos) {
     }
