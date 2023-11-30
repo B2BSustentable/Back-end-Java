@@ -11,6 +11,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,29 +38,29 @@ public class ResponsavelService {
         return responsavelRepository.findAll();
     }
 
-    public Responsavel cadastrarResponsavel(ResponsavelRegisterRequestDTO data, String idEmpresa) {
+    public ResponseEntity<String> cadastrarResponsavel(ResponsavelRegisterRequestDTO data, String idEmpresa) {
         Optional<Responsavel> responsavelExistente = responsavelRepository.findByEmailResponsavel(data.emailResponsavel());
 
         if (empresaService.getEmpresaPorId(idEmpresa).getPlano().getQtdNegociantes() <= responsavelRepository.countResponsavelByEmpresa(empresaService.getEmpresaPorId(idEmpresa))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de negociantes atingido");
+            return new ResponseEntity<String>("Limite de negociantes atingido",HttpStatus.CONFLICT );
         }
 
         if (!empresaService.getEmpresaPorId(idEmpresa).getUIdEmpresa().equals(idEmpresa)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Empresa não autorizada");
+            return new ResponseEntity<String>("Empresa não autorizada" ,HttpStatus.UNAUTHORIZED );
         }
 
         if (empresaService.getEmpresaPorId(idEmpresa).equals(null)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Empresa não cadastrada");
+            return new ResponseEntity<String>("Empresa não cadastrada", HttpStatus.UNAUTHORIZED);
         }
 
         if (responsavelExistente.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Responsavel já cadastrado");
+            return new ResponseEntity<String>( "Responsavel ja cadastrado",HttpStatus.CONFLICT );
         }
 
         Responsavel responsavel = new Responsavel(data);
         responsavel.setEmpresa(empresaService.getEmpresaPorId(idEmpresa));
-
-        return responsavelRepository.save(responsavel);
+        responsavelRepository.save(responsavel);
+        return new ResponseEntity<String>("criado com sucesso", HttpStatus.CREATED);
     }
 
     public Responsavel getResponsavelPorUId(String id) {

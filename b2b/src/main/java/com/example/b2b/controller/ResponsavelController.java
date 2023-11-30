@@ -51,10 +51,10 @@ public class ResponsavelController {
     }
 
     @PostMapping("/{idEmpresa}")
-    public ResponseEntity<ResponsavelRegisterResponseDTO> cadastrarResponsavel(@RequestBody @Valid ResponsavelRegisterRequestDTO data, @PathVariable String idEmpresa) {
-        Responsavel responsavel = responsavelService.cadastrarResponsavel(data, idEmpresa);
-        ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), false, responsavel.getPhotoResponsavel());
-        return ResponseEntity.status(201).body(responsavelResponseDTO);
+    public ResponseEntity<String> cadastrarResponsavel(@RequestBody @Valid ResponsavelRegisterRequestDTO data, @PathVariable String idEmpresa) {
+        ResponseEntity<String> responsavel = responsavelService.cadastrarResponsavel(data, idEmpresa);
+        //ResponsavelRegisterResponseDTO responsavelResponseDTO = new ResponsavelRegisterResponseDTO(responsavel.getNomeResponsavel(), responsavel.getSobrenomeResponsavel(), responsavel.getEmailResponsavel(), false, responsavel.getPhotoResponsavel());
+        return ResponseEntity.status(responsavel.getStatusCode()).body(responsavel.getBody());
     }
 
     @PutMapping("/{email}")
