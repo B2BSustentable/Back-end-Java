@@ -246,10 +246,6 @@ public class EmpresaService {
         }
     }
 
-    private String formatarNomeArquivo(String nomeOriginal) {
-        return String.format("%s_%s", UUID.randomUUID(), nomeOriginal);
-    }
-
     public Void deletarEmpresaPorCnpj(@PathVariable String cnpj) {
         Optional<Empresa> verificarExistenciaDeEmpresa = empresaRepository.findByCnpj(cnpj);
         if (verificarExistenciaDeEmpresa.isPresent()) {
